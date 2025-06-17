@@ -48,10 +48,7 @@ public class Request {
      * 이 필드는 RequestStatus enum 타입으로 관리되며,
      * 데이터베이스에는 문자열(String) 형태로 저장됩니다.
      * 가능한 상태 값은
-     *  ACCEPTED(승인),
-     *  PENDING(대기),
-     *  REJECTED(거절),
-     *  COMPLETED(완료)입니다.
+     * 
      */
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
