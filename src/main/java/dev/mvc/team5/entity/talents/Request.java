@@ -44,17 +44,10 @@ public class Request {
     private User userno;
 
     /**
-     * 요청 상태를 나타내는 필드입니다.
-     * 이 필드는 RequestStatus enum 타입으로 관리되며,
-     * 데이터베이스에는 문자열(String) 형태로 저장됩니다.
-     * 가능한 상태 값은
-     *  ACCEPTED(승인),
-     *  PENDING(대기),
-     *  REJECTED(거절),
-     *  COMPLETED(완료)입니다.
+
+     * 요청 상태
      */
-    @Enumerated(EnumType.STRING)
-    private RequestStatus status;
+    private String status;
 
     /**
      * 요청 메세지
@@ -78,7 +71,7 @@ public class Request {
      * @param message 요청 메세지
      */
     public Request(Talent talentno, User userno,
-        RequestStatus status, String message) {
+        String status, String message) {
       this.talentno = talentno;
       this.userno = userno;
       this.status = status;

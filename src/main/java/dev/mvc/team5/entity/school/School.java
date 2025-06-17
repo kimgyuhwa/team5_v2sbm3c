@@ -21,10 +21,12 @@ public class School {
     @Column(name = "schoolname", length = 50)
     private String schoolname;
     
- // 양방향: School ↔ Users
-    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    // 양방향: School ↔ Users
+    @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
     
+
 
 
     public void addUser(User userno) {

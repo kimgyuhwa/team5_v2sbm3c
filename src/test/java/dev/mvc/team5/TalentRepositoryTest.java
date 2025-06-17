@@ -1,6 +1,11 @@
 package dev.mvc.team5;
 
 
+
+import dev.mvc.team5.entity.school.School;
+import dev.mvc.team5.entity.talents.Talent;
+import dev.mvc.team5.entity.user.User;
+
 import dev.mvc.team5.repository.TalentRepository;
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.talents.Talent;
