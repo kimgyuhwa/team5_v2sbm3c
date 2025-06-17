@@ -27,14 +27,14 @@ public class Talent {
     @Column(name = "talentno")
     private Long talentNo;
 
-//    /**
-//     * 재능을 등록한 사용자 (작성자)
-//     * User 엔티티와 다대일 관계 (ManyToOne)
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "userno")
-//    private User user;
-//
+    /**
+     * 재능을 등록한 사용자 (작성자)
+     * User 엔티티와 다대일 관계 (ManyToOne)
+     */
+    @ManyToOne
+    @JoinColumn(name = "userno")
+    private User user;
+
 //    /**
 //     * 재능 유형 (예: 악기, 언어 등)
 //     * TalentType 엔티티와 다대일 관계
@@ -51,13 +51,13 @@ public class Talent {
 //    @JoinColumn(name = "categoryno")
 //    private TalentCategory category;
 //
-//    /**
-//     * 재능과 연관된 학교 정보
-//     * School 엔티티와 다대일 관계
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "schoolno")
-//    private School school;
+    /**
+     * 재능과 연관된 학교 정보
+     * School 엔티티와 다대일 관계
+     */
+    @ManyToOne
+    @JoinColumn(name = "schoolno")
+    private School school;
 
     /**
      * 재능 제목 (게시글 제목)
@@ -102,12 +102,12 @@ public class Talent {
      * @param description 게시글 내용
      * @param language 사용 언어
      */
-    public Talent(// User user, TalentType type, TalentCategory category, School school,
+    public Talent(User user, School school, // TalentType type, TalentCategory category, 
                   String title, String description, String language) {
-//        this.user = user;
+        this.user = user;
 //        this.type = type;
 //        this.category = category;
-//        this.school = school;
+        this.school = school;
         this.title = title;
         this.description = description;
         this.language = language;

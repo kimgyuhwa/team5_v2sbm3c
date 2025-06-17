@@ -62,9 +62,14 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
-    public User() {
-      
-    }
+    public User(String userId, String password, String name, School school) {
+      this.userId = userId;
+      this.password = password;
+      this.name = name;
+      this.school = school;
+  }
+
+
 
 
 }

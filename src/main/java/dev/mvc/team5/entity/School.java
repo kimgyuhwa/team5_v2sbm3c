@@ -31,6 +31,15 @@ public class School {
       users.add(user);
       user.setSchool(this);
   }
+    
+    /**
+     * 생성자
+     * @param schoolname
+     */
+    public School(String schoolname) {
+      this.schoolname = schoolname;
+  }
+
 
 }
 

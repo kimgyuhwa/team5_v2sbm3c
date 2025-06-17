@@ -33,13 +33,13 @@ public class Request {
     @JoinColumn(name = "talentno")
     private Talent talent;
 
-//    /**
-//     * 요청과 관련된 회원 정보
-//     * User 엔티티와 일대일 관계
-//     */
-//    @OneToOne
-//    @JoinColumn(name = "userno")
-//    private User user;
+    /**
+     * 요청과 관련된 회원 정보
+     * User 엔티티와 일대일 관계
+     */
+    @ManyToOne
+    @JoinColumn(name = "userno")
+    private User user;
 
     /**
      * 요청 상태를 나타내는 필드입니다.
@@ -75,10 +75,10 @@ public class Request {
      * @param status 요청 상태
      * @param message 요청 메세지
      */
-    public Request(Talent talent, //User user,
+    public Request(Talent talent, User user,
         RequestStatus status, String message) {
       this.talent = talent;
-      // this.user = user;
+      this.user = user;
       this.status = status;
       this.message = message;
   }

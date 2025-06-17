@@ -63,4 +63,14 @@ public class Match {
      */
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+    
+ // Match.java 내부에 생성자 추가
+    public Match(User giver, User receiver, Talent talent, LocalDateTime completedAt) {
+        this.giver = giver;
+        this.receiver = receiver;
+        this.talent = talent;
+        this.completedAt = completedAt;
+    }
+
+    
 }
