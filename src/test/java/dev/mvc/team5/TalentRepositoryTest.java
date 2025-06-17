@@ -1,17 +1,13 @@
 package dev.mvc.team5;
 
-<<<<<<< HEAD
-import dev.mvc.team5.entity.talents.Talent;
-import dev.mvc.team5.repository.TalentRepository;
 
-=======
-import dev.mvc.team5.entity.School;
-import dev.mvc.team5.entity.Talent;
-import dev.mvc.team5.entity.User;
 import dev.mvc.team5.repository.TalentRepository;
+import dev.mvc.team5.entity.school.School;
+import dev.mvc.team5.entity.talents.Talent;
+import dev.mvc.team5.entity.user.User;
 import dev.mvc.team5.repository.SchoolRepository;
 import dev.mvc.team5.repository.UserRepository;
->>>>>>> 1971435a37ee02c24a6e5f26500ea5ac402f65b2
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
