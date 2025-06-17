@@ -18,11 +18,11 @@ public class Report {
     private Integer reportno;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reporter_id")
+    @JoinColumn(name = "reporter")
     private User reporter;  // 신고자
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_id")
+    @JoinColumn(name = "reported")
     private User reported;  // 신고당한 사용자
 
     @Lob
