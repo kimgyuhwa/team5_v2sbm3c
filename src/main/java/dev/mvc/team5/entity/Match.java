@@ -23,7 +23,7 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "match_seq")
     @SequenceGenerator(name = "match_seq", sequenceName = "match_seq", allocationSize = 1)
     @Column(name = "matchno")
-    private Long matchNo;
+    private Long matchno;
 
     /**
      * 요청한 회원
@@ -31,7 +31,7 @@ public class Match {
      */
     @ManyToOne
     @JoinColumn(name = "giverno")
-    private User giver;
+    private User giverno;
 
     /**
      * 요청 받은 회원
@@ -39,7 +39,7 @@ public class Match {
      */
     @ManyToOne
     @JoinColumn(name = "receiverno")
-    private User receiver;
+    private User receiverno;
 
     /**
      * 요청 게시물
@@ -65,9 +65,9 @@ public class Match {
     private LocalDateTime completedAt;
     
  // Match.java 내부에 생성자 추가
-    public Match(User giver, User receiver, Talent talent, LocalDateTime completedAt) {
-        this.giver = giver;
-        this.receiver = receiver;
+    public Match(User giverno, User receiverno, Talent talent, LocalDateTime completedAt) {
+        this.giverno = giverno;
+        this.receiverno = receiverno;
         this.talent = talent;
         this.completedAt = completedAt;
     }

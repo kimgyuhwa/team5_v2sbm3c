@@ -25,7 +25,7 @@ public class Talent {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "talent_seq")
     @SequenceGenerator(name = "talent_seq", sequenceName = "talent_seq", allocationSize = 1)
     @Column(name = "talentno")
-    private Long talentNo;
+    private Long talentno;
 
     /**
      * 재능을 등록한 사용자 (작성자)
@@ -33,7 +33,7 @@ public class Talent {
      */
     @ManyToOne
     @JoinColumn(name = "userno")
-    private User user;
+    private User userno;
 
 //    /**
 //     * 재능 유형 (예: 악기, 언어 등)
@@ -57,7 +57,7 @@ public class Talent {
      */
     @ManyToOne
     @JoinColumn(name = "schoolno")
-    private School school;
+    private School schoolno;
 
     /**
      * 재능 제목 (게시글 제목)
@@ -102,12 +102,12 @@ public class Talent {
      * @param description 게시글 내용
      * @param language 사용 언어
      */
-    public Talent(User user, School school, // TalentType type, TalentCategory category, 
+    public Talent(User userno, School schoolno, // TalentType type, TalentCategory category, 
                   String title, String description, String language) {
-        this.user = user;
+        this.userno = userno;
 //        this.type = type;
 //        this.category = category;
-        this.school = school;
+        this.schoolno = schoolno;
         this.title = title;
         this.description = description;
         this.language = language;
