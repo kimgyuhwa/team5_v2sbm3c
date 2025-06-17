@@ -27,9 +27,12 @@ public class School {
     
 
 
-    public void addUser(User user) {
-      users.add(user);
-      user.setSchool(this);
+
+
+
+    public void addUser(User userno) {
+      users.add(userno);
+      userno.setSchoolno(this);
   }
     
     /**

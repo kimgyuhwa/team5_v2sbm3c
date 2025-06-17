@@ -64,7 +64,7 @@ public class RequestRepositoryTest {
         assertThat(pendingRequests.get(0).getMessage()).isEqualTo("첫번째 요청 메시지");
 
         // Talent 기준 조회
-        List<Request> requestsByTalent = requestRepository.findByTalent_TalentNo(talent.getTalentNo());
+        List<Request> requestsByTalent = requestRepository.findByTalent_Talentno(talent.getTalentno());
         assertThat(requestsByTalent).hasSize(2);
     }
 }

@@ -25,7 +25,7 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "request_seq")
     @SequenceGenerator(name = "request_seq", sequenceName = "request_seq", allocationSize = 1)
     @Column(name = "requestno")
-    private Long requestNo;
+    private Long requestno;
 
     /**
      * 요청과 연관된 talent 정보
@@ -33,7 +33,7 @@ public class Request {
      */
     @ManyToOne
     @JoinColumn(name = "talentno")
-    private Talent talent;
+    private Talent talentno;
 
     /**
      * 요청과 관련된 회원 정보
@@ -41,7 +41,7 @@ public class Request {
      */
     @ManyToOne
     @JoinColumn(name = "userno")
-    private User user;
+    private User userno;
 
     /**
      * 요청 상태를 나타내는 필드입니다.
@@ -77,10 +77,10 @@ public class Request {
      * @param status 요청 상태
      * @param message 요청 메세지
      */
-    public Request(Talent talent, User user,
+    public Request(Talent talentno, User userno,
         RequestStatus status, String message) {
-      this.talent = talent;
-      this.user = user;
+      this.talentno = talentno;
+      this.userno = userno;
       this.status = status;
       this.message = message;
   }

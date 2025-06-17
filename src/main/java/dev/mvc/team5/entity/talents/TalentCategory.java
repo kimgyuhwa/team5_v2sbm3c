@@ -13,11 +13,11 @@ public class TalentCategory {
 
     @Id
     @Column(name = "categoryno")
-    private Long categoryNo;
+    private Long categoryno;
 
     @ManyToOne
     @JoinColumn(name = "categrpno")
-    private TalentCateGrp cateGrp;
+    private TalentCateGrp cateGrpno;
 
     private String name;
 

@@ -13,7 +13,7 @@ public class TalentCateGrp {
 
     @Id
     @Column(name = "categrpno")
-    private Long cateGrpNo;
+    private Long cateGrpno;
 
     private String name;
 
