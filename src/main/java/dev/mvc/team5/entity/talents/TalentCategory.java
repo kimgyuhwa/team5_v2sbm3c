@@ -1,6 +1,11 @@
 package dev.mvc.team5.entity.talents;
 
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import dev.mvc.team5.entity.user.User;
 import jakarta.persistence.*;
 
 @Getter @Setter
@@ -12,7 +17,8 @@ import jakarta.persistence.*;
 public class TalentCategory {
 
     @Id
-    @Column(name = "categoryno")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="categoryno_seq")
+    @SequenceGenerator(name="categoryno_seq", sequenceName="categoryno_seq", allocationSize=1)
     private Long categoryno;
 
     @ManyToOne
@@ -22,4 +28,10 @@ public class TalentCategory {
     private String name;
 
     private Integer cnt;
+    
+    // 양방향: Category ↔ Talent
+    @OneToMany(mappedBy = "talentno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Talent> talents = new ArrayList<>();
+    
+    
 }

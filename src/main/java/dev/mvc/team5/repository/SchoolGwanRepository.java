@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import dev.mvc.team5.entity.school.School;
 
 @Repository
-public interface SchoolRepository extends JpaRepository<School, Long> {
+public interface SchoolGwanRepository extends JpaRepository<School, Long> {
     // 필요하다면 커스텀 쿼리 추가 가능
 
 }
