@@ -73,10 +73,7 @@ public class Match {
 
         this.completedAt = completedAt;
     }
-    
-    public Match() {
-      
-    }
+
     
 
     

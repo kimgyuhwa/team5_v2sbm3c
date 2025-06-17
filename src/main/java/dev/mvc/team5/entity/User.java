@@ -69,11 +69,7 @@ public class User {
       this.schoolno = schoolno;
   }
     
-    public User() {
-      
-    }
 
-    // ㅎㅇㅎㅇㅎㅇ
 
 
 
