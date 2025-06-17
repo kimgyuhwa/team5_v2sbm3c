@@ -1,9 +1,10 @@
 package dev.mvc.team5.repository;
 
 
-import dev.mvc.team5.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import dev.mvc.team5.entity.user.User;
 
 
 @Repository

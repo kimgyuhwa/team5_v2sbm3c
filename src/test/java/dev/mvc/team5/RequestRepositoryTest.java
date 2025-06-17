@@ -1,6 +1,7 @@
 package dev.mvc.team5;
 
 import dev.mvc.team5.entity.*;
+import dev.mvc.team5.entity.user.User;
 import dev.mvc.team5.repository.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +60,7 @@ public class RequestRepositoryTest {
         assertThat(pendingRequests.get(0).getMessage()).isEqualTo("첫번째 요청 메시지");
 
         // Talent 기준 조회
-        List<Request> requestsByTalent = requestRepository.findByTalent_Talentno(talent.getTalentno());
+        List<Request> requestsByTalent = requestRepository.findByTalentno_Talentno(talent.getTalentno());
         assertThat(requestsByTalent).hasSize(2);
     }
 }

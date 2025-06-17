@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import dev.mvc.team5.entity.user.User;
+
 @Getter
 @Setter
 @NoArgsConstructor
