@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Getter @Setter
-@NoArgsConstructor
+// @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Entity
@@ -73,6 +73,11 @@ public class Match {
 
         this.completedAt = completedAt;
     }
+    
+    public Match() {
+      
+    }
+    
 
     
 }
