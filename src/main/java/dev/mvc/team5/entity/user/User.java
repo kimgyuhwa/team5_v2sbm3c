@@ -7,6 +7,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import dev.mvc.team5.entity.review.Review;
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.talents.Match;
 
@@ -98,6 +100,12 @@ public class User {
 
     @OneToMany(mappedBy = "receiverno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Match> receivedMatches = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "giverno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> givenReviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiverno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> receivedReviews = new ArrayList<>();
     
     // --------------------
     //    생성자 ㅋㅋ
