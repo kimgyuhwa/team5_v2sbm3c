@@ -39,22 +39,22 @@ public class Talent {
     @JoinColumn(name = "userno")
     private User userno;
 
-//    /**
-//     * 재능 유형 (예: 악기, 언어 등)
-//     * TalentType 엔티티와 다대일 관계
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "type_id")
-//    private TalentType type;
-//
-//    /**
-//     * 재능 카테고리
-//     * TalentCategory 엔티티와 다대일 관계
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "categoryno")
-//    private TalentCategory category;
-//
+    /**
+     * 재능 유형 (예: 악기, 언어 등)
+     * TalentType 엔티티와 다대일 관계
+     */
+    @ManyToOne
+    @JoinColumn(name = "typeno")
+    private TalentType typeno;
+
+    /**
+     * 재능 카테고리
+     * TalentCategory 엔티티와 다대일 관계
+     */
+    @ManyToOne
+    @JoinColumn(name = "categoryno")
+    private TalentCategory categoryno;
+
     /**
      * 재능과 연관된 학교 정보
      * School 엔티티와 다대일 관계
