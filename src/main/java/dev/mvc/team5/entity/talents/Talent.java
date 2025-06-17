@@ -1,13 +1,15 @@
-package dev.mvc.team5.entity;
+package dev.mvc.team5.entity.talents;
 
 import lombok.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
+import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.user.User;
 
 @Getter
@@ -91,11 +93,21 @@ public class Talent {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    // 양방향: Talent ↔ Request
+    @OneToMany(mappedBy = "talentno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Request> requests = new ArrayList<>();
+    
+ // 양방향: Talent ↔ Match
+    @OneToMany(mappedBy = "talentno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Match> matches = new ArrayList<>();
 
+    
+    
     /**
      * 생성자: 필수 정보로 객체 생성할 때 사용
      * 시퀀스, 생성/수정 시간은 자동 처리되므로 포함하지 않음
-     * 
+     *
      * @param user 작성자 User 객체
      * @param type 재능 유형 TalentType 객체
      * @param category 재능 카테고리 TalentCategory 객체
@@ -104,7 +116,7 @@ public class Talent {
      * @param description 게시글 내용
      * @param language 사용 언어
      */
-    public Talent(User userno, School schoolno, // TalentType type, TalentCategory category, 
+    public Talent(User userno, School schoolno, // TalentType type, TalentCategory category,
                   String title, String description, String language) {
         this.userno = userno;
 //        this.type = type;
@@ -114,13 +126,7 @@ public class Talent {
         this.description = description;
         this.language = language;
     }
-    
-    public Talent(// TalentType type, TalentCategory category, 
-        String title, String description, String language) {
-//this.type = type;
-//this.category = category;
-this.title = title;
-this.description = description;
-this.language = language;
-}
+   
+
+
 }

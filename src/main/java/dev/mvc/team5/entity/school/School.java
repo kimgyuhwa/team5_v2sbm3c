@@ -1,4 +1,4 @@
-package dev.mvc.team5.entity;
+package dev.mvc.team5.entity.school;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import dev.mvc.team5.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "school")
 @Data // Getter, Setter, toString 자동 생성
@@ -20,13 +21,12 @@ public class School {
     @Column(name = "schoolname", length = 50)
     private String schoolname;
     
- // 양방향: School ↔ Users
+
+    // 양방향: School ↔ Users
     @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
     
-    public School() {
-      
-    }
+
 
 
     public void addUser(User userno) {
@@ -42,6 +42,10 @@ public class School {
       this.schoolname = schoolname;
   }
 
-
+    
+//  @NoArgsConstructor로 기본 생성자 삭제 가능
+//  public School() {
+//    
+//  }
 }
 

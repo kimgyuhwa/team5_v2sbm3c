@@ -7,8 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import dev.mvc.team5.entity.School;
+import dev.mvc.team5.entity.school.School;
 
 @Entity
 @NoArgsConstructor
@@ -24,7 +23,7 @@ public class User {
 //    @Column(name = "schoolno", nullable = false)
 //    private Long schoolno;   
 // 기존 Long schoolno 제거하고 아래로 대체
-    @ManyToOne(fetch = FetchType.LAZY)  
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schoolno") // FK 이름 매칭
     private School schoolno;
 
