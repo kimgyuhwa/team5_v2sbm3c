@@ -24,7 +24,7 @@ public class Places {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno", nullable = false)
-    private User user;
+    private User userno;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schoolgwanno", nullable = false)
@@ -44,8 +44,8 @@ public class Places {
     @Column(name = "hosu", length = 100)
     private String hosu;
 
-    public Places(User user, SchoolGwan schoolGwan, String placename, String hosu) {
-        this.user = user;
+    public Places(User userno, SchoolGwan schoolGwan, String placename, String hosu) {
+        this.userno = userno;
         this.schoolGwan = schoolGwan;
         this.placename = placename;
         this.hosu = hosu;

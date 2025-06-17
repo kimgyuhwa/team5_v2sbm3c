@@ -21,7 +21,7 @@ public class Reservations {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno", nullable = false)
-    private User user;
+    private User userno;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "placeno", nullable = false)
@@ -43,8 +43,8 @@ public class Reservations {
     private String status;
     
     // 생성자 (필요시)
-    public Reservations(User user, Places place, LocalDateTime start_time, LocalDateTime end_time, String placesinfo, String status) {
-        this.user = user;
+    public Reservations(User userno, Places place, LocalDateTime start_time, LocalDateTime end_time, String placesinfo, String status) {
+        this.userno = userno;
         this.place = place;
         this.start_time = start_time;
         this.end_time = end_time;
