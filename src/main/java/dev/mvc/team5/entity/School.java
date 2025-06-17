@@ -29,7 +29,7 @@ public class School {
 
     public void addUser(User user) {
       users.add(user);
-      user.setSchool(this);
+      user.setSchoolno(this);
   }
     
     /**

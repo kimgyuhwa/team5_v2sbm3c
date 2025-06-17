@@ -21,7 +21,7 @@ public class User {
 // 기존 Long schoolno 제거하고 아래로 대체
     @ManyToOne(fetch = FetchType.LAZY)  
     @JoinColumn(name = "schoolno") // FK 이름 매칭
-    private School school;
+    private School schoolno;
 
     @Column(name = "user_id", length = 30)
     private String userId;
@@ -62,11 +62,11 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
-    public User(String userId, String password, String name, School school) {
+    public User(String userId, String password, String name, School schoolno) {
       this.userId = userId;
       this.password = password;
       this.name = name;
-      this.school = school;
+      this.schoolno = schoolno;
   }
 
 
