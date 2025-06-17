@@ -1,7 +1,8 @@
 package dev.mvc.team5;
 
-import dev.mvc.team5.entity.Talent;
+import dev.mvc.team5.entity.talents.Talent;
 import dev.mvc.team5.repository.TalentRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

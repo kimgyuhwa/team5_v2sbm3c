@@ -1,4 +1,4 @@
-package dev.mvc.team5.entity;
+package dev.mvc.team5.entity.talents;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import dev.mvc.team5.entity.school.School;
+import dev.mvc.team5.entity.user.User;
 
 @Getter
 @Setter
@@ -90,26 +93,5 @@ public class Talent {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    /**
-     * 생성자: 필수 정보로 객체 생성할 때 사용
-     * 시퀀스, 생성/수정 시간은 자동 처리되므로 포함하지 않음
-     * 
-     * @param user 작성자 User 객체
-     * @param type 재능 유형 TalentType 객체
-     * @param category 재능 카테고리 TalentCategory 객체
-     * @param school 관련 학교 School 객체
-     * @param title 게시글 제목
-     * @param description 게시글 내용
-     * @param language 사용 언어
-     */
-    public Talent(User user, School school, // TalentType type, TalentCategory category, 
-                  String title, String description, String language) {
-        this.user = user;
-//        this.type = type;
-//        this.category = category;
-        this.school = school;
-        this.title = title;
-        this.description = description;
-        this.language = language;
-    }
+
 }

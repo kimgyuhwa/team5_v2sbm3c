@@ -1,4 +1,4 @@
-package dev.mvc.team5.entity;
+package dev.mvc.team5.entity.talents;
 
 import lombok.*;
 import jakarta.persistence.*;

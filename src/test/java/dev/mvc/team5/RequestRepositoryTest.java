@@ -1,6 +1,11 @@
 package dev.mvc.team5;
 
 import dev.mvc.team5.entity.*;
+import dev.mvc.team5.entity.school.School;
+import dev.mvc.team5.entity.talents.Request;
+import dev.mvc.team5.entity.talents.RequestStatus;
+import dev.mvc.team5.entity.talents.Talent;
+import dev.mvc.team5.entity.user.User;
 import dev.mvc.team5.repository.*;
 
 import org.junit.jupiter.api.DisplayName;

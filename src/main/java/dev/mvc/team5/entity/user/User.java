@@ -1,10 +1,12 @@
-package dev.mvc.team5.entity;
+package dev.mvc.team5.entity.user;
 
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+
+import dev.mvc.team5.entity.school.School;
 
 @Entity
 @Table(name = "users")

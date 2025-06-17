@@ -1,4 +1,4 @@
-package dev.mvc.team5.entity;
+package dev.mvc.team5.entity.talents;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+
+import dev.mvc.team5.entity.user.User;
 
 @Getter @Setter
 @NoArgsConstructor

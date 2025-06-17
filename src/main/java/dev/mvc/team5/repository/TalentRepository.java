@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import dev.mvc.team5.entity.Talent;
+import dev.mvc.team5.entity.talents.Talent;
 
 @Repository
 public interface TalentRepository extends JpaRepository<Talent, Long> {
