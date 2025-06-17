@@ -61,10 +61,10 @@ public class MatchRepositoryTest {
 
         Match saved = matchRepository.save(match);
 
-        assertThat(saved.getMatchNo()).isNotNull();
-        assertThat(saved.getGiver().getUserno()).isEqualTo(giver.getUserno());
-        assertThat(saved.getReceiver().getUserno()).isEqualTo(receiver.getUserno());
-        assertThat(saved.getTalent().getTalentNo()).isEqualTo(talent.getTalentNo());
+        assertThat(saved.getMatchno()).isNotNull();
+        assertThat(saved.getGiverno().getUserno()).isEqualTo(giver.getUserno());
+        assertThat(saved.getReceiverno().getUserno()).isEqualTo(receiver.getUserno());
+        assertThat(saved.getTalent().getTalentno()).isEqualTo(talent.getTalentno());
         
         Match saved1 = matchRepository.saveAndFlush(match);  // saveAndFlush로 즉시 DB 반영
         assertThat(saved1.getStartedAt()).isNotNull(); // @CreationTimestamp 확인

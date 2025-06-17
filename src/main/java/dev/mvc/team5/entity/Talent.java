@@ -25,7 +25,7 @@ public class Talent {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "talent_seq")
     @SequenceGenerator(name = "talent_seq", sequenceName = "talent_seq", allocationSize = 1)
     @Column(name = "talentno")
-    private Long talentNo;
+    private Long talentno;
 
     /**
      * 재능을 등록한 사용자 (작성자)

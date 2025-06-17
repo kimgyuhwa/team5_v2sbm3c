@@ -65,10 +65,12 @@ public class Match {
     private LocalDateTime completedAt;
     
  // Match.java 내부에 생성자 추가
+
     public Match(User giverno, User receiverno, Talent talentno, LocalDateTime completedAt) {
         this.giverno = giverno;
         this.receiverno = receiverno;
         this.talentno = talentno;
+
         this.completedAt = completedAt;
     }
 
