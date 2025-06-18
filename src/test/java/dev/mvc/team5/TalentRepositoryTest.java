@@ -4,13 +4,19 @@ package dev.mvc.team5;
 
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.talents.Talent;
+import dev.mvc.team5.entity.talents.TalentCateGrp;
+import dev.mvc.team5.entity.talents.TalentCategory;
+import dev.mvc.team5.entity.talents.TalentType;
 import dev.mvc.team5.entity.user.User;
 
 import dev.mvc.team5.repository.TalentRepository;
+import dev.mvc.team5.repository.TalentTypeRepository;
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.talents.Talent;
 import dev.mvc.team5.entity.user.User;
 import dev.mvc.team5.repository.SchoolRepository;
+import dev.mvc.team5.repository.TalentCateGrpRepository;
+import dev.mvc.team5.repository.TalentCategoryRepository;
 import dev.mvc.team5.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +40,15 @@ public class TalentRepositoryTest {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private TalentCateGrpRepository talentCateGrpRepository;
+    
+    @Autowired
+    private TalentCategoryRepository talentCategoryRepository;
+    
+    @Autowired
+    private TalentTypeRepository talentTypeRepository;
 
     @BeforeEach
     void setup() {
@@ -42,10 +57,19 @@ public class TalentRepositoryTest {
   
         // 사용자 저장
         User user = userRepository.save(new User("user", "user123", "유저", school));
+        
+        // 대분류 그룹
+        TalentCateGrp cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악", 100));
+        
+        // 카테고리 
+        TalentCategory category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타", 50));
+        
+        // 재능기부/교환
+        TalentType talentType = talentTypeRepository.save(new TalentType("기부", 50));
                 
-        talentRepository.save(new Talent(user, school, "기타 레슨 합니다", "기초부터 알려드려요", "Korean"));
-        talentRepository.save(new Talent(user, school, "피아노 레슨 가능", "1:1 맞춤", "Korean"));
-        talentRepository.save(new Talent(user, school, "운동 코칭", "헬스, PT", "Korean"));
+        talentRepository.save(new Talent(user, school, talentType, category, "기타 레슨 합니다", "기초부터 알려드려요", "Korean"));
+        talentRepository.save(new Talent(user, school,  talentType, category, "피아노 레슨 가능", "1:1 맞춤", "Korean"));
+        talentRepository.save(new Talent(user, school,  talentType, category, "운동 코칭", "헬스, PT", "Korean"));
     }
 
     @Test

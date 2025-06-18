@@ -62,7 +62,7 @@ public class UserRelationshipTest {
     @Test
     public void testActivityLog() {
         ActivityLog log = new ActivityLog();
-        log.setUserno(user1);
+        log.setUser(user1);
         log.setAction("LOGIN");
         log.setDetail("User logged in successfully.");
         log.setCreatedAt(LocalDateTime.now());
@@ -74,7 +74,7 @@ public class UserRelationshipTest {
     @Test
     public void testLoginLog() {
         LoginLog log = new LoginLog();
-        log.setUserno(user1);
+        log.setUser(user1);
         log.setLoginTime(LocalDateTime.now());
         log.setIpAddress("127.0.0.1");
         loginLogRepository.save(log);
@@ -85,7 +85,7 @@ public class UserRelationshipTest {
     @Test
     public void testNotification() {
         Notification notification = new Notification();
-        notification.setUserno(user1);
+        notification.setUser(user1);
         notification.setMessage("Welcome to the system!");
         notification.setCreatedAt(LocalDateTime.now());
         notificationRepository.save(notification);

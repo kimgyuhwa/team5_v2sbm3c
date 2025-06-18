@@ -34,7 +34,7 @@ class UserTests {
 
         // 4) 검증
         assertThat(savedUser.getUserno()).isNotNull();
-        assertThat(savedUser.getSchoolno()).isNotNull();
-        assertThat(savedUser.getSchoolno().getSchoolname()).isEqualTo("테스트학교");
+        assertThat(savedUser.getSchool()).isNotNull();
+        assertThat(savedUser.getSchool().getSchoolname()).isEqualTo("테스트학교");
     }
 }

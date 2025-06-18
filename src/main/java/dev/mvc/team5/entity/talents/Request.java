@@ -32,16 +32,16 @@ public class Request {
      * Talent 엔티티와 다대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "talentno")
-    private Talent talentno;
+    @JoinColumn(name = "talent")
+    private Talent talent;
 
     /**
      * 요청과 관련된 회원 정보
      * User 엔티티와 일대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "userno")
-    private User userno;
+    @JoinColumn(name = "user")
+    private User user;
 
     /**
 
@@ -70,10 +70,10 @@ public class Request {
      * @param status 요청 상태
      * @param message 요청 메세지
      */
-    public Request(Talent talentno, User userno,
+    public Request(Talent talent, User user,
         String status, String message) {
-      this.talentno = talentno;
-      this.userno = userno;
+      this.talent = talent;
+      this.user = user;
       this.status = status;
       this.message = message;
   }

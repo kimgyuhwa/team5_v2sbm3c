@@ -26,6 +26,12 @@ public class TalentType {
     private Integer cnt;
     
     // 양방향: Type ↔ Talent
-    @OneToMany(mappedBy = "typeno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
+    
+    // 생성자
+    public TalentType(String name, Integer cnt) {
+      this.name=name;
+      this.cnt=cnt;
+    }
 }

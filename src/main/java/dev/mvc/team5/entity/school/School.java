@@ -23,15 +23,15 @@ public class School {
     
 
     // 양방향: School ↔ Users
-    @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
     
 
 
 
-    public void addUser(User userno) {
-      users.add(userno);
-      userno.setSchoolno(this);
+    public void addUser(User user) {
+      users.add(user);
+      user.setSchool(this);
   }
     
     /**

@@ -27,7 +27,7 @@ public class SchoolGwan {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schoolno", nullable = false)
-    private School schoolno;
+    private School school;
 
     /**
      * 학교관 이름
@@ -39,8 +39,8 @@ public class SchoolGwan {
     
     
     // 생성자
-    public SchoolGwan(School schoolno, String schoolgwanname) {
-        this.schoolno = schoolno;
+    public SchoolGwan(School school, String schoolgwanname) {
+        this.school = school;
         this.schoolgwanname = schoolgwanname;
     }
 }

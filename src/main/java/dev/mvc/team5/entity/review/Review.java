@@ -23,13 +23,13 @@ public class Review {
 
     // giverno: 리뷰를 작성한 사용자
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "giverno", nullable = false)
-    private User giverno;
+    @JoinColumn(name = "giver", nullable = false)
+    private User giver;
 
     // receiverno: 리뷰 대상 사용자
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiverno", nullable = false)
-    private User receiverno;
+    @JoinColumn(name = "receiver", nullable = false)
+    private User receiver;
 
     @Column(name = "reviewer_id")
     private Integer reviewerId;  // 보통 이건 필요 없을 수 있음. giverno랑 중복 역할?
@@ -37,7 +37,7 @@ public class Review {
     private Integer rating;
 
     @Column(columnDefinition = "TEXT")
-    private String comment;
+    private String comments;
 
     @CreationTimestamp
     @Column(name = "created_at")
