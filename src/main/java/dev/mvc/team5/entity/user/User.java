@@ -82,7 +82,7 @@ public class User {
     @OneToMany(mappedBy = "blocker", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Block> blocksCreated = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "blocked", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Block> blocksReceived = new ArrayList<>();
 
     // Report는 reporter 와 reported 두 방향이 있음

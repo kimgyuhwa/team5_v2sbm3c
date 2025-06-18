@@ -3,6 +3,7 @@ package dev.mvc.team5.entity.school;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.mvc.team5.entity.talents.Talent;
 import dev.mvc.team5.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,9 +27,14 @@ public class School {
     @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
     
-
-
-
+    // 양방향: School ↔ talents
+    @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Talent> talents = new ArrayList<>();
+    
+    // 양방향: School ↔ schoolgwan
+    @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SchoolGwan> schoolgwan = new ArrayList<>();
+    
     public void addUser(User userno) {
       users.add(userno);
       userno.setSchoolno(this);

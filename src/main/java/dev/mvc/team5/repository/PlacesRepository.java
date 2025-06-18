@@ -4,10 +4,12 @@ package dev.mvc.team5.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import dev.mvc.team5.entity.school.School;
+import dev.mvc.team5.entity.school.Places;
+
+
 
 @Repository
-public interface PlacesRepository extends JpaRepository<School, Long> {
+public interface PlacesRepository extends JpaRepository<Places, Long> {
     // 필요하다면 커스텀 쿼리 추가 가능
 
 }

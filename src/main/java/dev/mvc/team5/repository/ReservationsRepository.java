@@ -4,10 +4,11 @@ package dev.mvc.team5.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import dev.mvc.team5.entity.school.Reservations;
 import dev.mvc.team5.entity.school.School;
 
 @Repository
-public interface ReservationsRepository extends JpaRepository<School, Long> {
+public interface ReservationsRepository extends JpaRepository<Reservations, Long> {
     // 필요하다면 커스텀 쿼리 추가 가능
 
 }
