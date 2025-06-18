@@ -33,6 +33,7 @@ public class TalentCategory {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
     
+    // 생성자
     public TalentCategory(TalentCateGrp cateGrp, String name, Integer cnt) {
       this.cateGrp = cateGrp;
       this.name = name;

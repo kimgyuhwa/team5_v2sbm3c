@@ -24,7 +24,7 @@ public class Reservations {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "placeno", nullable = false)
+    @JoinColumn(name = "place", nullable = false)
     private Places place;
 
     private LocalDateTime start_time;
@@ -34,7 +34,7 @@ public class Reservations {
     private LocalDateTime created_at = LocalDateTime.now();
 
 
-    @Column(columnDefinition = "TEXT")
+    @Column
     private String placesinfo;
 
     /**

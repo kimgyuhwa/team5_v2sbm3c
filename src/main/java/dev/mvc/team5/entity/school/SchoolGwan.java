@@ -33,7 +33,7 @@ public class SchoolGwan {
      * 학교관 이름
      * @param schoolgwanname
      */
-    @Column(name = "schoolgwanname", columnDefinition = "TEXT")
+    @Column(name = "schoolgwanname")
     private String schoolgwanname;
     
     

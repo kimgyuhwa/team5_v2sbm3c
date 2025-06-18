@@ -40,7 +40,7 @@ public class Request {
      * User 엔티티와 일대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "userno")
     private User user;
 
     /**

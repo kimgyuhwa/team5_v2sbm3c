@@ -27,7 +27,7 @@ public class Places {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schoolgwanno", nullable = false)
+    @JoinColumn(name = "schoolgwan", nullable = false)
     private SchoolGwan schoolGwan;
     
     /**

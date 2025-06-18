@@ -36,7 +36,8 @@ public class Review {
 
     private Integer rating;
 
-    @Column(columnDefinition = "TEXT")
+
+    @Column
     private String comments;
 
     @CreationTimestamp
