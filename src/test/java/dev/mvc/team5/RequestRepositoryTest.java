@@ -10,6 +10,13 @@ import dev.mvc.team5.entity.talents.TalentCategory;
 import dev.mvc.team5.entity.talents.TalentType;
 import dev.mvc.team5.entity.user.User;
 import dev.mvc.team5.repository.*;
+import dev.mvc.team5.repository.school.SchoolRepository;
+import dev.mvc.team5.repository.talents.RequestRepository;
+import dev.mvc.team5.repository.talents.TalentCateGrpRepository;
+import dev.mvc.team5.repository.talents.TalentCategoryRepository;
+import dev.mvc.team5.repository.talents.TalentRepository;
+import dev.mvc.team5.repository.talents.TalentTypeRepository;
+import dev.mvc.team5.repository.user.UserRepository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

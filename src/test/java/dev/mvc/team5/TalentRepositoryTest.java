@@ -8,16 +8,15 @@ import dev.mvc.team5.entity.talents.TalentCateGrp;
 import dev.mvc.team5.entity.talents.TalentCategory;
 import dev.mvc.team5.entity.talents.TalentType;
 import dev.mvc.team5.entity.user.User;
-
-import dev.mvc.team5.repository.TalentRepository;
-import dev.mvc.team5.repository.TalentTypeRepository;
+import dev.mvc.team5.repository.user.UserRepository;
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.talents.Talent;
 import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.SchoolRepository;
-import dev.mvc.team5.repository.TalentCateGrpRepository;
-import dev.mvc.team5.repository.TalentCategoryRepository;
-import dev.mvc.team5.repository.UserRepository;
+import dev.mvc.team5.repository.school.SchoolRepository;
+import dev.mvc.team5.repository.talents.TalentCateGrpRepository;
+import dev.mvc.team5.repository.talents.TalentCategoryRepository;
+import dev.mvc.team5.repository.talents.TalentRepository;
+import dev.mvc.team5.repository.talents.TalentTypeRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
