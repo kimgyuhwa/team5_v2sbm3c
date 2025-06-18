@@ -5,8 +5,18 @@ import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.talents.Request;
 import dev.mvc.team5.entity.talents.RequestStatus;
 import dev.mvc.team5.entity.talents.Talent;
+import dev.mvc.team5.entity.talents.TalentCateGrp;
+import dev.mvc.team5.entity.talents.TalentCategory;
+import dev.mvc.team5.entity.talents.TalentType;
 import dev.mvc.team5.entity.user.User;
 import dev.mvc.team5.repository.*;
+import dev.mvc.team5.repository.school.SchoolRepository;
+import dev.mvc.team5.repository.talents.RequestRepository;
+import dev.mvc.team5.repository.talents.TalentCateGrpRepository;
+import dev.mvc.team5.repository.talents.TalentCategoryRepository;
+import dev.mvc.team5.repository.talents.TalentRepository;
+import dev.mvc.team5.repository.talents.TalentTypeRepository;
+import dev.mvc.team5.repository.user.UserRepository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +41,15 @@ public class RequestRepositoryTest {
 
     @Autowired
     private SchoolRepository schoolRepository;
+    
+    @Autowired
+    private TalentCateGrpRepository talentCateGrpRepository;
+    
+    @Autowired
+    private TalentCategoryRepository talentCategoryRepository;
+    
+    @Autowired
+    private TalentTypeRepository talentTypeRepository;
 
     @Test
     @DisplayName("특정 Talent에 대한 요청 저장 및 상태별 조회 테스트")
@@ -41,15 +60,20 @@ public class RequestRepositoryTest {
         // 사용자 저장
         User giver = userRepository.save(new User("giver@example.com", "giver123", "기버", school));
         User requester = userRepository.save(new User("requester@example.com", "req123", "요청자", school));
+        
+        // 대분류 그룹
+        TalentCateGrp cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악", 100));
+        
+        // 카테고리 
+        TalentCategory category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타", 50));
+        
+        // 재능기부/교환
+        TalentType talentType = talentTypeRepository.save(new TalentType("기부", 50));
 
         // 재능 저장
-        Talent talent = talentRepository.save(new Talent(
-                giver,
-                school,
-                "기타 레슨 합니다",
-                "기초부터 알려드려요",
-                "Korean"
-        ));
+        Talent talent = talentRepository.save(new Talent(giver, school, talentType, category,
+            "기타 레슨", "자세히 알려드려요", "Korean"));
+
 
         // 요청 저장
         Request request1 = new Request(talent, requester, RequestStatus.PENDING, "첫번째 요청 메시지");

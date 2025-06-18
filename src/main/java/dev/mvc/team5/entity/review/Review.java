@@ -18,7 +18,7 @@ public class Review {
 
   @Id
   @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="review_seq")
-  @SequenceGenerator(name="review_seq", sequenceName="review_seq", allocationSize=1)
+  @SequenceGenerator(name="review_seq", sequenceName="REVIEW_SEQ", allocationSize=1)
     private String reviewno;
 
     // giverno: 리뷰를 작성한 사용자
@@ -35,6 +35,7 @@ public class Review {
     private Integer reviewerId;  // 보통 이건 필요 없을 수 있음. giverno랑 중복 역할?
 
     private Integer rating;
+
 
     @Column
     private String comments;

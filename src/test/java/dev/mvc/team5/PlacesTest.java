@@ -9,9 +9,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import dev.mvc.team5.entity.school.Places;
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.school.SchoolGwan;
-import dev.mvc.team5.repository.PlacesRepository;
-import dev.mvc.team5.repository.SchoolGwanRepository;
-import dev.mvc.team5.repository.SchoolRepository;
+import dev.mvc.team5.repository.school.PlacesRepository;
+import dev.mvc.team5.repository.school.SchoolGwanRepository;
+import dev.mvc.team5.repository.school.SchoolRepository;
+
+
+
 
 @SpringBootTest
 public class PlacesTest {
@@ -40,10 +43,10 @@ public class PlacesTest {
         // 3. Places 생성 및 저장 (위에서 저장한 SchoolGwan 참조)
         Places place = new Places(savedGwan, "강의실 101", "A-101", null, null);
         Places savedPlace = placesRepository.save(place);
-        System.out.println("✅ 저장된 장소 ID: " + savedPlace.getPlaceno());
+        System.out.println("✅ 저장된 장소 ID: " + savedPlace.getPlace());
 
         // 4. 저장한 Places 다시 조회
-        Optional<Places> retrievedPlaceOpt = placesRepository.findById(savedPlace.getPlaceno());
+        Optional<Places> retrievedPlaceOpt = placesRepository.findById(savedPlace.getPlace());
         retrievedPlaceOpt.ifPresentOrElse(
             p -> System.out.println("✅ 조회된 장소명: " + p.getPlacename()),
             () -> System.out.println("❌ 장소 조회 실패")

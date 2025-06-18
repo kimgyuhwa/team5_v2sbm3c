@@ -18,7 +18,7 @@ public class TalentType {
 
   @Id
   @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="type_seq")
-  @SequenceGenerator(name="type_seq", sequenceName="type_seq", allocationSize=1)
+  @SequenceGenerator(name="type_seq", sequenceName="TYPE_SEQ", allocationSize=1)
     private Long typeno;
 
     private String name;
@@ -28,4 +28,10 @@ public class TalentType {
     // 양방향: Type ↔ Talent
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
+    
+    // 생성자
+    public TalentType(String name, Integer cnt) {
+      this.name=name;
+      this.cnt=cnt;
+    }
 }

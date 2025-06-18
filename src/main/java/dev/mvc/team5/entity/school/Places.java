@@ -25,12 +25,9 @@ public class Places {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "places_seq")
     @SequenceGenerator(name = "places_seq", sequenceName = "PLACES_SEQ", allocationSize = 1)
-    @Column(name = "placeno")
-    private Long placeno;
+    @Column(name = "place")
+    private Long place;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "userno", nullable = false)
-//    private User userno;
 
     @ManyToOne(fetch = FetchType.LAZY)
 
@@ -51,6 +48,7 @@ public class Places {
      */
     @Column(name = "hosu", length = 100)
     private String hosu;
+
     
     /**
      * 강의 시간

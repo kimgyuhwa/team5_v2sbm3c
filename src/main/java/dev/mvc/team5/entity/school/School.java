@@ -16,7 +16,7 @@ public class School {
 
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="school_seq")
-    @SequenceGenerator(name="school_seq", sequenceName="school_seq", allocationSize=1)
+    @SequenceGenerator(name="school_seq", sequenceName="SCHOOL_SEQ", allocationSize=1)
     private Long schoolno;
 
     @Column(name = "schoolname", length = 50)
@@ -38,6 +38,7 @@ public class School {
     public void addUser(User userno) {
       users.add(userno);
       userno.setSchool(this);
+
   }
     
     /**

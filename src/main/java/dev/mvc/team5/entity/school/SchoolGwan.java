@@ -39,6 +39,7 @@ public class SchoolGwan {
     private Long schoolgwanno;
 
 
+
     /**
      * 학교관 이름
      * @param schoolgwanname

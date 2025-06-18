@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.mvc.team5.entity.chat.ChatRoomMember;
+import dev.mvc.team5.entity.chat.Message;
 import dev.mvc.team5.entity.review.Review;
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.talents.Match;
@@ -72,41 +74,50 @@ public class User {
     // --------------------
     //   양방향 연관관계
     // --------------------
+    // 활동 로그
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActivityLog> activityLogs = new ArrayList<>();
-
+    // 로그인 내역
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LoginLog> loginLogs = new ArrayList<>();
-
+    // 알림
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications = new ArrayList<>();
 
-    // Block은 blocker 와 blocked 두 방향이 있으므로 주의!
+    // 차단 시스템 연관
     @OneToMany(mappedBy = "blocker", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Block> blocksCreated = new ArrayList<>();
 
     @OneToMany(mappedBy = "blocked", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Block> blocksReceived = new ArrayList<>();
 
-    // Report는 reporter 와 reported 두 방향이 있음
+    // 신고 시스템 연관
     @OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reportsCreated = new ArrayList<>();
 
     @OneToMany(mappedBy = "reported", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reportsReceived = new ArrayList<>();
     
+    // 매칭 시스템 연관
     @OneToMany(mappedBy = "giver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Match> givenMatches = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Match> receivedMatches = new ArrayList<>();
     
+    // 리뷰 연관
     @OneToMany(mappedBy = "giver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> givenReviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> receivedReviews = new ArrayList<>();
     
+    // 채팅방 연관
+    @OneToMany(mappedBy = "user")
+    private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender")
+    private List<Message> messages = new ArrayList<>();
     // --------------------
     //    생성자 ㅋㅋ
     // -------------------- 
