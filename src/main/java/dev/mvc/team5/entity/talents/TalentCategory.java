@@ -17,8 +17,8 @@ import jakarta.persistence.*;
 public class TalentCategory {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="categoryno_seq")
-    @SequenceGenerator(name="categoryno_seq", sequenceName="categoryno_seq", allocationSize=1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="category_seq")
+    @SequenceGenerator(name="category_seq", sequenceName="CATEGORY_SEQ", allocationSize=1)
     private Long categoryno;
 
     @ManyToOne

@@ -18,7 +18,7 @@ public class TalentType {
 
   @Id
   @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="type_seq")
-  @SequenceGenerator(name="type_seq", sequenceName="type_seq", allocationSize=1)
+  @SequenceGenerator(name="type_seq", sequenceName="TYPE_SEQ", allocationSize=1)
     private Long typeno;
 
     private String name;

@@ -23,7 +23,7 @@ public class Request {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "request_seq")
-    @SequenceGenerator(name = "request_seq", sequenceName = "request_seq", allocationSize = 1)
+    @SequenceGenerator(name = "request_seq", sequenceName = "REQUEST_SEQ", allocationSize = 1)
     @Column(name = "requestno")
     private Long requestno;
 

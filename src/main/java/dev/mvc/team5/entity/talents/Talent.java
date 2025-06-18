@@ -27,7 +27,7 @@ public class Talent {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "talent_seq")
-    @SequenceGenerator(name = "talent_seq", sequenceName = "talent_seq", allocationSize = 1)
+    @SequenceGenerator(name = "talent_seq", sequenceName = "TALENT_SEQ", allocationSize = 1)
     @Column(name = "talentno")
     private Long talentno;
 
