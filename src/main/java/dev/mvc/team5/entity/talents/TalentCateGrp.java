@@ -29,4 +29,11 @@ public class TalentCateGrp {
     @OneToMany(mappedBy = "cateGrp", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TalentCategory> categorys = new ArrayList<>();
     
+    // 생성자
+    public TalentCateGrp(String name, Integer cnt) {
+      this.name = name;
+      this.cnt = cnt;
+    }
+    
+    
 }

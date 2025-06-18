@@ -3,11 +3,17 @@ package dev.mvc.team5;
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.talents.Match;
 import dev.mvc.team5.entity.talents.Talent;
+import dev.mvc.team5.entity.talents.TalentCateGrp;
+import dev.mvc.team5.entity.talents.TalentCategory;
+import dev.mvc.team5.entity.talents.TalentType;
 import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.MatchRepository;
-import dev.mvc.team5.repository.SchoolRepository;
-import dev.mvc.team5.repository.TalentRepository;
-import dev.mvc.team5.repository.UserRepository;
+import dev.mvc.team5.repository.school.SchoolRepository;
+import dev.mvc.team5.repository.talents.MatchRepository;
+import dev.mvc.team5.repository.talents.TalentCateGrpRepository;
+import dev.mvc.team5.repository.talents.TalentCategoryRepository;
+import dev.mvc.team5.repository.talents.TalentRepository;
+import dev.mvc.team5.repository.talents.TalentTypeRepository;
+import dev.mvc.team5.repository.user.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,11 +39,23 @@ public class MatchRepositoryTest {
 
     @Autowired
     private SchoolRepository schoolRepository;
+    
+    @Autowired
+    private TalentCateGrpRepository talentCateGrpRepository;
+    
+    @Autowired
+    private TalentCategoryRepository talentCategoryRepository;
+    
+    @Autowired
+    private TalentTypeRepository talentTypeRepository;
 
     private User giver;
     private User receiver;
     private Talent talent;
     private School school;
+    private TalentCateGrp cateGrp;
+    private TalentCategory category;
+    private TalentType talentType;
 
     @BeforeEach
     void setup() {
@@ -47,9 +65,18 @@ public class MatchRepositoryTest {
         // 유저 저장 (필요한 생성자 만들어야 함)
         giver = userRepository.save(new User("giver@example.com", "giver123", "기버", school));
         receiver = userRepository.save(new User("receiver@example.com", "recv123", "리시버", school));
+        
+        // 대분류 그룹
+        cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악", 100));
+        
+        // 카테고리 
+        category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타", 50));
+        
+        // 재능기부/교환
+        talentType = talentTypeRepository.save(new TalentType("기부", 50));
 
         // Talent 저장 (user, school 필수)
-        talent = talentRepository.save(new Talent(giver, school,
+        talent = talentRepository.save(new Talent(giver, school, talentType, category,
                 "기타 레슨", "자세히 알려드려요", "Korean"));
     }
 

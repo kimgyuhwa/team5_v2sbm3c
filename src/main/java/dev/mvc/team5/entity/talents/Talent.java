@@ -27,7 +27,7 @@ public class Talent {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "talent_seq")
-    @SequenceGenerator(name = "talent_seq", sequenceName = "talent_seq", allocationSize = 1)
+    @SequenceGenerator(name = "talent_seq", sequenceName = "TALENT_SEQ", allocationSize = 1)
     @Column(name = "talentno")
     private Long talentno;
 
@@ -116,11 +116,11 @@ public class Talent {
      * @param description 게시글 내용
      * @param language 사용 언어
      */
-    public Talent(User user, School school, // TalentType type, TalentCategory category,
+    public Talent(User user, School school, TalentType type, TalentCategory category,
                   String title, String description, String language) {
         this.user = user;
-//        this.type = type;
-//        this.category = category;
+        this.type = type;
+        this.category = category;
         this.school = school;
         this.title = title;
         this.description = description;

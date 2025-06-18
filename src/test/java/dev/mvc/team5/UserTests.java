@@ -2,8 +2,9 @@ package dev.mvc.team5;
 
 import dev.mvc.team5.entity.school.School;
 import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.SchoolRepository;
-import dev.mvc.team5.repository.UserRepository;
+import dev.mvc.team5.repository.school.SchoolRepository;
+import dev.mvc.team5.repository.user.UserRepository;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

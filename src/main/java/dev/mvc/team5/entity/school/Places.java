@@ -19,12 +19,12 @@ public class Places {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "places_seq")
     @SequenceGenerator(name = "places_seq", sequenceName = "PLACES_SEQ", allocationSize = 1)
-    @Column(name = "placeno")
-    private Long placeno;
+    @Column(name = "place")
+    private Long place;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno", nullable = false)
-    private User userno;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schoolgwan", nullable = false)
@@ -44,8 +44,8 @@ public class Places {
     @Column(name = "hosu", length = 100)
     private String hosu;
 
-    public Places(User userno, SchoolGwan schoolGwan, String placename, String hosu) {
-        this.userno = userno;
+    public Places(User user, SchoolGwan schoolGwan, String placename, String hosu) {
+        this.user = user;
         this.schoolGwan = schoolGwan;
         this.placename = placename;
         this.hosu = hosu;

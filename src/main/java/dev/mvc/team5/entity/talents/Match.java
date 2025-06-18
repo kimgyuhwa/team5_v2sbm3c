@@ -23,7 +23,7 @@ public class Match {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "match_seq")
-    @SequenceGenerator(name = "match_seq", sequenceName = "match_seq", allocationSize = 1)
+    @SequenceGenerator(name = "match_seq", sequenceName = "MATCH_SEQ", allocationSize = 1)
     @Column(name = "matchno")
     private Long matchno;
 

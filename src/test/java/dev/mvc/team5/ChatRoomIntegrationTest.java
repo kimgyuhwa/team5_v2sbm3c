@@ -11,7 +11,7 @@ import dev.mvc.team5.entity.user.User;
 import dev.mvc.team5.repository.ChatRoomMemberRepository;
 import dev.mvc.team5.repository.ChatRoomRepository;
 import dev.mvc.team5.repository.MessageRepository;
-import dev.mvc.team5.repository.UserRepository;
+import dev.mvc.team5.repository.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +35,7 @@ public class ChatRoomIntegrationTest {
     MessageRepository messageRepository;
 
     @Test
-    void 채팅방_회원_메시지_저장_조회() {
+    void ChatRoomIntegrationTest() {
         // 1) 유저 생성
         User user1 = new User();
         user1.setUsername("Alice");
