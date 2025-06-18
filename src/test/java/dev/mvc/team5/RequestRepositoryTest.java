@@ -65,7 +65,7 @@ public class RequestRepositoryTest {
 
         // Talent 기준 조회
 
-        List<Request> requestsByTalent = requestRepository.findByTalentno_talentno(talent.getTalentno());
+        List<Request> requestsByTalent = requestRepository.findByTalent_talentno(talent.getTalentno());
         assertThat(requestsByTalent).hasSize(2);
     }
 }

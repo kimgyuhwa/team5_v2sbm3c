@@ -22,16 +22,18 @@ public class TalentCategory {
     private Long categoryno;
 
     @ManyToOne
-    @JoinColumn(name = "categrpno")
-    private TalentCateGrp cateGrpno;
+    @JoinColumn(name = "cateGrp")
+    private TalentCateGrp cateGrp;
 
     private String name;
 
     private Integer cnt;
     
     // 양방향: Category ↔ Talent
-    @OneToMany(mappedBy = "talentno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
+    
+
     
     
 }

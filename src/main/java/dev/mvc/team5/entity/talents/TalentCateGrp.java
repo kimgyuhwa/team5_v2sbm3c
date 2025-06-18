@@ -28,7 +28,7 @@ public class TalentCateGrp {
     private String field;
     
     // 양방향: TalentCateGrp ↔ TalentCategory
-    @OneToMany(mappedBy = "categoryno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cateGrp", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TalentCategory> categorys = new ArrayList<>();
     
 }

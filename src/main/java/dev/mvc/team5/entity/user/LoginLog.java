@@ -17,7 +17,7 @@ public class LoginLog {
 
     @ManyToOne
     @JoinColumn(name = "userno")
-    private User userno; 
+    private User user; 
     
     private LocalDateTime loginTime;
     

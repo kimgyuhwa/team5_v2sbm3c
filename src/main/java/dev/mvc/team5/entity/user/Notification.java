@@ -17,7 +17,7 @@ public class Notification {
 
     @ManyToOne
     @JoinColumn(name = "userno")
-    private User userno;
+    private User user;
 
     @Column(length = 50)
     private String type;

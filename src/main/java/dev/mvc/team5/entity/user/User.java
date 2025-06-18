@@ -27,8 +27,8 @@ public class User {
 //    private Long schoolno;   
 // 기존 Long schoolno 제거하고 아래로 대체
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schoolno") // FK 이름 매칭
-    private School schoolno;
+    @JoinColumn(name = "school") // FK 이름 매칭
+    private School school;
 
     @Column(name = "user_id", length = 30)
     private String userId;
@@ -72,13 +72,13 @@ public class User {
     // --------------------
     //   양방향 연관관계
     // --------------------
-    @OneToMany(mappedBy = "userno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActivityLog> activityLogs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LoginLog> loginLogs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications = new ArrayList<>();
 
     // Block은 blocker 와 blocked 두 방향이 있으므로 주의!
@@ -92,29 +92,29 @@ public class User {
     @OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reportsCreated = new ArrayList<>();
 
-    @OneToMany(mappedBy = "reportedno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "reported", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reportsReceived = new ArrayList<>();
     
-    @OneToMany(mappedBy = "giverno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "giver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Match> givenMatches = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receiverno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Match> receivedMatches = new ArrayList<>();
     
-    @OneToMany(mappedBy = "giverno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "giver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> givenReviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receiverno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> receivedReviews = new ArrayList<>();
     
     // --------------------
     //    생성자 ㅋㅋ
     // -------------------- 
-    public User(String userId, String password, String name, School schoolno) {
+    public User(String userId, String password, String name, School school) {
       this.userId = userId;
       this.password = password;
       this.name = name;
-      this.schoolno = schoolno;
+      this.school = school;
   }
     
 
