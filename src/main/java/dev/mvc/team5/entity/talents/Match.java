@@ -32,24 +32,24 @@ public class Match {
      * User 엔티티와 다대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "giverno")
-    private User giverno;
+    @JoinColumn(name = "giver")
+    private User giver;
 
     /**
      * 요청 받은 회원
      * User 엔티티와 다대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "receiverno")
-    private User receiverno;
+    @JoinColumn(name = "receiver")
+    private User receiver;
 
     /**
      * 요청 게시물
      * Talent 엔티티와 다대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "talentno")
-    private Talent talentno;
+    @JoinColumn(name = "talent")
+    private Talent talent;
 
     /**
      * 요청 시간
@@ -68,10 +68,10 @@ public class Match {
     
  // Match.java 내부에 생성자 추가
 
-    public Match(User giverno, User receiverno, Talent talentno, LocalDateTime completedAt) {
-        this.giverno = giverno;
-        this.receiverno = receiverno;
-        this.talentno = talentno;
+    public Match(User giver, User receiver, Talent talent, LocalDateTime completedAt) {
+        this.giver = giver;
+        this.receiver = receiver;
+        this.talent = talent;
 
         this.completedAt = completedAt;
     }

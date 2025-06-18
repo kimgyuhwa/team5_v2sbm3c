@@ -1,5 +1,7 @@
 package dev.mvc.team5.entity.user;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,9 +11,17 @@ import lombok.Data;
 public class LoginLog {
 
     @Id
-    @Column(length = 255)
-    private String loginno;
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="login_seq")
+    @SequenceGenerator(name="login_seq", sequenceName="LOGIN_SEQ", allocationSize=1)
+    private Integer loginno;
 
-    @Column(nullable = false)
-    private Long userno; // NUMBER(10) => Long
+    @ManyToOne
+    @JoinColumn(name = "userno")
+    private User user; 
+    
+    private LocalDateTime loginTime;
+    
+    private String IpAddress;
+    //log.setLoginTime(LocalDateTime.now());
+   // log.setIpAddress("127.0.0.1");
 }

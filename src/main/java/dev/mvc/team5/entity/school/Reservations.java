@@ -10,8 +10,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "reservations")
+@Data
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reservations {
@@ -27,19 +29,25 @@ public class Reservations {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno", nullable = false)
-    private User userno;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "placeno", nullable = false)
-    private Places placeno;
-
+    private Places place;
+    
+    /**
+     * 예약한 시간
+     * 예약한 시간과 끝나는 시간은 불가능하도록 막고 다른 시간은 가능하도록 설계
+     */
     private LocalDateTime start_time;
     
+    /**
+     * 끝나는 시간
+     * 예약한 시간과 끝나는 시간은 불가능하도록 막고 다른 시간은 가능하도록 설계
+     */    
     private LocalDateTime end_time;
     
-    private LocalDateTime created_at = LocalDateTime.now();
-
-
+    
     @Column(name = "placesinfo", length = 100)
     private String placesinfo;
 
@@ -49,13 +57,13 @@ public class Reservations {
     private String status;
     
     // 생성자 (필요시)
-    public Reservations(User userno, Places placeno, LocalDateTime start_time, LocalDateTime end_time, String placesinfo, String status) {
-        this.userno = userno;
-        this.placeno = placeno;
+
+    public Reservations(User user, Places place, LocalDateTime start_time, LocalDateTime end_time, String placesinfo, String status) {
+        this.user = user;
+        this.place = place;
         this.start_time = start_time;
         this.end_time = end_time;
         this.placesinfo = placesinfo;
         this.status = status;
-        this.created_at = LocalDateTime.now();
     }
 }

@@ -16,7 +16,7 @@ public class SchoolGwan {
 	
   
   // 양방향: schoolgwan ↔ places
-  @OneToMany(mappedBy = "schoolGwanno", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "schoolGwan", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Places> places  = new ArrayList<>();
   
   /**
@@ -24,8 +24,8 @@ public class SchoolGwan {
    * @param schoolno
    */
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "schoolno", nullable = false)
-  private School schoolno;
+  @JoinColumn(name = "school", nullable = false)
+  private School school;
 
   
   /**
@@ -49,8 +49,8 @@ public class SchoolGwan {
     
     
     // 생성자
-    public SchoolGwan(School schoolno, String schoolgwanname) {
-        this.schoolno = schoolno;
+    public SchoolGwan(School school, String schoolgwanname) {
+        this.school = school;
         this.schoolgwanname = schoolgwanname;
     }
 }

@@ -16,7 +16,7 @@ public class School {
 
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="school_seq")
-    @SequenceGenerator(name="school_seq", sequenceName="SCHOOL_SEQ", allocationSize=1)
+    @SequenceGenerator(name="school_seq", sequenceName="school_seq", allocationSize=1)
     private Long schoolno;
 
     @Column(name = "schoolname", length = 50)
@@ -24,20 +24,20 @@ public class School {
     
 
     // 양방향: School ↔ Users
-    @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
     
     // 양방향: School ↔ talents
-    @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
     
     // 양방향: School ↔ schoolgwan
-    @OneToMany(mappedBy = "schoolno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SchoolGwan> schoolgwan = new ArrayList<>();
     
     public void addUser(User userno) {
       users.add(userno);
-      userno.setSchoolno(this);
+      userno.setSchool(this);
   }
     
     /**

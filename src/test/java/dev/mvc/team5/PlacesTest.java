@@ -38,7 +38,7 @@ public class PlacesTest {
         System.out.println("✅ 저장된 학관 ID: " + savedGwan.getSchoolgwanno());
 
         // 3. Places 생성 및 저장 (위에서 저장한 SchoolGwan 참조)
-        Places place = new Places(savedGwan, "강의실 101", "A-101");
+        Places place = new Places(savedGwan, "강의실 101", "A-101", null, null);
         Places savedPlace = placesRepository.save(place);
         System.out.println("✅ 저장된 장소 ID: " + savedPlace.getPlaceno());
 

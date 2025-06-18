@@ -37,31 +37,31 @@ public class Talent {
      */
     @ManyToOne
     @JoinColumn(name = "userno")
-    private User userno;
+    private User user;
 
-//    /**
-//     * 재능 유형 (예: 악기, 언어 등)
-//     * TalentType 엔티티와 다대일 관계
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "type_id")
-//    private TalentType type;
-//
-//    /**
-//     * 재능 카테고리
-//     * TalentCategory 엔티티와 다대일 관계
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "categoryno")
-//    private TalentCategory category;
-//
+    /**
+     * 재능 유형 (예: 악기, 언어 등)
+     * TalentType 엔티티와 다대일 관계
+     */
+    @ManyToOne
+    @JoinColumn(name = "type")
+    private TalentType type;
+
+    /**
+     * 재능 카테고리
+     * TalentCategory 엔티티와 다대일 관계
+     */
+    @ManyToOne
+    @JoinColumn(name = "category")
+    private TalentCategory category;
+
     /**
      * 재능과 연관된 학교 정보
      * School 엔티티와 다대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "schoolno")
-    private School schoolno;
+    @JoinColumn(name = "school")
+    private School school;
 
     /**
      * 재능 제목 (게시글 제목)
@@ -95,11 +95,11 @@ public class Talent {
     private LocalDateTime updatedAt;
     
     // 양방향: Talent ↔ Request
-    @OneToMany(mappedBy = "talentno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "talent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Request> requests = new ArrayList<>();
     
  // 양방향: Talent ↔ Match
-    @OneToMany(mappedBy = "talentno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "talent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Match> matches = new ArrayList<>();
 
     
@@ -116,12 +116,12 @@ public class Talent {
      * @param description 게시글 내용
      * @param language 사용 언어
      */
-    public Talent(User userno, School schoolno, // TalentType type, TalentCategory category,
+    public Talent(User user, School school, // TalentType type, TalentCategory category,
                   String title, String description, String language) {
-        this.userno = userno;
+        this.user = user;
 //        this.type = type;
 //        this.category = category;
-        this.schoolno = schoolno;
+        this.school = school;
         this.title = title;
         this.description = description;
         this.language = language;

@@ -11,10 +11,13 @@ import java.time.LocalDateTime;
 public class Notification {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="notification_seq")
+    @SequenceGenerator(name="notification_seq", sequenceName="NOTIFICATION_SEQ", allocationSize=1)
     private Integer notificationno;
 
-    @Column(nullable = false)
-    private Long userno;
+    @ManyToOne
+    @JoinColumn(name = "userno")
+    private User user;
 
     @Column(length = 50)
     private String type;
