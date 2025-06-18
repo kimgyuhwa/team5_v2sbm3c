@@ -5,15 +5,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "reservations")
+@Data
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reservations {
-
+	
+//	  // 양방향: schoolgwan ↔ places
+//	  @OneToMany(mappedBy = "reservationno", cascade = CascadeType.ALL, orphanRemoval = true)
+//	  private List<Reservations> reservation = new ArrayList<>();
+  
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reservation_seq")
     @SequenceGenerator(name = "reservation_seq", sequenceName = "RESERVATION_SEQ", allocationSize = 1)
@@ -24,17 +32,23 @@ public class Reservations {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place", nullable = false)
+    @JoinColumn(name = "placeno", nullable = false)
     private Places place;
-
+    
+    /**
+     * 예약한 시간
+     * 예약한 시간과 끝나는 시간은 불가능하도록 막고 다른 시간은 가능하도록 설계
+     */
     private LocalDateTime start_time;
     
+    /**
+     * 끝나는 시간
+     * 예약한 시간과 끝나는 시간은 불가능하도록 막고 다른 시간은 가능하도록 설계
+     */    
     private LocalDateTime end_time;
     
-    private LocalDateTime created_at = LocalDateTime.now();
-
-
-    @Column
+    
+    @Column(name = "placesinfo", length = 100)
     private String placesinfo;
 
     /**
@@ -43,6 +57,7 @@ public class Reservations {
     private String status;
     
     // 생성자 (필요시)
+
     public Reservations(User user, Places place, LocalDateTime start_time, LocalDateTime end_time, String placesinfo, String status) {
         this.user = user;
         this.place = place;
@@ -50,6 +65,5 @@ public class Reservations {
         this.end_time = end_time;
         this.placesinfo = placesinfo;
         this.status = status;
-        this.created_at = LocalDateTime.now();
     }
 }
