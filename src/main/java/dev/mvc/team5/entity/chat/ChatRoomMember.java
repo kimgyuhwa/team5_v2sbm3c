@@ -40,6 +40,6 @@ public class ChatRoomMember {
     private User user;
 
     private LocalDateTime joinedAt;
-
+// zz
 
 }
