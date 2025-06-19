@@ -1,19 +1,8 @@
 package dev.mvc.team5;
 
-import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.school.SchoolRepository;
-import dev.mvc.team5.repository.user.UserRepository;
-import dev.mvc.team5.talent.entity.Match;
-import dev.mvc.team5.talent.entity.Talent;
-import dev.mvc.team5.talent.entity.TalentCateGrp;
-import dev.mvc.team5.talent.entity.TalentCategory;
-import dev.mvc.team5.talent.entity.TalentType;
-import dev.mvc.team5.talent.repository.MatchRepository;
-import dev.mvc.team5.talent.repository.TalentCateGrpRepository;
-import dev.mvc.team5.talent.repository.TalentCategoryRepository;
-import dev.mvc.team5.talent.repository.TalentRepository;
-import dev.mvc.team5.talent.repository.TalentTypeRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +10,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import dev.mvc.team5.match.Match;
+import dev.mvc.team5.match.MatchRepository;
+import dev.mvc.team5.school.School;
+import dev.mvc.team5.school.SchoolRepository;
+import dev.mvc.team5.talentCateGrp.TalentCateGrp;
+import dev.mvc.team5.talentCateGrp.TalentCateGrpRepository;
+import dev.mvc.team5.talentCategory.TalentCategory;
+import dev.mvc.team5.talentCategory.TalentCategoryRepository;
+import dev.mvc.team5.talentType.TalentType;
+import dev.mvc.team5.talentType.TalentTypeRepository;
+import dev.mvc.team5.talents.Talent;
+import dev.mvc.team5.talents.TalentRepository;
+import dev.mvc.team5.user.User;
+import dev.mvc.team5.user.UserRepository;
 
 @DataJpaTest
 public class MatchRepositoryTest {

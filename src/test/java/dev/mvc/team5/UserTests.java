@@ -1,17 +1,17 @@
 package dev.mvc.team5;
 
-import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.school.SchoolRepository;
-import dev.mvc.team5.repository.user.UserRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Optional;
+import dev.mvc.team5.school.School;
+import dev.mvc.team5.school.SchoolRepository;
+import dev.mvc.team5.user.User;
+import dev.mvc.team5.user.UserRepository;
 
 @SpringBootTest
 class UserTests {

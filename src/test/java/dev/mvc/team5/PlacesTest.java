@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import dev.mvc.team5.entity.school.Places;
-import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.school.SchoolGwan;
-import dev.mvc.team5.repository.school.PlacesRepository;
-import dev.mvc.team5.repository.school.SchoolGwanRepository;
-import dev.mvc.team5.repository.school.SchoolRepository;
+import dev.mvc.team5.places.Places;
+import dev.mvc.team5.places.PlacesRepository;
+import dev.mvc.team5.school.School;
+import dev.mvc.team5.school.SchoolRepository;
+import dev.mvc.team5.schoolgwan.SchoolGwan;
+import dev.mvc.team5.schoolgwan.SchoolGwanRepository;
 
 
 

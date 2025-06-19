@@ -1,27 +1,27 @@
 package dev.mvc.team5;
 
-import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.user.ActivityLog;
-import dev.mvc.team5.entity.user.Block;
-import dev.mvc.team5.entity.user.LoginLog;
-import dev.mvc.team5.entity.user.Notification;
-import dev.mvc.team5.entity.user.Report;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.*;
-import dev.mvc.team5.repository.school.SchoolRepository;
-import dev.mvc.team5.repository.user.ActivityLogRepository;
-import dev.mvc.team5.repository.user.BlockRepository;
-import dev.mvc.team5.repository.user.LoginLogRepository;
-import dev.mvc.team5.repository.user.NotificationRepository;
-import dev.mvc.team5.repository.user.ReportRepository;
-import dev.mvc.team5.repository.user.UserRepository;
-import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
+import dev.mvc.team5.activityLog.ActivityLog;
+import dev.mvc.team5.activityLog.ActivityLogRepository;
+import dev.mvc.team5.block.Block;
+import dev.mvc.team5.block.BlockRepository;
+import dev.mvc.team5.loginlog.LoginLog;
+import dev.mvc.team5.loginlog.LoginLogRepository;
+import dev.mvc.team5.notification.Notification;
+import dev.mvc.team5.notification.NotificationRepository;
+import dev.mvc.team5.report.Report;
+import dev.mvc.team5.report.ReportRepository;
+import dev.mvc.team5.school.School;
+import dev.mvc.team5.school.SchoolRepository;
+import dev.mvc.team5.user.User;
+import dev.mvc.team5.user.UserRepository;
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @Transactional

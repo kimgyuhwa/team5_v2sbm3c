@@ -1,22 +1,22 @@
 package dev.mvc.team5;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import dev.mvc.team5.entity.chat.ChatRoom;
-import dev.mvc.team5.entity.chat.ChatRoomMember;
-import dev.mvc.team5.entity.chat.Message;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.message.ChatRoomMemberRepository;
-import dev.mvc.team5.repository.message.ChatRoomRepository;
-import dev.mvc.team5.repository.message.MessageRepository;
-import dev.mvc.team5.repository.user.UserRepository;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import dev.mvc.team5.chatroom.ChatRoom;
+import dev.mvc.team5.chatroom.ChatRoomRepository;
+import dev.mvc.team5.chatroomMember.ChatRoomMember;
+import dev.mvc.team5.chatroomMember.ChatRoomMemberRepository;
+import dev.mvc.team5.message.Message;
+import dev.mvc.team5.message.MessageRepository;
+import dev.mvc.team5.user.User;
+import dev.mvc.team5.user.UserRepository;
 
 @SpringBootTest
 @Transactional
