@@ -1,19 +1,19 @@
 package dev.mvc.team5;
 
 import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.talents.Match;
-import dev.mvc.team5.entity.talents.Talent;
-import dev.mvc.team5.entity.talents.TalentCateGrp;
-import dev.mvc.team5.entity.talents.TalentCategory;
-import dev.mvc.team5.entity.talents.TalentType;
 import dev.mvc.team5.entity.user.User;
 import dev.mvc.team5.repository.school.SchoolRepository;
-import dev.mvc.team5.repository.talents.MatchRepository;
-import dev.mvc.team5.repository.talents.TalentCateGrpRepository;
-import dev.mvc.team5.repository.talents.TalentCategoryRepository;
-import dev.mvc.team5.repository.talents.TalentRepository;
-import dev.mvc.team5.repository.talents.TalentTypeRepository;
 import dev.mvc.team5.repository.user.UserRepository;
+import dev.mvc.team5.talent.entity.Match;
+import dev.mvc.team5.talent.entity.Talent;
+import dev.mvc.team5.talent.entity.TalentCateGrp;
+import dev.mvc.team5.talent.entity.TalentCategory;
+import dev.mvc.team5.talent.entity.TalentType;
+import dev.mvc.team5.talent.repository.MatchRepository;
+import dev.mvc.team5.talent.repository.TalentCateGrpRepository;
+import dev.mvc.team5.talent.repository.TalentCategoryRepository;
+import dev.mvc.team5.talent.repository.TalentRepository;
+import dev.mvc.team5.talent.repository.TalentTypeRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

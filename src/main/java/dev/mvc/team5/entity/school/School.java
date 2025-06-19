@@ -3,8 +3,8 @@ package dev.mvc.team5.entity.school;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.mvc.team5.entity.talents.Talent;
 import dev.mvc.team5.entity.user.User;
+import dev.mvc.team5.talent.entity.Talent;
 import jakarta.persistence.*;
 import lombok.*;
 

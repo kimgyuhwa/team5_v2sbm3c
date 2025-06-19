@@ -14,7 +14,7 @@ import dev.mvc.team5.entity.chat.ChatRoomMember;
 import dev.mvc.team5.entity.chat.Message;
 import dev.mvc.team5.entity.review.Review;
 import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.talents.Match;
+import dev.mvc.team5.talent.entity.Match;
 
 @Entity
 @NoArgsConstructor
