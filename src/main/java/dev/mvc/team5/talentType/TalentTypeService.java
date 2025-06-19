@@ -1,4 +1,4 @@
-package dev.mvc.team5.talentType;
+package dev.mvc.team5.talenttype;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import dev.mvc.team5.chatroom.ChatRoom;
 import dev.mvc.team5.chatroom.ChatRoomRepository;
-import dev.mvc.team5.chatroomMember.ChatRoomMember;
-import dev.mvc.team5.chatroomMember.ChatRoomMemberRepository;
+import dev.mvc.team5.chatroommember.ChatRoomMember;
+import dev.mvc.team5.chatroommember.ChatRoomMemberRepository;
 import dev.mvc.team5.message.Message;
 import dev.mvc.team5.message.MessageRepository;
 import dev.mvc.team5.user.User;

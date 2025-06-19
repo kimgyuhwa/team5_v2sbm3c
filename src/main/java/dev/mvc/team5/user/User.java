@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import dev.mvc.team5.activityLog.ActivityLog;
+import dev.mvc.team5.activitylog.ActivityLog;
 import dev.mvc.team5.block.Block;
-import dev.mvc.team5.chatroomMember.ChatRoomMember;
+import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.loginlog.LoginLog;
 import dev.mvc.team5.match.Match;
 import dev.mvc.team5.message.Message;

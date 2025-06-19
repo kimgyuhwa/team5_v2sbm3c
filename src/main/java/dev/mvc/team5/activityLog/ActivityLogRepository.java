@@ -1,4 +1,4 @@
-package dev.mvc.team5.activityLog;
+package dev.mvc.team5.activitylog;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

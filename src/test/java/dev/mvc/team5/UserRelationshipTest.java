@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import dev.mvc.team5.activityLog.ActivityLog;
-import dev.mvc.team5.activityLog.ActivityLogRepository;
+import dev.mvc.team5.activitylog.ActivityLog;
+import dev.mvc.team5.activitylog.ActivityLogRepository;
 import dev.mvc.team5.block.Block;
 import dev.mvc.team5.block.BlockRepository;
 import dev.mvc.team5.loginlog.LoginLog;

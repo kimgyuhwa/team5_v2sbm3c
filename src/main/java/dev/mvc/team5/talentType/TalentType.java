@@ -1,4 +1,4 @@
-package dev.mvc.team5.talentType;
+package dev.mvc.team5.talenttype;
 
 import java.util.ArrayList;
 import java.util.List;

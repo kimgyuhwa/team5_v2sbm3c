@@ -1,4 +1,4 @@
-package dev.mvc.team5.talentCategory;
+package dev.mvc.team5.talentcategory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.mvc.team5.chatroomMember.ChatRoomMember;
+import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.message.Message;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

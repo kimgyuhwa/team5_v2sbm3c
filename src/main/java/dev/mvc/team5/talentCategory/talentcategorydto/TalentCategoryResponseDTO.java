@@ -1,4 +1,4 @@
-package dev.mvc.team5.talentCategory.talentcategorydto;
+package dev.mvc.team5.talentcategory.talentcategorydto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

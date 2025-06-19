@@ -1,4 +1,4 @@
-package dev.mvc.team5.talentCateGrp;
+package dev.mvc.team5.talentcategrp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

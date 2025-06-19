@@ -2,7 +2,6 @@ package dev.mvc.team5.reservations;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.Id;
 
 import dev.mvc.team5.places.Places;
 import dev.mvc.team5.user.User;
@@ -11,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;

@@ -1,4 +1,4 @@
-package dev.mvc.team5.activityLog;
+package dev.mvc.team5.activitylog;
 
 
 import java.time.LocalDateTime;

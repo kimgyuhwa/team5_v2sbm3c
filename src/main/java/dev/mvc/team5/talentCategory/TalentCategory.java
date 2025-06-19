@@ -1,9 +1,9 @@
-package dev.mvc.team5.talentCategory;
+package dev.mvc.team5.talentcategory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.mvc.team5.talentCateGrp.TalentCateGrp;
+import dev.mvc.team5.talentcategrp.TalentCateGrp;
 import dev.mvc.team5.talents.Talent;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

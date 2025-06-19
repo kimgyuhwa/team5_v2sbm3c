@@ -1,4 +1,4 @@
-package dev.mvc.team5.talentType;
+package dev.mvc.team5.talenttype;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

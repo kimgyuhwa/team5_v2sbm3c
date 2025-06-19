@@ -1,4 +1,4 @@
-package dev.mvc.team5.talentCateGrp.talentcategrpdto;
+package dev.mvc.team5.talentcategrp.talentcategrpdto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

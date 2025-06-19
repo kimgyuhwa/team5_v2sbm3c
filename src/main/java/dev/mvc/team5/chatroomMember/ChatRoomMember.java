@@ -1,4 +1,4 @@
-package dev.mvc.team5.chatroomMember;
+package dev.mvc.team5.chatroommember;
 
 import java.time.LocalDateTime;
 

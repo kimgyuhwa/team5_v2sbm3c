@@ -1,4 +1,4 @@
-package dev.mvc.team5.talentType.talenttypedto;
+package dev.mvc.team5.talenttype.talenttypedto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
