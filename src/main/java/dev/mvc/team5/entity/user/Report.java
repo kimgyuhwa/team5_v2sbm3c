@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-import dev.mvc.team5.entity.RequestStatus;
+import dev.mvc.team5.tool.RequestStatus;
 
 @Entity
 @Table(name = "reports")
