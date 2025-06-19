@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.mvc.team5.talent.Entity.TalentCateGrp;
-import dev.mvc.team5.talent.Entity.TalentType;
-import dev.mvc.team5.talent.Service.TalentCateGrpService;
+import dev.mvc.team5.talent.entity.TalentCateGrp;
+import dev.mvc.team5.talent.entity.TalentType;
+import dev.mvc.team5.talent.service.TalentCateGrpService;
 
 @RestController
 @RequestMapping("/talent_cate_grp")

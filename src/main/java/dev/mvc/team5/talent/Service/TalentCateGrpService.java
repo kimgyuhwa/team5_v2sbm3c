@@ -1,10 +1,10 @@
-package dev.mvc.team5.talent.Service;
+package dev.mvc.team5.talent.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import dev.mvc.team5.talent.Entity.TalentCateGrp;
-import dev.mvc.team5.talent.Entity.TalentCategory;
+import dev.mvc.team5.talent.entity.TalentCateGrp;
+import dev.mvc.team5.talent.entity.TalentCategory;
 import dev.mvc.team5.talent.repository.TalentCateGrpRepository;
 
 @Service

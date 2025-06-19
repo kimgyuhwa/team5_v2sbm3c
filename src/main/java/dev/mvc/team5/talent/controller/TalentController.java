@@ -1,7 +1,7 @@
 package dev.mvc.team5.talent.controller;
 
-import dev.mvc.team5.talent.controller;
-import dev.mvc.team5.talent.Service.TalentService;
+import dev.mvc.team5.talent.entity.Talent;
+import dev.mvc.team5.talent.service.TalentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

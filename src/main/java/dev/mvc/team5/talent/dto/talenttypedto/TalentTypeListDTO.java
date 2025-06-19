@@ -1,10 +1,10 @@
-package dev.mvc.team5.dto.talenttype;
+package dev.mvc.team5.talent.dto.talenttypedto;
 
 import lombok.*;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class TalentTypeResponseDTO {
+public class TalentTypeListDTO {
     private Long typeno;
     private String name;
 }

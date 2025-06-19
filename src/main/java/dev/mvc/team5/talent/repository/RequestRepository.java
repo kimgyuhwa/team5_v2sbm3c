@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import dev.mvc.team5.talent.Entity.Request;
-import dev.mvc.team5.talent.Entity.RequestStatus;
+import dev.mvc.team5.talent.entity.Request;
+import dev.mvc.team5.talent.entity.RequestStatus;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {

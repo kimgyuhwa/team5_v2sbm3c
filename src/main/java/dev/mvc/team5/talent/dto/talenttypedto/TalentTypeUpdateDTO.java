@@ -1,4 +1,4 @@
-package dev.mvc.team5.dto.talenttype;
+package dev.mvc.team5.talent.dto.talenttypedto;
 
 import lombok.*;
 

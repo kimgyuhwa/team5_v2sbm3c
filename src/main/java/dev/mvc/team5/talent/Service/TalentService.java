@@ -1,4 +1,4 @@
-package dev.mvc.team5.talent.Service;
+package dev.mvc.team5.talent.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import dev.mvc.team5.talent.Entity.Talent;
+import dev.mvc.team5.talent.entity.Talent;
 import dev.mvc.team5.talent.repository.TalentRepository;
 
 @Service

@@ -3,7 +3,7 @@ package dev.mvc.team5.talent.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import dev.mvc.team5.talent.Entity.TalentCategory;
+import dev.mvc.team5.talent.entity.TalentCategory;
 
 @Repository
 public interface TalentCategoryRepository extends JpaRepository<TalentCategory, Long> {

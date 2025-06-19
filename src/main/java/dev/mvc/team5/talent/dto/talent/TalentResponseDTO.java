@@ -1,8 +1,9 @@
 package dev.mvc.team5.talent.dto.talent;
 
 import lombok.*;
-import dev.mvc.team5.dto.talenttype.TalentTypeResponseDTO;
 import dev.mvc.team5.talent.dto.talent.TalentResponseDTO;
+import dev.mvc.team5.talent.dto.talentcategorydto.TalentCategoryResponseDTO;
+import dev.mvc.team5.talent.dto.talenttypedto.TalentTypeResponseDTO;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
