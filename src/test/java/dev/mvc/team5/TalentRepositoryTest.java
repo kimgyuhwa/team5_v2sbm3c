@@ -58,13 +58,13 @@ public class TalentRepositoryTest {
         User user = userRepository.save(new User("user", "user123", "유저", school));
         
         // 대분류 그룹
-        TalentCateGrp cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악", 100));
+        TalentCateGrp cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악"));
         
         // 카테고리 
-        TalentCategory category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타", 50));
+        TalentCategory category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타"));
         
         // 재능기부/교환
-        TalentType talentType = talentTypeRepository.save(new TalentType("기부", 50));
+        TalentType talentType = talentTypeRepository.save(new TalentType("기부"));
                 
         talentRepository.save(new Talent(user, school, talentType, category, "기타 레슨 합니다", "기초부터 알려드려요", "Korean"));
         talentRepository.save(new Talent(user, school,  talentType, category, "피아노 레슨 가능", "1:1 맞춤", "Korean"));

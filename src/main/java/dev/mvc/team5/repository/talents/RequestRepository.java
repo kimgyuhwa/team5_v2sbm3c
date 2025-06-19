@@ -11,8 +11,6 @@ import dev.mvc.team5.entity.talents.RequestStatus;
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
 	// 특정 재능의 요청 목록 조회
-
-
 	List<Request> findByTalent_talentno(Long talent);
 
 	

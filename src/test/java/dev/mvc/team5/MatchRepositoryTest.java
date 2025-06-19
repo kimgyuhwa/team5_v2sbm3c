@@ -67,13 +67,13 @@ public class MatchRepositoryTest {
         receiver = userRepository.save(new User("receiver@example.com", "recv123", "리시버", school));
         
         // 대분류 그룹
-        cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악", 100));
+        cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악"));
         
         // 카테고리 
-        category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타", 50));
+        category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타"));
         
         // 재능기부/교환
-        talentType = talentTypeRepository.save(new TalentType("기부", 50));
+        talentType = talentTypeRepository.save(new TalentType("기부"));
 
         // Talent 저장 (user, school 필수)
         talent = talentRepository.save(new Talent(giver, school, talentType, category,

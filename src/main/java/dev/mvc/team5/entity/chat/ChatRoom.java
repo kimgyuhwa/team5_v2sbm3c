@@ -32,7 +32,7 @@ public class ChatRoom {
     
     private LocalDateTime createAt;
 
-    // === 연관 관계 ===zz
+    // === 연관 관계 ===
 
     @OneToMany(mappedBy = "chatRoom")
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();

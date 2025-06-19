@@ -1,4 +1,4 @@
-package dev.mvc.team5.repository;
+package dev.mvc.team5.repository.message;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -8,9 +8,9 @@ import dev.mvc.team5.entity.chat.ChatRoom;
 import dev.mvc.team5.entity.chat.ChatRoomMember;
 import dev.mvc.team5.entity.chat.Message;
 import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.ChatRoomMemberRepository;
-import dev.mvc.team5.repository.ChatRoomRepository;
-import dev.mvc.team5.repository.MessageRepository;
+import dev.mvc.team5.repository.message.ChatRoomMemberRepository;
+import dev.mvc.team5.repository.message.ChatRoomRepository;
+import dev.mvc.team5.repository.message.MessageRepository;
 import dev.mvc.team5.repository.user.UserRepository;
 
 import java.time.LocalDateTime;

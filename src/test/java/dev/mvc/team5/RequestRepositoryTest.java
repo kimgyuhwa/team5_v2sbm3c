@@ -62,13 +62,13 @@ public class RequestRepositoryTest {
         User requester = userRepository.save(new User("requester@example.com", "req123", "요청자", school));
         
         // 대분류 그룹
-        TalentCateGrp cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악", 100));
+        TalentCateGrp cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악"));
         
         // 카테고리 
-        TalentCategory category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타", 50));
+        TalentCategory category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타"));
         
         // 재능기부/교환
-        TalentType talentType = talentTypeRepository.save(new TalentType("기부", 50));
+        TalentType talentType = talentTypeRepository.save(new TalentType("기부"));
 
         // 재능 저장
         Talent talent = talentRepository.save(new Talent(giver, school, talentType, category,
