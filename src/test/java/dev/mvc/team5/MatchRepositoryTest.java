@@ -1,19 +1,8 @@
 package dev.mvc.team5;
 
-import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.talents.Match;
-import dev.mvc.team5.entity.talents.Talent;
-import dev.mvc.team5.entity.talents.TalentCateGrp;
-import dev.mvc.team5.entity.talents.TalentCategory;
-import dev.mvc.team5.entity.talents.TalentType;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.school.SchoolRepository;
-import dev.mvc.team5.repository.talents.MatchRepository;
-import dev.mvc.team5.repository.talents.TalentCateGrpRepository;
-import dev.mvc.team5.repository.talents.TalentCategoryRepository;
-import dev.mvc.team5.repository.talents.TalentRepository;
-import dev.mvc.team5.repository.talents.TalentTypeRepository;
-import dev.mvc.team5.repository.user.UserRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +10,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import dev.mvc.team5.match.Match;
+import dev.mvc.team5.match.MatchRepository;
+import dev.mvc.team5.school.School;
+import dev.mvc.team5.school.SchoolRepository;
+import dev.mvc.team5.talentcategrp.TalentCateGrp;
+import dev.mvc.team5.talentcategrp.TalentCateGrpRepository;
+import dev.mvc.team5.talentcategory.TalentCategory;
+import dev.mvc.team5.talentcategory.TalentCategoryRepository;
+import dev.mvc.team5.talenttype.TalentType;
+import dev.mvc.team5.talenttype.TalentTypeRepository;
+import dev.mvc.team5.talents.Talent;
+import dev.mvc.team5.talents.TalentRepository;
+import dev.mvc.team5.user.User;
+import dev.mvc.team5.user.UserRepository;
 
 @DataJpaTest
 public class MatchRepositoryTest {
@@ -67,13 +67,13 @@ public class MatchRepositoryTest {
         receiver = userRepository.save(new User("receiver@example.com", "recv123", "리시버", school));
         
         // 대분류 그룹
-        cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악", 100));
+        cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악"));
         
         // 카테고리 
-        category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타", 50));
+        category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타"));
         
         // 재능기부/교환
-        talentType = talentTypeRepository.save(new TalentType("기부", 50));
+        talentType = talentTypeRepository.save(new TalentType("기부"));
 
         // Talent 저장 (user, school 필수)
         talent = talentRepository.save(new Talent(giver, school, talentType, category,

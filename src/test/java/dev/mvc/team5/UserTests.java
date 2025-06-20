@@ -1,15 +1,17 @@
 package dev.mvc.team5;
 
-import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.school.SchoolRepository;
-import dev.mvc.team5.repository.user.UserRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import dev.mvc.team5.school.School;
+import dev.mvc.team5.school.SchoolRepository;
+import dev.mvc.team5.user.User;
+import dev.mvc.team5.user.UserRepository;
 
 @SpringBootTest
 class UserTests {
@@ -28,7 +30,7 @@ class UserTests {
         School savedSchool = schoolRepository.save(school);
 
         // 2) 유저 생성 + 학교 연결
-        User user = new User("testId", "password123", "홍길동", savedSchool);
+        User user = new User("testId", "1234", "홍길동", savedSchool);
 
         // 3) 저장
         User savedUser = userRepository.save(user);
@@ -37,5 +39,16 @@ class UserTests {
         assertThat(savedUser.getUserno()).isNotNull();
         assertThat(savedUser.getSchool()).isNotNull();
         assertThat(savedUser.getSchool().getSchoolname()).isEqualTo("테스트학교");
+        
+        // 로그인
+        Optional<User> userOpt = userRepository.findByUserIdAndPassword("testId", "1234");
+        if (userOpt.isPresent()) {
+          System.out.println("회원 존재");
+          System.out.println(userOpt.get().toString());
+        } else {
+          System.out.println("해당하는 회원 없음");
+        }
+        
+        
     }
 }

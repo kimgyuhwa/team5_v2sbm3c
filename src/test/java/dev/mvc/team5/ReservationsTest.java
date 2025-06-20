@@ -2,23 +2,23 @@ package dev.mvc.team5;
 
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import dev.mvc.team5.entity.school.Places;
-import dev.mvc.team5.entity.school.Reservations;
-import dev.mvc.team5.entity.school.SchoolGwan;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.school.PlacesRepository;
-import dev.mvc.team5.repository.school.ReservationsRepository;
-import dev.mvc.team5.repository.school.SchoolGwanRepository;
-import dev.mvc.team5.repository.user.UserRepository;
+import dev.mvc.team5.places.Places;
+import dev.mvc.team5.places.PlacesRepository;
+import dev.mvc.team5.reservations.Reservations;
+import dev.mvc.team5.reservations.ReservationsRepository;
+import dev.mvc.team5.schoolgwan.SchoolGwan;
+import dev.mvc.team5.schoolgwan.SchoolGwanRepository;
+import dev.mvc.team5.user.User;
+import dev.mvc.team5.user.UserRepository;
 import jakarta.transaction.Transactional;
-
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional

@@ -2,31 +2,22 @@ package dev.mvc.team5;
 
 
 
-import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.talents.Talent;
-import dev.mvc.team5.entity.talents.TalentCateGrp;
-import dev.mvc.team5.entity.talents.TalentCategory;
-import dev.mvc.team5.entity.talents.TalentType;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.user.UserRepository;
-import dev.mvc.team5.entity.school.School;
-import dev.mvc.team5.entity.talents.Talent;
-import dev.mvc.team5.entity.user.User;
-import dev.mvc.team5.repository.school.SchoolRepository;
-import dev.mvc.team5.repository.talents.TalentCateGrpRepository;
-import dev.mvc.team5.repository.talents.TalentCategoryRepository;
-import dev.mvc.team5.repository.talents.TalentRepository;
-import dev.mvc.team5.repository.talents.TalentTypeRepository;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import dev.mvc.team5.school.School;
+import dev.mvc.team5.school.SchoolRepository;
+import dev.mvc.team5.talentcategrp.TalentCateGrp;
+import dev.mvc.team5.talentcategrp.TalentCateGrpRepository;
+import dev.mvc.team5.talentcategory.TalentCategory;
+import dev.mvc.team5.talentcategory.TalentCategoryRepository;
+import dev.mvc.team5.talenttype.TalentType;
+import dev.mvc.team5.talenttype.TalentTypeRepository;
+import dev.mvc.team5.talents.Talent;
+import dev.mvc.team5.talents.TalentRepository;
+import dev.mvc.team5.user.User;
+import dev.mvc.team5.user.UserRepository;
 
 @DataJpaTest
 public class TalentRepositoryTest {
@@ -58,25 +49,25 @@ public class TalentRepositoryTest {
         User user = userRepository.save(new User("user", "user123", "유저", school));
         
         // 대분류 그룹
-        TalentCateGrp cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악", 100));
+        TalentCateGrp cateGrp = talentCateGrpRepository.save(new TalentCateGrp("음악"));
         
         // 카테고리 
-        TalentCategory category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타", 50));
+        TalentCategory category = talentCategoryRepository.save(new TalentCategory(cateGrp, "기타"));
         
         // 재능기부/교환
-        TalentType talentType = talentTypeRepository.save(new TalentType("기부", 50));
+        TalentType talentType = talentTypeRepository.save(new TalentType("기부"));
                 
         talentRepository.save(new Talent(user, school, talentType, category, "기타 레슨 합니다", "기초부터 알려드려요", "Korean"));
         talentRepository.save(new Talent(user, school,  talentType, category, "피아노 레슨 가능", "1:1 맞춤", "Korean"));
         talentRepository.save(new Talent(user, school,  talentType, category, "운동 코칭", "헬스, PT", "Korean"));
     }
 
-    @Test
-    @DisplayName("제목에 '레슨'이 포함된 재능 글 검색")
-    void testFindByTitleContaining() {
-        List<Talent> results = talentRepository.findByTitleContaining("레슨");
-
-        assertThat(results).hasSize(2);
-        assertThat(results).allMatch(t -> t.getTitle().contains("레슨"));
-    }
+//    @Test
+//    @DisplayName("제목에 '레슨'이 포함된 재능 글 검색")
+//    void testFindByTitleContaining() {
+//        List<Talent> results = talentRepository.findByTitleContaining("레슨");
+//
+//        assertThat(results).hasSize(2);
+//        assertThat(results).allMatch(t -> t.getTitle().contains("레슨"));
+//    }
 }

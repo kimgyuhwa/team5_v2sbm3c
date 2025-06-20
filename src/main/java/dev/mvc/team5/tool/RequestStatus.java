@@ -1,6 +1,7 @@
 package dev.mvc.team5.tool;
 
 public class RequestStatus {
+
   //PENDING, ACCEPTED, REJECTED, COMPLETED
   // 대기 상태
   public static final String PENDING = "pending"; 
@@ -12,5 +13,4 @@ public class RequestStatus {
   public static final String COMPLETED = "completed"; 
  
 }
-
 
