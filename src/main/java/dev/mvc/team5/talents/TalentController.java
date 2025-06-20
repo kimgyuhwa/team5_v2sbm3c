@@ -1,18 +1,20 @@
 package dev.mvc.team5.talents;
 
-import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import dev.mvc.team5.talents.talentdto.TalentCreateDTO;
+import dev.mvc.team5.talents.talentdto.TalentListDTO;
+import dev.mvc.team5.talents.talentdto.TalentResponseDTO;
+import dev.mvc.team5.talents.talentdto.TalentUpdateDTO;
+import jakarta.servlet.http.HttpSession;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/talent")
@@ -25,20 +27,21 @@ public class TalentController {
      * 등록(Create)
      * @param entity 등록할 Talent 객체
      * @return 저장된 Talent 객체
-     */
+     */    
     @PostMapping("/save")
-    public ResponseEntity<Talent> createTalent(@RequestBody Talent entity) {
-        Talent saved = service.save(entity);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<TalentResponseDTO> createTalent(@RequestBody TalentCreateDTO dto) {
+        TalentResponseDTO savedDto = service.save(dto);
+        return ResponseEntity.ok(savedDto);
     }
+
 
     /** 
      * 전체 조회(Read)
      * @return Talent 전체 목록
      */
     @GetMapping("/list")
-    public ResponseEntity<List<Talent>> getAllTalents() {
-        List<Talent> list = service.findAll();
+    public ResponseEntity<List<TalentListDTO>> getAllTalents() {
+        List<TalentListDTO> list = service.findAll();
         return ResponseEntity.ok(list);
     }
 
@@ -48,13 +51,13 @@ public class TalentController {
      * @return 해당 Talent 객체
      */
     @GetMapping("/{talentno}")
-    public ResponseEntity<Talent> getTalent(@PathVariable Long talentno) {
-        Optional<Talent> optionalTalent = service.findById(talentno);
+    public ResponseEntity<TalentResponseDTO> getTalent(@PathVariable(name="talentno") Long talentno) {
+        Optional<TalentResponseDTO> optionalDto = service.findById(talentno);
 
-        if (optionalTalent.isPresent()) {
-            return ResponseEntity.ok(optionalTalent.get());
+        if (optionalDto.isPresent()) {
+            return ResponseEntity.ok(optionalDto.get());
         } else {
-            return ResponseEntity.notFound().build(); // 404 응답
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -67,10 +70,21 @@ public class TalentController {
      * @return 수정된 Talent 객체
      */
     @PutMapping("/update")
-    public ResponseEntity<Talent> updateTalent(@RequestBody Talent entity) {
-        Talent updated = service.save(entity); // save로 처리 가능
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<TalentResponseDTO> updateTalent(
+            @RequestBody TalentUpdateDTO dto,
+            HttpSession session) {
+
+        Long loggedInUserNo = (Long) session.getAttribute("userno");
+
+        if (loggedInUserNo == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        TalentResponseDTO updatedDto = service.update(dto, loggedInUserNo);
+        return ResponseEntity.ok(updatedDto);
     }
+
+
 
     /** 
      * 삭제(Delete)
@@ -78,7 +92,7 @@ public class TalentController {
      * @return 상태 메시지
      */
     @DeleteMapping("/delete/{talentno}")
-    public ResponseEntity<String> deleteTalent(@PathVariable Long talentno) {
+    public ResponseEntity<String> deleteTalent(@PathVariable(name="talentno") Long talentno) {
         service.delete(talentno);
         return ResponseEntity.ok("삭제 완료");
     }

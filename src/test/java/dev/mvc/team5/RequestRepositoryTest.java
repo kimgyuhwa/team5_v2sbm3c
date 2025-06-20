@@ -21,6 +21,8 @@ import dev.mvc.team5.talenttype.TalentType;
 import dev.mvc.team5.talenttype.TalentTypeRepository;
 import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.talents.TalentRepository;
+import dev.mvc.team5.talenttype.TalentType;
+import dev.mvc.team5.talenttype.TalentTypeRepository;
 import dev.mvc.team5.tool.RequestStatus;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
