@@ -1,8 +1,11 @@
-package dev.mvc.team5.talents.talentDTO;
+package dev.mvc.team5.talents.talentdto;
 
+
+import java.time.LocalDateTime;
 
 import dev.mvc.team5.talentcategory.talentcategorydto.TalentCategoryResponseDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeResponseDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +20,9 @@ public class TalentResponseDTO {
     private String title;
     private String description;
     private String language;
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 
     private TalentTypeResponseDTO type;
     private TalentCategoryResponseDTO category;
