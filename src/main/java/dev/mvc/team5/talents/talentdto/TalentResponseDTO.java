@@ -1,19 +1,8 @@
 package dev.mvc.team5.talents.talentdto;
-<<<<<<< HEAD
-
 
 import dev.mvc.team5.talentcategory.talentcategorydto.TalentCategoryResponseDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeResponseDTO;
-import lombok.AllArgsConstructor;
-=======
-
-
 import java.time.LocalDateTime;
-
-import dev.mvc.team5.talentcategory.talentcategorydto.TalentCategoryResponseDTO;
-import dev.mvc.team5.talenttype.talenttypedto.TalentTypeResponseDTO;
-
->>>>>>> 3acb283b311cd8427e20b55ce92ae79501109877
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
