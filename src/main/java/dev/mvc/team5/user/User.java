@@ -49,7 +49,7 @@ public class User {
 
     /** 학교 정보와 다대일 연관관계 (Lazy 로딩) */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school") // 외래키 컬럼명
+    @JoinColumn(name = "schoolno") // 외래키 컬럼명
     private School school;
 
     /** 사용자 아이디 (최대 30자) */
@@ -62,11 +62,11 @@ public class User {
 
     /** 이름 (최대 100자) */
     @Column(length = 100)
-    private String name;
+    private String username;
 
     /** 사용자 이름 (닉네임, 최대 50자) */
     @Column(length = 50)
-    private String username;
+    private String name;
 
     /** 이메일 (최대 100자) */
     @Column(length = 100)

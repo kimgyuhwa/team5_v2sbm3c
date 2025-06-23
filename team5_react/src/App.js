@@ -7,6 +7,8 @@ import Home from './components/Home';
 import UserLogin from './user/UserLogin';
 import UserLogout from './user/UserLogout';
 import UserSession from './user/UserSession';
+import UserRegister from './user/UserRegister';
+import UserProfile from './user/UserProfile';
 
 function App() {
   return (
@@ -19,7 +21,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />
-          <Route path="/user/session" element={<UserSession />} />  
+          <Route path="/user/session" element={<UserSession />} /> 
+          <Route path="/user/register" element={<UserRegister />} />  
+          <Route path="/user/profile" element={<UserProfile />} />  
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>
