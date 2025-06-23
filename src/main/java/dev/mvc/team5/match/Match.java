@@ -1,95 +1,53 @@
 package dev.mvc.team5.match;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-
+import dev.mvc.team5.request.Request;
 import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.user.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-
+import dev.mvc.team5.reservations.Reservations;
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Getter @Setter
-// @NoArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Entity
 @Table(name = "matches")
 public class Match {
 
-    /**
-     * 매칭 고유 번호 (기본키)
-     * 시퀀스(match_seq)를 통해 자동 생성됨
-     */
+    /** 매칭 고유 번호 (기본키) */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "match_seq")
-    @SequenceGenerator(name = "match_seq", sequenceName = "MATCH_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "match_seq", sequenceName = "match_seq", allocationSize = 1)
     @Column(name = "matchno")
     private Long matchno;
 
-    /**
-     * 요청한 회원
-     * User 엔티티와 다대일 관계
-     */
-    @ManyToOne
-    @JoinColumn(name = "giver")
+    /** 요청 외래키 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requestno")
+    private Request request;
+
+    /** 주는 사람 (giver, 외래키) */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "giverno")
     private User giver;
 
-    /**
-     * 요청 받은 회원
-     * User 엔티티와 다대일 관계
-     */
-    @ManyToOne
-    @JoinColumn(name = "receiver")
+    /** 받는 사람 (receiver, 외래키) */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiverno")
     private User receiver;
 
-    /**
-     * 요청 게시물
-     * Talent 엔티티와 다대일 관계
-     */
-    @ManyToOne
-    @JoinColumn(name = "talent")
+    /** 재능 게시물 외래키 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "talentno")
     private Talent talent;
 
-    /**
-     * 요청 시간
-     * 엔티티 생성시 자동으로 현재 시간 저장
-     */
-    @CreationTimestamp
-    @Column(name = "started_at")
-    private LocalDateTime startedAt;
+    /** 예약 정보 외래키 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservationno")
+    private Reservations reservation;
     
-    /**
-     * 완료 시간
-     * 컨트롤러에서 수동으로 받기(LocalDate,now()등)
-     */
-    @Column(name = "completed_at")
-    private LocalDateTime completedAt;
-    
- // Match.java 내부에 생성자 추가
-
-    public Match(User giver, User receiver, Talent talent, LocalDateTime completedAt) {
-        this.giver = giver;
-        this.receiver = receiver;
-        this.talent = talent;
-
-        this.completedAt = completedAt;
-    }
-
     
 
-    
 }

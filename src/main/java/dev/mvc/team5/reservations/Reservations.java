@@ -1,10 +1,17 @@
 package dev.mvc.team5.reservations;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import dev.mvc.team5.match.Match;
 import dev.mvc.team5.places.Places;
+import dev.mvc.team5.request.Request;
 import dev.mvc.team5.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +20,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -53,12 +61,14 @@ public class Reservations {
      * 예약한 시간
      * 예약한 시간과 끝나는 시간은 불가능하도록 막고 다른 시간은 가능하도록 설계
      */
+    @CreationTimestamp
     private LocalDateTime start_time;
     
     /**
      * 끝나는 시간
      * 예약한 시간과 끝나는 시간은 불가능하도록 막고 다른 시간은 가능하도록 설계
      */    
+    @UpdateTimestamp
     private LocalDateTime end_time;
     
     
@@ -69,6 +79,10 @@ public class Reservations {
      * 요청 상태
      */
     private String status;
+    
+    // 양방향: Reservation ↔ Match
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Match> matches = new ArrayList<>();
     
     // 생성자 (필요시)
 

@@ -1,5 +1,7 @@
 package dev.mvc.team5.talents.talentdto;
 
+import dev.mvc.team5.talents.Talent;
+import dev.mvc.team5.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +16,16 @@ public class TalentUpdateDTO {
     private String title;         // 수정할 제목
     private String description;   // 수정할 내용
     private String language;      // 수정할 언어
+    
+    public Talent toEntity() {
+      Talent talent = new Talent();
+      User user = new User();
+      user.setUserno(this.userno);
+      
+      talent.setTitle(title);
+      talent.setDescription(description);
+      talent.setLanguage(language);
+      
+      return talent;
+    }
 }

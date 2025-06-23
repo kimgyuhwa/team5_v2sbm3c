@@ -10,4 +10,6 @@ import lombok.Setter;
 public class TalentTypeUpdateDTO {
     private Long typeno;
     private String name;
+    
+    
 }

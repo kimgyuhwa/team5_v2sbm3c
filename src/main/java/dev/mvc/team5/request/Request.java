@@ -1,11 +1,15 @@
 package dev.mvc.team5.request;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import dev.mvc.team5.match.Match;
 import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -44,7 +49,7 @@ public class Request {
      * Talent 엔티티와 다대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "talent")
+    @JoinColumn(name = "talentno")
     private Talent talent;
 
     /**
@@ -73,6 +78,10 @@ public class Request {
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    // 양방향: Request ↔ Match
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Match> matches = new ArrayList<>();
     
     /**
      * 생성자

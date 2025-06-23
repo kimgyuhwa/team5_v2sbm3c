@@ -1,30 +1,114 @@
 package dev.mvc.team5.talentcategory;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import dev.mvc.team5.talentcategory.talentcategorydto.TalentCategoryCreateDTO;
+import dev.mvc.team5.talentcategory.talentcategorydto.TalentCategoryListDTO;
+import dev.mvc.team5.talentcategory.talentcategorydto.TalentCategoryResponseDTO;
+import dev.mvc.team5.talentcategory.talentcategorydto.TalentCategoryUpdateDTO;
+import dev.mvc.team5.talenttype.TalentType;
+import dev.mvc.team5.talenttype.talenttypedto.TalentTypeCreateDTO;
+import dev.mvc.team5.talenttype.talenttypedto.TalentTypeListDTO;
+import dev.mvc.team5.talenttype.talenttypedto.TalentTypeResponseDTO;
+import dev.mvc.team5.talenttype.talenttypedto.TalentTypeUpdateDTO;
 
 @Service
 public class TalentCategoryService {
 
   @Autowired
-  TalentCategoryRepository repository;
+  TalentCategoryRepository cateRepository;
   
   /**
-   * 카테고리 대분류를 저장하거나 수정하는 메서드
-   * @param entity 저장할 TalentCateGrp 엔티티 객체
-   * @return 저장 완료된 TalentCateGrp 객체
+   * TalentCategory 엔티티를 TalentCategoryResponseDTO로 변환하는 헬퍼 메서드
+   * @param t 변환할 TalentCategory 엔티티
+   * @return 응답용 DTO 객체
    */
-  public TalentCategory save(TalentCategory entity) {
-    return repository.save(entity);
+  private TalentCategoryResponseDTO toCategoryResponseDTO(TalentCategory t) {
+    return new TalentCategoryResponseDTO(
+        t.getCategoryno() != null ? t.getCategoryno() : null,
+        t.getName(),
+        t.getCateGrp() != null ? t.getCateGrp().getCateGrpno() : null  // 외래키 ID만
+    );
+}
+  
+  /**
+   * 타입 정보를 저장하는 메서드
+   * @param dto 클라이언트로부터 전달받은 생성용 DTO (TalentCategoryCreateDTO)
+   * @return 저장된 엔티티를 응답용 DTO로 변환하여 반환
+   */
+  public TalentCategoryResponseDTO save(TalentCategoryCreateDTO dto) {
+    TalentCategory cate = dto.toEntity(); // DTO를 엔티티로 변환
+    TalentCategory saved = cateRepository.save(cate); // 변환된 엔티티를 DB에 저장
+    
+    return toCategoryResponseDTO(saved); // 저장된 엔티티를 응답 DTO로 변환하여 반환
   }
   
-  /** 수정 (UPDATE) → save() 재사용 */
-  public TalentCategory update(TalentCategory updatedCate) {
-      // 이미 있는 경우만 update 진행
-      if (updatedCate.getCategoryno() != null && repository.existsById(updatedCate.getCategoryno())) {
-          return repository.save(updatedCate);
+  /**
+   * TalentCategory 엔티티를 수정하는 메서드
+   * 
+   * @param dto 수정할 데이터를 담고 있는 TalentCategoryUpdateDTO 객체
+   * @return 수정된 내용을 반영한 TalentCategoryResponseDTO 객체
+   * @throws RuntimeException cateno에 해당하는 기존 데이터가 없을 경우 발생
+   */
+  public TalentCategoryResponseDTO update(TalentCategoryUpdateDTO dto) {
+    // cateno로 기존 데이터 조회
+    TalentCategory existing = cateRepository.findById(dto.getCategoryno())
+                               .orElseThrow(() -> new RuntimeException("해당 타입이 존재하지 않습니다."));
+
+    // 변경할 값만 업데이트
+    existing.setName(dto.getName());
+    // 저장
+    TalentCategory updated = cateRepository.save(existing);
+    // DTO로 변환해서 반환
+    return toCategoryResponseDTO(updated);
+}
+  
+  
+  /**
+   * 주어진 cateno를 가진 TalentCategory 데이터를 삭제하는 메서드
+   *
+   * cateno로 해당 데이터가 존재하는지 먼저 확인하고,
+   * 존재하면 삭제하고, 존재하지 않으면 예외를 던진다.
+   *
+   * @param cateno 삭제할 TalentCategory의 고유 번호
+   * @throws RuntimeException 삭제 대상이 존재하지 않을 경우 예외 발생
+   */
+  public void delete(Long cateno) {
+      // 1) 해당 cateno가 DB에 존재하는지 확인 (선택 사항)
+      boolean exists = cateRepository.existsById(cateno);
+      if (!exists) {
+          throw new RuntimeException("삭제할 타입이 존재하지 않습니다.");
       }
-      throw new IllegalArgumentException("해당 재능이 존재하지 않음: talentno=" + updatedCate.getCategoryno());
+
+      // 2) 삭제 수행
+      cateRepository.deleteById(cateno);
+  }
+  
+  public List<TalentCategoryListDTO> list() {
+    List<TalentCategory> entityList = cateRepository.findAll(); // DB에서 전체 조회
+
+    // 람다식으로 DTO 변환
+    return entityList.stream()
+        .map(t -> new TalentCategoryListDTO(t.getCategoryno(), t.getName()))
+        .collect(Collectors.toList());
+
+}
+  
+  /**
+   * 검색어가 있으면 name 기준 필터링,
+   * 없으면 전체 목록 가져오되 cateno 기준 정렬 + 페이징
+   */
+  public Page<TalentCategoryListDTO> list(String keyword, Pageable pageable) {
+      Page<TalentCategory> entityPage = cateRepository.findByNameContaining(keyword, pageable);
+
+      // Entity → DTO 변환
+      return entityPage.map(t -> new TalentCategoryListDTO(t.getCategoryno(), t.getName()));
   }
   
 }
