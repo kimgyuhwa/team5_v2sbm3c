@@ -32,15 +32,6 @@ public class SchoolGwan {
   private List<Places> places  = new ArrayList<>();
   
   /**
-   * 학교테이블 학교번호
-   * @param schoolno
-   */
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "school", nullable = false)
-  private School school;
-
-  
-  /**
    * 학교관 번호
    * @param schoolgwanno 
    */
@@ -50,7 +41,16 @@ public class SchoolGwan {
     @Column(name = "schoolgwanno")
     private Long schoolgwanno;
 
+
     /**
+     * 학교테이블 학교번호
+     * @param schoolno
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "school", nullable = false)
+    private School school;
+
+   /**
      * 학교관 이름
      * @param schoolgwanname
      */

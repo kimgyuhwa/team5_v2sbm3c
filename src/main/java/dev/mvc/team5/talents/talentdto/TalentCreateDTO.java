@@ -1,11 +1,11 @@
 package dev.mvc.team5.talents.talentdto;
 
+
 import dev.mvc.team5.school.School;
 import dev.mvc.team5.talentcategory.TalentCategory;
 import dev.mvc.team5.talenttype.TalentType;
 import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.user.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
