@@ -1,6 +1,6 @@
 const getIP = () => {
   // return "localhost";
-  return "192.168.12.145";
+  return "192.168.12.141";
 }
 const getCopyright = () => {
   return "TEAM 5";

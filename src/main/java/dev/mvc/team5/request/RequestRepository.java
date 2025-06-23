@@ -2,18 +2,26 @@ package dev.mvc.team5.request;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-	// 특정 재능의 요청 목록 조회
-	List<Request> findByTalent_talentno(Long talent);
-
-	
-	// 특정 회원의 요청 목록 조회
-	// List<Request> findByUser_Userno(Long userno);
-
-  // 상태별 요청 조회
-  List<Request> findByStatus(String status);
+    
+    // 게시물 제목으로 검색 + 페이징 + 정렬
+    Page<Request> findByTalent_TitleContaining(String keyword, Pageable pageable);
+    
+    // 요청한 회원 이름으로 검색
+    Page<Request> findByUser_NameContaining(String keyword, Pageable pageable);
+    
+    // 요청 상태로 검색
+    Page<Request> findByStatusContaining(String keyword, Pageable pageable);
+    
+    // 요청 내용으로 검색
+    Page<Request> findByMessageContaining(String keyword, Pageable pageable);
+    
 }
+
