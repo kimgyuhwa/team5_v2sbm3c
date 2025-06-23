@@ -64,5 +64,21 @@ public class RequestController {
         Page<RequestListDTO> resultPage = service.searchRequests(searchType, keyword, pageable);
         return ResponseEntity.ok(resultPage);
     }
+    
+    /**
+     * 요청 상태 변경
+     * @param requestno
+     * @param status
+     * @return
+     */
+    @PatchMapping("/status/{requestno}")
+    public ResponseEntity<String> updateStatus(
+            @PathVariable Long requestno,
+            @RequestParam String status) {
+
+        service.updateStatus(requestno, status);
+        return ResponseEntity.ok("상태가 변경되었습니다.");
+    }
+
 
 }

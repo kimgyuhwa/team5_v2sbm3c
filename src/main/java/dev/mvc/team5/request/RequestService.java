@@ -103,4 +103,17 @@ public class RequestService {
                 r.getCreatedAt()
         ));
     }
+    
+    // 요청 상태 변경 메서드
+    public void updateStatus(Long requestno, String status) {
+        Request request = requestRepository.findById(requestno)
+            .orElseThrow(() -> new RuntimeException("요청을 찾을 수 없습니다."));
+
+        // 상태 변경
+        request.setStatus(status);
+
+        // 변경된 엔티티 저장
+        requestRepository.save(request);
+    }
+    
 }

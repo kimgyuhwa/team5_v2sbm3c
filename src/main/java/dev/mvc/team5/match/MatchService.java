@@ -49,21 +49,25 @@ public class MatchService {
 
     // 매칭 생성
     public MatchResponseDTO save(MatchCreateDTO dto) {
-        // DTO -> Entity 변환
-        Match match = dto.toEntity();
+      // DTO -> Entity 변환
+      Match match = dto.toEntity();
 
-        // 예약 엔티티 조회 후 세팅
-        reservationsRepository.findById(dto.getReservationno())
-            .ifPresent(match::setReservation);
+      // 예약 엔티티 조회 후 세팅
+      reservationsRepository.findById(dto.getReservationno())
+          .ifPresent(match::setReservation);
 
-        // 요청, giver, receiver, talent는 이미 toEntity에서 ID만 세팅되어 있음
-        // 필요 시 실제 엔티티 전부 조회해서 세팅할 수도 있음 (optional)
+      // 요청 상태를 accepted로 바꿔줌
+      requestRepository.findById(dto.getRequestno())
+          .ifPresent(request -> {
+              request.setStatus("accepted"); // 또는 RequestStatus.ACCEPTED
+              requestRepository.save(request); // 상태 변경 저장
+          });
 
-        Match saved = matchRepository.save(match);
+      Match saved = matchRepository.save(match);
 
-        // 응답 DTO 변환
-        return toMatchResponseDTO(saved);
-    }
+      return toMatchResponseDTO(saved);
+  }
+
 
 //    // 단건 조회
 //    public MatchResponseDTO getMatch(Long matchno) {
