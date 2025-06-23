@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dev.mvc.team5.talenttype.talenttypedto.TalentTypeCreateDTO;
+import dev.mvc.team5.talenttype.talenttypedto.TalentTypeResponseDTO;
+import dev.mvc.team5.talenttype.talenttypedto.TalentTypeUpdateDTO;
+
 @RestController
 @RequestMapping("/talent_type")
 public class TalentTypeController {
@@ -29,11 +33,10 @@ public class TalentTypeController {
    * @return 등록된 TalentType 객체를 포함한 HTTP 200 응답
    */
   @PostMapping(path="/save")
-  public ResponseEntity<TalentType> createEntity(@RequestBody TalentType entity) {
+  public ResponseEntity<TalentTypeResponseDTO> createType(@RequestBody TalentTypeCreateDTO dto) {
       // System.out.println("-> 카테고리 대분류 추가: " + entity.getName());
-
-      TalentType type = service.save(entity);
-      return ResponseEntity.ok(type);
+      TalentTypeResponseDTO savedDto = service.save(dto);
+      return ResponseEntity.ok(savedDto);
   }
 
   /**
@@ -45,11 +48,11 @@ public class TalentTypeController {
    * @return 수정된 TalentType 객체를 포함한 HTTP 200 응답
    */
   @PutMapping("/update")
-  public ResponseEntity<TalentType> updateEntity(@RequestBody TalentType entity) {
+  public ResponseEntity<TalentTypeResponseDTO> updateType(@RequestBody TalentTypeUpdateDTO dto) {
       // System.out.println("-> 카테고리 대분류 수정: " + entity.getName());
 
-      TalentType type = service.save(entity);
-      return ResponseEntity.ok(type);
+      TalentTypeResponseDTO updateDto = service.update(dto);
+      return ResponseEntity.ok(updateDto);
   }
 
 
