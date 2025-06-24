@@ -40,10 +40,20 @@ public class TalentService {
 
     /** 전체 조회 (LIST) */
     public List<TalentListDTO> findAll() {
-        return talentRepository.findAll().stream()
-                .map(this::toListDTO)
+        return talentRepository.findAll().stream() // 람다식 + 스트림
+                .map(this::toListDTO) 
                 .collect(Collectors.toList());
     }
+    
+//    람다식  + 스트림쓴거 원래(?)코드
+//    List<Talent> entityList = talentRepository.findAll();
+//    List<TalentListDTO> dtoList = new ArrayList<>();
+//
+//    for (Talent t : entityList) {
+//        TalentListDTO dto = toListDTO(t);
+//        dtoList.add(dto);
+//    }
+
 
     /** 개별 조회 (DETAIL) */
     public Optional<TalentResponseDTO> findById(Long talentno) {

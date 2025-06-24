@@ -25,15 +25,34 @@ public class UserService {
         return userRepository.findByUserId(userId) != null;
     }
 
+     // userno로 사용자 찾기
+    public User findById(Long userno) {
+      return userRepository.findById(userno)
+          .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+  }
+
+
     // 회원가입
     public void create(UserDTO userDTO) {
         User user = new User();
         user.setUserId(userDTO.getUserId());
         user.setPassword(security.aesEncode(userDTO.getPassword()));
+        user.setUsername(userDTO.getUsername());
         user.setName(userDTO.getName());
-        user.setCreatedAt(LocalDateTime.now());
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setZipcode(userDTO.getZipcode());
+        user.setAddress(userDTO.getAddress());
+        user.setLanguage(userDTO.getLanguage());
+        user.setLocation(userDTO.getLocation());
+        user.setBio(userDTO.getBio());
+        user.setRole(userDTO.getRole());
+        // 학교 연관관계 처리
+        // if (dto.getSchoolId() != null) {
+        //   user.setSchool(schoolRepository.findById(dto.getSchoolId()).orElse(null));
+        // }
         userRepository.save(user);
-    }
+      }
     //로그인
     public boolean login(UserDTO userDTO, HttpSession session) {
       User user = userRepository.findByUserId(userDTO.getUserId());
@@ -41,7 +60,7 @@ public class UserService {
           String encodedPw = security.aesEncode(userDTO.getPassword());
           if (user.getPassword().equals(encodedPw)) {
               session.setAttribute("userno", user.getUserno());   // userno 저장
-              session.setAttribute("username", user.getName());   // username 저장
+              session.setAttribute("username", user.getUsername());   // username 저장
               session.setAttribute("userId", user.getUserId());
               session.setAttribute("schoolname", user.getSchool());
               session.setAttribute("role", user.getRole());
@@ -58,7 +77,7 @@ public class UserService {
       UserDTO dto = new UserDTO();
       dto.setUserno(user.getUserno());   // User 엔티티에 userno 필드가 있어야 합니다.
       dto.setUserId(user.getUserId());
-      dto.setName(user.getName());
+      dto.setUsername(user.getUsername());
       dto.setEmail(user.getEmail());
       // 필요하다면 schoolId 등도 추가
       return dto;
@@ -88,7 +107,7 @@ public class UserService {
     // 회원정보 업데이트
     public void updateProfile(Long userno, UserDTO userDTO) {
       User user = userRepository.findById(userno).orElseThrow();
-      user.setName(userDTO.getName());
+      user.setUsername(userDTO.getUsername());
       user.setEmail(userDTO.getEmail());
       userRepository.save(user);
   }

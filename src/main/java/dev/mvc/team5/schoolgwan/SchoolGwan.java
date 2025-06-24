@@ -47,7 +47,7 @@ public class SchoolGwan {
      * @param schoolno
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schoolno")
+    @JoinColumn(name = "schoolno", nullable = false)
     private School school;
 
    /**

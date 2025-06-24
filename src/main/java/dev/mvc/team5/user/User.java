@@ -15,8 +15,10 @@ import dev.mvc.team5.match.Match;
 import dev.mvc.team5.message.Message;
 import dev.mvc.team5.notification.Notification;
 import dev.mvc.team5.report.Report;
+import dev.mvc.team5.request.Request;
 import dev.mvc.team5.review.Review;
 import dev.mvc.team5.school.School;
+import dev.mvc.team5.talents.Talent;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,7 +51,7 @@ public class User {
 
     /** 학교 정보와 다대일 연관관계 (Lazy 로딩) */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school") // 외래키 컬럼명
+    @JoinColumn(name = "schoolno") // 외래키 컬럼명
     private School school;
 
     /** 사용자 아이디 (최대 30자) */
@@ -62,11 +64,11 @@ public class User {
 
     /** 이름 (최대 100자) */
     @Column(length = 100)
-    private String name;
+    private String username;
 
     /** 사용자 이름 (닉네임, 최대 50자) */
     @Column(length = 50)
-    private String username;
+    private String name;
 
     /** 이메일 (최대 100자) */
     @Column(length = 100)
@@ -160,6 +162,14 @@ public class User {
     /** 보낸 메시지 목록 - User가 메시지 송신자(sender)인 일대다 관계 */
     @OneToMany(mappedBy = "sender")
     private List<Message> messages = new ArrayList<>();
+    
+    /** 요청 - User가 리뷰 작성자(user)인 일대다 관계  */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Request> requests = new ArrayList<>();
+    
+    /** 게시물(Talent) - User가 작성자(user)인 일대다 관계  */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Talent> talents = new ArrayList<>();
     
     // --------------------
     // 생성자

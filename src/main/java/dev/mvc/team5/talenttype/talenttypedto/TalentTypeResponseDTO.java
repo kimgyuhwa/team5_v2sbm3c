@@ -6,8 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
 public class TalentTypeResponseDTO {
     private Long typeno;
     private String name;
+    
+    public TalentTypeResponseDTO(Long typeno, String name) {
+      this.typeno = typeno;
+      this.name = name;
+    }
 }
