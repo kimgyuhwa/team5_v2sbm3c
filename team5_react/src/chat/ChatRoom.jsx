@@ -4,8 +4,8 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import axios from "axios";
 
-const SOCKET_URL = "http://localhost:9093/ws-chat";
-const SESSION_API = "http://localhost:9093/user/session";
+const SOCKET_URL = "/ws-chat";
+const SESSION_API = "/user/session";
 
 const ChatRoom = ({ chatRoomno = 21 }) => {
   const [messages, setMessages] = useState([]);
@@ -14,26 +14,23 @@ const ChatRoom = ({ chatRoomno = 21 }) => {
   const stompClient = useRef(null);
 
   useEffect(() => {
-    axios.get(SESSION_API, { withCredentials: true }).then(res => {
-      if (res.data.sw) {
-        setUser({ userno: res.data.userno, username: res.data.username });
-      } else {
-        alert("로그인 필요");
-      }
-      
-    });
+  axios.get(SESSION_API, { withCredentials: true }).then(res => {
+    if (res.data.sw) {
+      const loginUser = { userno: res.data.userno, username: res.data.username };
+      setUser(loginUser);
 
-// **1. 기존 메시지 불러오기 API 호출 예시**
-axios.get(`http://localhost:9093/message/chatroom/${chatRoomno}`, { withCredentials: true })
-  .then(res => {
-    setMessages(res.data);
-  })
-  .catch(err => {
-    console.error("❌ 메시지 로딩 실패:", err);
+      // ✅ 세션 확인 후 메시지 가져오기
+      axios.get(`/message/chatroom/${chatRoomno}`, { withCredentials: true })
+        .then(res => {
+          setMessages(res.data);
+        })
+        .catch(err => {
+          console.error("❌ 메시지 로딩 실패:", err);
+        });
+    } else {
+      alert("로그인 필요");
+    }
   });
-
-
-
 
     const socket = new SockJS(SOCKET_URL);
     stompClient.current = new Client({
@@ -62,6 +59,7 @@ axios.get(`http://localhost:9093/message/chatroom/${chatRoomno}`, { withCredenti
     const message = {
       chatRoomno,
       senderno: user.userno,
+      userName: user.username,
       content: input
     };
     stompClient.current.publish({
