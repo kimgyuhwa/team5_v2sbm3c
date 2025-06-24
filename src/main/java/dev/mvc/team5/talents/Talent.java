@@ -62,21 +62,21 @@ public class Talent {
 	 */
 	@ManyToOne
 	@JsonBackReference
-	@JoinColumn(name = "type")
+	@JoinColumn(name = "typeno")
 	private TalentType type;
 
 	/**
 	 * 재능 카테고리 TalentCategory 엔티티와 다대일 관계
 	 */
 	@ManyToOne
-	@JoinColumn(name = "category")
+	@JoinColumn(name = "categoryno")
 	private TalentCategory category;
 
 	/**
 	 * 재능과 연관된 학교 정보 School 엔티티와 다대일 관계
 	 */
 	@ManyToOne
-	@JoinColumn(name = "school")
+	@JoinColumn(name = "schoolno")
 	private School school;
 
 	/**

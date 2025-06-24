@@ -29,9 +29,7 @@ public class TalentCateGrp {
     /** 카테고리 그룹 고유 번호 (기본키) */
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="talent_cateGrp_seq")
-
     @SequenceGenerator(name="talent_cateGrp_seq", sequenceName="talent_cateGrp_seq", allocationSize=1)
-
     private Long cateGrpno;
     
     /** 카테고리 그룹 이름 */

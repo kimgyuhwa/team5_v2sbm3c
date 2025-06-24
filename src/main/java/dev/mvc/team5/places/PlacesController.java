@@ -53,7 +53,7 @@ public class PlacesController {
     @PutMapping("/{placeno}")
     public ResponseEntity<Places> update(@PathVariable Long placeno,
                                          @RequestBody Places places) {
-        places.setPlace(placeno); // ID 설정
+        places.setPlaceno(placeno); // ID 설정
         Places updated = placesService.update(places);
         return ResponseEntity.ok(updated);
     }
