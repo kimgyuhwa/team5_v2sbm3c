@@ -36,13 +36,13 @@ public class Places {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "places_seq")
     @SequenceGenerator(name = "places_seq", sequenceName = "PLACES_SEQ", allocationSize = 1)
-    @Column(name = "place")
+    @Column(name = "placeno")
     private Long place;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
 
-    @JoinColumn(name = "schoolgwan", nullable = false)
+    @JoinColumn(name = "schoolgwanno", nullable = false)
     private SchoolGwan schoolGwan;
 
     
