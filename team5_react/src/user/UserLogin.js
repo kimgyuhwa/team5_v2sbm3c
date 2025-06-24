@@ -59,10 +59,28 @@ function UserLogin() {
       setPasswd(storedPasswd);
       setSavePasswd(true);
     }
+
+    // 로그인 세션 복원   이거해야  새로고침시에도 sw 저장됨 
+  fetch(`/user/session`, {
+    credentials: "include"
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.sw) {
+        setSw(true);      // 로그인 상태 복원
+        setUserno(data.userno);
+        sessionStorage.setItem('sw', 'true');
+        sessionStorage.setItem('userno', data.userno);
+      } else {
+        setSw(false);
+        setUserno(null);
+      }
+    })
+    .catch(err => console.error("세션 복원 오류:", err));
   }, []);
 
   const send = (event) => {
-    fetch(`http://${getIP()}:9093/user/login`, {
+    fetch(`/user/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -75,7 +93,7 @@ function UserLogin() {
         console.log('->', text);
         if (text.includes('성공')) {
           // 성공이면 세션에서 정보 가져옴
-          fetch(`http://${getIP()}:9093/user/session`)
+          fetch(`/user/session`)
             .then(res => res.json())
             .then(data => {
               console.log('session ->', data);
@@ -92,7 +110,7 @@ function UserLogin() {
   };
 
   const test = () => {
-    setId('testuser');
+    setId('admin');
     setPasswd('1234');
   };
 

@@ -64,11 +64,11 @@ public class User {
 
     /** 이름 (최대 100자) */
     @Column(length = 100)
-    private String name;
+    private String username;
 
     /** 사용자 이름 (닉네임, 최대 50자) */
     @Column(length = 50)
-    private String username;
+    private String name;
 
     /** 이메일 (최대 100자) */
     @Column(length = 100)

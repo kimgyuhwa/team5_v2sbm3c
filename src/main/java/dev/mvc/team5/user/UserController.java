@@ -1,7 +1,12 @@
 package dev.mvc.team5.user;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +30,21 @@ public class UserController {
         }
         return json.toString();
     }
+    /** 아이디 중복확인 */
+    @GetMapping("/checkId")
+    public ResponseEntity<Map<String, Object>> checkId(@RequestParam(name="userId", defaultValue = "") String userId) {
+        boolean isDuplicated = userService.checkID(userId);
+
+        Map<String, Object> result = new HashMap<>();
+        if (isDuplicated) {
+            result.put("sw", false);  // 중복이면 sw = false (사용 불가)
+            result.put("msg", "중복된 ID입니다.");
+        } else {
+            result.put("sw", true);   // 중복 아니면 sw = true (사용 가능)
+            result.put("msg", "사용 가능한 ID입니다.");
+        }
+        return ResponseEntity.ok(result);
+    }
 
     /** 로그인 */
     @PostMapping("/login")
@@ -34,7 +54,7 @@ public class UserController {
         if (success) {
             UserDTO loginUser = userService.getUserById(userDTO.getUserId());
             session.setAttribute("userno", loginUser.getUserno());
-            session.setAttribute("username", loginUser.getUsername()); // 닉네임
+            session.setAttribute("username", loginUser.getUsername()); // 이름
             session.setAttribute("schoolname", loginUser.getSchoolId());
 
             json.put("sw", true);

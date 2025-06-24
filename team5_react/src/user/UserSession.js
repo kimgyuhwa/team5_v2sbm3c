@@ -7,7 +7,7 @@ function UserSession() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://${getIP()}:9093/user/session`, {
+    fetch(`/user/session`, {
       method: 'GET',
       credentials: 'include',  // 세션 쿠키 포함
     })
