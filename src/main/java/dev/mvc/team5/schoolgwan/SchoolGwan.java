@@ -43,7 +43,7 @@ public class SchoolGwan {
 
 
     /**
-     * 학교테이블 학교번호
+     * 학교번호 학교정보 테이블 다
      * @param schoolno
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,4 +64,5 @@ public class SchoolGwan {
         this.school = school;
         this.schoolgwanname = schoolgwanname;
     }
+    
 }

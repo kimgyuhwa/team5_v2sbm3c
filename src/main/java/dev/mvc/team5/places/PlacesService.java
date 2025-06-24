@@ -17,31 +17,38 @@ public interface PlacesService {
      * @param places 등록할 Places 객체
      * @return 저장된 Places 객체
      */
-    Places create(Places places);
+		Places save(PlacesDTO dto); 
 
     /**
      * 특정 강의실 조회
      * @param placeno PK (장소 번호)
      * @return 해당 placeno에 대한 Places 객체 (Optional로 감쌈)
      */
-    Optional<Places> read(Long placeno);
+		Optional<Places> findById(Long placeId);
 
     /**
      * 전체 강의실 목록 조회
      * @return 모든 Places 리스트
      */
-    List<Places> listAll();
+		List<Places> findAll();
 
     /**
      * 강의실 정보 수정
      * @param places 수정할 객체
      * @return 수정된 Places 객체
      */
-    Places update(Places places);
+		Places update(Long placeId, PlacesDTO dto);
 
     /**
      * 강의실 삭제
      * @param placeno 삭제할 장소 번호
      */
-    void delete(Long placeno);
+		void delete(Long placeId); 
+		
+//		특정 강의실만 조회
+		List<Places> searchByPlacename(String keyword);
+		
+//		특정 학교관에 속한 강의실만 조회
+		List<Places> findBySchoolGwanNo(Long schoolgwanno);
+		
 }

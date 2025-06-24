@@ -1,7 +1,6 @@
 package dev.mvc.team5.places;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,56 +14,53 @@ public class PlacesController {
 
     private final PlacesService placesService;
 
-    /**
-     * 강의실 등록
-     * POST /places
-     */
-    @PostMapping("")
-    public ResponseEntity<Places> create(@RequestBody Places places) {
-        Places saved = placesService.create(places);
+    // 등록
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody PlacesDTO dto) {
+        Places saved = placesService.save(dto);
         return ResponseEntity.ok(saved);
     }
 
-    /**
-     * 특정 강의실 조회
-     * GET /places/{placeno}
-     */
-    @GetMapping("/{placeno}")
-    public ResponseEntity<Places> read(@PathVariable Long placeno) {
-        Optional<Places> placeOpt = placesService.read(placeno);
-        return placeOpt.map(ResponseEntity::ok)
-                       .orElse(ResponseEntity.notFound().build());
-    }
-
-    /**
-     * 전체 강의실 목록 조회
-     * GET /places
-     */
-    @GetMapping("")
+    // 전체 조회
+    @GetMapping
     public ResponseEntity<List<Places>> listAll() {
-        List<Places> placesList = placesService.listAll();
-        return ResponseEntity.ok(placesList);
+        return ResponseEntity.ok(placesService.findAll());
     }
 
-    /**
-     * 강의실 수정
-     * PUT /places/{placeno}
-     */
-    @PutMapping("/{placeno}")
-    public ResponseEntity<Places> update(@PathVariable Long placeno,
-                                         @RequestBody Places places) {
-        places.setPlaceno(placeno); // ID 설정
-        Places updated = placesService.update(places);
-        return ResponseEntity.ok(updated);
+    // 단건 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<?> read(@PathVariable Long id) {
+        return placesService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * 강의실 삭제
-     * DELETE /places/{placeno}
-     */
-    @DeleteMapping("/{placeno}")
-    public ResponseEntity<Void> delete(@PathVariable Long placeno) {
-        placesService.delete(placeno);
+
+
+    // 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PlacesDTO dto) {
+        return ResponseEntity.ok(placesService.update(id, dto));
+    }
+
+
+    // 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        placesService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    
+    // 키워드 검색 (예: placename에 특정 글자가 포함된 강의실 조회)
+    @GetMapping("/search")
+    public ResponseEntity<List<Places>> search(@RequestParam String keyword) {
+        return ResponseEntity.ok(placesService.searchByPlacename(keyword));
+    }
+
+    // 특정 학교관에 속한 강의실만 조회
+    @GetMapping("/schoolgwan/{schoolgwanno}")
+    public ResponseEntity<List<Places>> listBySchoolGwan(@PathVariable Long schoolgwanno) {
+        return ResponseEntity.ok(placesService.findBySchoolGwanNo(schoolgwanno));
+    }
+    
 }

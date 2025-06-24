@@ -1,0 +1,15 @@
+package dev.mvc.team5.reservations;
+
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+public class ReservationsRequestDTO {
+    private Long userno;
+    private Long placeno;
+    private LocalDateTime start_time;
+    private LocalDateTime end_time;
+    private String placesinfo;
+    private String status;
+}

@@ -37,7 +37,8 @@ public class Places {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "places_seq")
     @SequenceGenerator(name = "places_seq", sequenceName = "PLACES_SEQ", allocationSize = 1)
     @Column(name = "placeno")
-    private Long placeno;
+    private Long place;
+
 
 
     @ManyToOne(fetch = FetchType.LAZY)
