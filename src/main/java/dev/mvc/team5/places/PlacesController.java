@@ -36,24 +36,13 @@ public class PlacesController {
     }
 
 
+
     // 수정
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PlacesDTO dto) {
         return ResponseEntity.ok(placesService.update(id, dto));
-
     }
-//    /**
-//     * 강의실 수정
-//     * PUT /places/{placeno}
-//     */
-//    @PutMapping("/{placeno}")
-//    public ResponseEntity<Places> update(@PathVariable Long placeno,
-//                                         @RequestBody Places places) {
-//        places.setPlaceno(placeno); // ID 설정
-//        Places updated = placesService.update(places);
-//        return ResponseEntity.ok(updated);
-//>>>>>>> d84a898d99543eab75b87ee034a50c7cec714df6
-//    }
+
 
     // 삭제
     @DeleteMapping("/{id}")
