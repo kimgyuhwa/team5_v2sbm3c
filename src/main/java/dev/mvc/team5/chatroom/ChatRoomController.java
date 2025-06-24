@@ -41,4 +41,5 @@ public class ChatRoomController {
         ChatRoomMember member = chatRoomMemberService.enterChatRoom(chatRoom, user);
         return ResponseEntity.ok("입장 완료: memberNo = " + member.getChatRoomMemberno());
     }
+    
 }

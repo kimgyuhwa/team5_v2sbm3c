@@ -1,4 +1,6 @@
 package dev.mvc.team5.message;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +14,7 @@ import dev.mvc.team5.user.UserService; // 가정
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/messages")
+@RequestMapping("/message")
 @RequiredArgsConstructor
 public class MessageController {
 
@@ -44,12 +46,20 @@ public class MessageController {
             saved.getMessageno(),                       // 메시지 고유 번호
             saved.getChatRoom().getChatRoomno(),        // 채팅방 번호
             saved.getSender().getUserno(),              // 보낸 사용자 번호
+            saved.getSender().getUsername(),
             saved.getContent(),                         // 메시지 내용
             saved.getSentAt()                           // 보낸 시간
         );
 
         // 5. 응답 반환 (200 OK + 메시지 정보)
         return ResponseEntity.ok(response);
+    }
+    
+    // 채팅방 번호에 해당하는 메시지 리스트 반환
+    @GetMapping("/chatroom/{chatRoomno}")
+    public ResponseEntity<List<MessageResponseDTO>> getMessagesByChatRoom(@PathVariable(name="chatRoomno") Long chatRoomno) {
+        List<MessageResponseDTO> messages = messageService.findMessagesByChatRoomno(chatRoomno);
+        return ResponseEntity.ok(messages);
     }
 
 }

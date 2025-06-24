@@ -62,7 +62,7 @@ public class User {
     @Column(length = 255)
     private String password;
 
-    /** 이름 (최대 100자) */
+    /** 닉네임 (최대 100자) */
     @Column(length = 100)
     private String username;
 

@@ -21,7 +21,7 @@ public class RealtimeChatService {
     // WebSocket으로 들어온 메시지를 DB에 저장
     public Message saveMessage(RealtimeMessageDTO dto) {
         ChatRoom chatRoom = chatRoomService.findById(dto.getChatRoomno());
-        User sender = userService.findById(dto.getSenderId());
+        User sender = userService.findById(dto.getSenderno());
 
         Message message = new Message();
         message.setChatRoom(chatRoom);

@@ -8,7 +8,8 @@ function Menu() {
       <Link to="/">Home</Link> |{" "}
       <Link to="/user/login">Login</Link> |{" "}
       <Link to="/user/logout">Logout</Link> |{" "}
-      <Link to="/user/session">Session Info</Link>
+      <Link to="/user/session">Session Info</Link> |{" "}
+      <Link to="/chat">Chat</Link>
     </nav>
   );
 }
