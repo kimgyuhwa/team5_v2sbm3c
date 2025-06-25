@@ -21,7 +21,7 @@ public class Block {
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="block_seq")
     @SequenceGenerator(name="block_seq", sequenceName="BLOCK_SEQ", allocationSize=1)
-    private Integer blockno;
+    private Long blockno;
 
     @ManyToOne
     @JoinColumn(name = "blocker")

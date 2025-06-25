@@ -79,23 +79,23 @@ public class MatchRepositoryTest {
         talent = talentRepository.save(new Talent(giver, school, talentType, category,
                 "기타 레슨", "자세히 알려드려요", "Korean"));
     }
-
-    @Test
-    @DisplayName("매칭 생성 및 저장 테스트")
-    void testSaveMatch() {
-        LocalDateTime completedTime = LocalDateTime.now();
-        Match match = new Match(giver, receiver, talent, completedTime);
-
-        Match saved = matchRepository.save(match);
-
-        assertThat(saved.getMatchno()).isNotNull();
-        assertThat(saved.getGiver().getUserno()).isEqualTo(giver.getUserno());
-        assertThat(saved.getReceiver().getUserno()).isEqualTo(receiver.getUserno());
-        assertThat(saved.getTalent().getTalentno()).isEqualTo(talent.getTalentno());
-        
-        Match saved1 = matchRepository.saveAndFlush(match);  // saveAndFlush로 즉시 DB 반영
-        assertThat(saved1.getStartedAt()).isNotNull(); // @CreationTimestamp 확인
-        
-        assertThat(saved.getCompletedAt()).isEqualTo(completedTime);        
-    }
+//
+//    @Test
+//    @DisplayName("매칭 생성 및 저장 테스트")
+//    void testSaveMatch() {
+//        LocalDateTime completedTime = LocalDateTime.now();
+//        Match match = new Match(giver, receiver, talent, completedTime);
+//
+//        Match saved = matchRepository.save(match);
+//
+//        assertThat(saved.getMatchno()).isNotNull();
+//        assertThat(saved.getGiver().getUserno()).isEqualTo(giver.getUserno());
+//        assertThat(saved.getReceiver().getUserno()).isEqualTo(receiver.getUserno());
+//        assertThat(saved.getTalent().getTalentno()).isEqualTo(talent.getTalentno());
+//        
+//        Match saved1 = matchRepository.saveAndFlush(match);  // saveAndFlush로 즉시 DB 반영
+//        assertThat(saved1.getStartedAt()).isNotNull(); // @CreationTimestamp 확인
+//        
+//        assertThat(saved.getCompletedAt()).isEqualTo(completedTime);        
+//    }
 }

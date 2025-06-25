@@ -53,6 +53,20 @@ function UserRegister() {
     }
   };
 
+  //카카오 주소 검색
+  const handlePostcode = () => {
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        // 주소 선택 시
+        setForm({
+          ...form,
+          zipcode: data.zonecode,
+          address: data.roadAddress || data.jibunAddress,
+        });
+      },
+    }).open();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -87,8 +101,11 @@ function UserRegister() {
         <input name="name" placeholder="닉네임" value={form.name} onChange={handleChange} /><br />
         <input name="email" placeholder="이메일" value={form.email} onChange={handleChange} /><br />
         <input name="phone" placeholder="전화번호" value={form.phone} onChange={handleChange} /><br />
-        <input name="zipcode" placeholder="우편번호" value={form.zipcode} onChange={handleChange} /><br />
-        <input name="address" placeholder="주소" value={form.address} onChange={handleChange} /><br />
+        {/* 우편번호 API 영역 */}
+        <input name="zipcode" placeholder="우편번호" value={form.zipcode} readOnly />
+        <button type="button" onClick={handlePostcode} style={{ marginLeft: '10px' }}>주소 찾기</button><br />
+        <input name="address" placeholder="주소" value={form.address} readOnly /><br />
+        {/* 우편번호 API 영역 */}
         <input name="language" placeholder="언어" value={form.language} onChange={handleChange} /><br />
         <input name="location" placeholder="위치" value={form.location} onChange={handleChange} /><br />
         <textarea name="bio" placeholder="자기소개" value={form.bio} onChange={handleChange} /><br />

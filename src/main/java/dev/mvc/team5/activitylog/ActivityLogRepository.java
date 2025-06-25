@@ -1,10 +1,28 @@
 package dev.mvc.team5.activitylog;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import dev.mvc.team5.user.User;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> {
-  // 필요하다면 커스텀 쿼리 추가 가능
+  List<ActivityLog> findByUser_Userno(Long userno);
+
+  //최신순으로 페이지네이션 (Pageable로 개수 제한)
+  Page<ActivityLog> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+  //특정 유저의 로그를 최신순으로 페이지네이션
+  Page<ActivityLog> findByUserUsernoOrderByCreatedAtDesc(Long userno, Pageable pageable);
+  
+  List<ActivityLog> findByAction(String action);
+
+  List<ActivityLog> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }
