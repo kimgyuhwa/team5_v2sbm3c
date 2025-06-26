@@ -1,9 +1,13 @@
 package dev.mvc.team5.message;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import dev.mvc.team5.chatroom.ChatRoom;
 import dev.mvc.team5.message.Message;
 import dev.mvc.team5.message.MessageRepository;
+import dev.mvc.team5.message.messagedto.MessageResponseDTO;
 import dev.mvc.team5.user.User;
 
 import lombok.RequiredArgsConstructor;
@@ -19,5 +23,18 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    // 메시지 조회 등 필요하면 추가
+    // 채팅방 번호로 메시지 목록 조회 (시간 순서 오름차순)
+    public List<MessageResponseDTO> findMessagesByChatRoomno(Long chatRoomno) {
+//      List<Message> messages = messageRepository.findByChatRoom_ChatRoomnoOrderBySentAtAsc(chatRoomno);
+      List<Message> messages = messageRepository.findByChatRoomWithSender(chatRoomno);
+      return messages.stream()
+                     .map(m -> new MessageResponseDTO(
+                         m.getMessageno(),
+                         m.getChatRoom().getChatRoomno(),
+                         m.getSender().getUserno(),
+                         m.getSender().getUsername(),
+                         m.getContent(),
+                         m.getSentAt()))
+                     .collect(Collectors.toList());
+  }
 }

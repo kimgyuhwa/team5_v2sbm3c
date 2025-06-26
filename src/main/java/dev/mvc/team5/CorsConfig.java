@@ -9,9 +9,10 @@ public class CorsConfig implements WebMvcConfigurer {
   @Override
   public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**") // 모든 경로에 대해
-      .allowedOrigins("http://192.168.12.141:3000") // 프론트 React 주소
+      .allowedOriginPatterns("*")    // 모든 origin 허용
       .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-      .allowCredentials(true)
-      .maxAge(3600);
+      .allowedHeaders("*")   // 모든 요청 헤더 허용
+      .allowCredentials(true)   // 인증 쿠키/세션 허용
+      .maxAge(3600);   //캐시 시간 1시간
   }
 }

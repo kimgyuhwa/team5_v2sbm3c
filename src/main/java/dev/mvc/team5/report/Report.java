@@ -26,7 +26,7 @@ public class Report {
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="report_seq")
     @SequenceGenerator(name="report_seq", sequenceName="REPORT_SEQ", allocationSize=1)
-    private Integer reportno;
+    private Long reportno;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter")

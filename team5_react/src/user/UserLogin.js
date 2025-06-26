@@ -110,7 +110,7 @@ function UserLogin() {
   };
 
   const test = () => {
-    setId('admin');
+    setId('kimgyuhwa123');
     setPasswd('1234');
   };
 
@@ -175,6 +175,7 @@ function UserLogin() {
             <div style={{ textAlign: 'center' }}>
               <button id='btnSend' type="submit" className="btn btn-primary" style={{ marginRight: '10px' }}>로그인</button>
               <button id='btnTest' type="button" className="btn btn-primary" onClick={test}>테스트 계정</button>
+              <Link to="/user/findId">아이디 찾기</Link>
             </div>
           </form>
         </>

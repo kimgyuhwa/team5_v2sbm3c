@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import dev.mvc.team5.activitylog.ActivityLog;
 import dev.mvc.team5.block.Block;
 import dev.mvc.team5.chatroommember.ChatRoomMember;
@@ -62,7 +65,7 @@ public class User {
     @Column(length = 255)
     private String password;
 
-    /** 이름 (최대 100자) */
+    /** 닉네임 (최대 100자) */
     @Column(length = 100)
     private String username;
 
@@ -113,6 +116,7 @@ public class User {
     
     /** 활동 로그 - User가 주체인 일대다 관계 */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ActivityLog> activityLogs = new ArrayList<>();
     
     /** 로그인 내역 - User가 주체인 일대다 관계 */
@@ -156,11 +160,11 @@ public class User {
     private List<Review> receivedReviews = new ArrayList<>();
     
     /** 채팅방 멤버 목록 - User가 속한 채팅방과 일대다 관계 */
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
     /** 보낸 메시지 목록 - User가 메시지 송신자(sender)인 일대다 관계 */
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
     
     /** 요청 - User가 리뷰 작성자(user)인 일대다 관계  */

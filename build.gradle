@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    // --- Spring Boot Core ---
+  // --- Spring Boot Core ---
     implementation 'org.springframework.boot:spring-boot-starter-web'             // Web MVC + REST, 톰캣 내장
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'         // JPA (Hibernate) + Spring Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'        // Thymeleaf 템플릿 엔진

@@ -1,6 +1,7 @@
 package dev.mvc.team5.user;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,17 @@ public class UserService {
 
     @Autowired
     private Security security;
+    
+    //엔티티 > DTO변환
+    private UserDTO toDTO(User user) {
+      UserDTO dto = new UserDTO();
+      dto.setUserno(user.getUserno());
+      dto.setUserId(user.getUserId());
+      dto.setUsername(user.getUsername());
+      dto.setEmail(user.getEmail());
+      // 필요한 필드 추가
+      return dto;
+  }
 
  // 아이디 중복 확인
     public boolean checkID(String userId) {
@@ -62,7 +74,7 @@ public class UserService {
               session.setAttribute("userno", user.getUserno());   // userno 저장
               session.setAttribute("username", user.getUsername());   // username 저장
               session.setAttribute("userId", user.getUserId());
-              session.setAttribute("schoolname", user.getSchool());
+             // session.setAttribute("schoolname", user.getSchool());
               session.setAttribute("role", user.getRole());
               return true;
           }
@@ -77,9 +89,17 @@ public class UserService {
       UserDTO dto = new UserDTO();
       dto.setUserno(user.getUserno());   // User 엔티티에 userno 필드가 있어야 합니다.
       dto.setUserId(user.getUserId());
+      dto.setName(user.getName());
       dto.setUsername(user.getUsername());
       dto.setEmail(user.getEmail());
-      // 필요하다면 schoolId 등도 추가
+      dto.setPhone(user.getPhone());
+      dto.setZipcode(user.getZipcode());
+      dto.setAddress(user.getAddress());
+      dto.setLanguage(user.getLanguage());
+      dto.setLocation(user.getLocation());
+      dto.setBio(user.getBio());
+      dto.setRole(user.getRole());
+      //dto.setSchoolId(user.getSchool() != null ? user.getSchool().getId() : null);
       return dto;
   }
     // 로그아웃
@@ -104,16 +124,38 @@ public class UserService {
         user.setPassword(security.aesEncode(newPassword));
         userRepository.save(user);
     }
+    
+    // 사용자 정보 불러오기
+    public User findByIdOrThrow(Long userno) {
+      return userRepository.findById(userno)
+                           .orElseThrow(() -> new RuntimeException("해당 사용자가 존재하지 않습니다."));
+    }
+    
+    
     // 회원정보 업데이트
     public void updateProfile(Long userno, UserDTO userDTO) {
       User user = userRepository.findById(userno).orElseThrow();
-      user.setUsername(userDTO.getUsername());
+      user.setUsername(userDTO.getUsername());  // 이름
+      user.setName(userDTO.getName());          // 닉네임
       user.setEmail(userDTO.getEmail());
+      user.setPhone(userDTO.getPhone());
+      user.setZipcode(userDTO.getZipcode());
+      user.setAddress(userDTO.getAddress());
+      user.setLanguage(userDTO.getLanguage());
+      user.setLocation(userDTO.getLocation());
+      user.setBio(userDTO.getBio());
+      user.setRole(userDTO.getRole());
       userRepository.save(user);
   }
     // 회원 탈퇴
     public void delete(Long userno) {
       userRepository.deleteById(userno);
+  }
+    
+    //아이디 찾기
+    public UserDTO findByUsernameAndEmail(String username, String email) {
+      Optional<User> userOpt = userRepository.findByUsernameAndEmail(username, email);
+      return userOpt.map(this::toDTO).orElse(null);
   }
     
     }

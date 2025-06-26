@@ -90,7 +90,7 @@ public class TalentTypeController {
    */
   @GetMapping("/list")
   public ResponseEntity<Page<TalentTypeListDTO>> listTypes(
-      @RequestParam(defaultValue = "") String keyword,
+      @RequestParam(name="keyword", defaultValue = "") String keyword,
       @PageableDefault(size = 10, sort = "typeno", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {

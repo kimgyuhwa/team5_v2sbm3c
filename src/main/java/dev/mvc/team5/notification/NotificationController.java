@@ -1,37 +1,44 @@
 package dev.mvc.team5.notification;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
- // Controller 테스트 안해봄
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/notifications")
-@RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    @Autowired
+    private NotificationService service;
+
+    @GetMapping
+    public List<NotificationDTO> getAll() {
+        return service.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
     @PostMapping
-    public ResponseEntity<Notification> create(@RequestBody NotificationDTO dto) {
-        return ResponseEntity.ok(notificationService.create(dto));
+    public NotificationDTO create(@RequestBody NotificationDTO dto) {
+        return toDTO(service.save(dto));
     }
 
-    @GetMapping("/user/{userno}")
-    public ResponseEntity<List<NotificationResponseDTO>> getByUser(@PathVariable Long userno) {
-        return ResponseEntity.ok(notificationService.getByUser(userno));
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 
-    @PutMapping("/{notificationno}/read")
-    public ResponseEntity<?> markAsRead(@PathVariable Integer notificationno) {
-        notificationService.markAsRead(notificationno);
-        return ResponseEntity.ok().build();
-    }
+    private NotificationDTO toDTO(Notification n) {
+        NotificationDTO dto = new NotificationDTO();
+        dto.setNotificationno(n.getNotificationno());
+        dto.setUserno(n.getUser().getUserno());
+        dto.setType(n.getType());
+        dto.setMessage(n.getMessage());
+        dto.setRead(n.getRead());
+        dto.setCreatedAt(n.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        return dto;
 
-    @DeleteMapping("/{notificationno}")
-    public ResponseEntity<?> delete(@PathVariable Integer notificationno) {
-        notificationService.delete(notificationno);
-        return ResponseEntity.noContent().build();
     }
 }

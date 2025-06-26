@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import dev.mvc.team5.chatroom.ChatRoom;
 import dev.mvc.team5.user.User;
 import jakarta.persistence.Column;
@@ -32,10 +34,12 @@ public class Message {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatRoomno")
+    @JsonIgnore
     private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno")
+    @JsonIgnore
     private User sender;
 
     private String content;

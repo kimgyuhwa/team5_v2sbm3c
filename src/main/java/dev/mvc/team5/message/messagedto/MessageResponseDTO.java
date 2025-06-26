@@ -12,7 +12,8 @@ import lombok.Setter;
 public class MessageResponseDTO {
     private Long messageno;
     private Long chatRoomno;
-    private Long userno;
+    private Long senderno;
+    private String userName;
     private String content;
     private LocalDateTime sentAt;
 }
