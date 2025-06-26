@@ -13,4 +13,7 @@ public interface TalentCateGrpRepository extends JpaRepository<TalentCateGrp, Lo
   //name에 keyword가 포함된 결과만 페이징 + 정렬해서 가져옴
   Page<TalentCateGrp> findByNameContaining(String keyword, Pageable pageable);
   
+  // name으로 존재 여부 확인
+  boolean existsByName(String name);  
+  
 }

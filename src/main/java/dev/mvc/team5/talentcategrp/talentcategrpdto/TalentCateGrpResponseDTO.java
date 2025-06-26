@@ -8,11 +8,11 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 public class TalentCateGrpResponseDTO {
-    private Long cateGrpNo;
+    private Long cateGrpno;
     private String name;
     
     public TalentCateGrpResponseDTO(Long grpno, String name) {
-      this.cateGrpNo = grpno;
+      this.cateGrpno = grpno;
       this.name = name;
     }
 }

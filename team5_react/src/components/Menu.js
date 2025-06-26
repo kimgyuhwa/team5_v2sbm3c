@@ -9,7 +9,9 @@ function Menu() {
       <Link to="/user/login">Login</Link> |{" "}
       <Link to="/user/logout">Logout</Link> |{" "}
       <Link to="/user/session">Session Info</Link> |{" "}
-      <Link to="/chat">Chat</Link>
+      <Link to="/chat">Chat</Link> |{" "}
+      <Link to="/talent/categrp">CateGrp(대분류)</Link> |{" "}
+      <Link to="/talent/category">Category(소분류)</Link>
     </nav>
   );
 }

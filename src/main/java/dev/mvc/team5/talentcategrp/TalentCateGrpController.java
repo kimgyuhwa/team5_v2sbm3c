@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import dev.mvc.team5.talentcategory.TalentCategoryRepository;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpCreateDTO;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpListDTO;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpResponseDTO;
@@ -24,13 +25,20 @@ import dev.mvc.team5.talenttype.talenttypedto.TalentTypeCreateDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeListDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeResponseDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeUpdateDTO;
+import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/talent_cate_grp")
 public class TalentCateGrpController {
 
   @Autowired
-  TalentCateGrpService service;
+  private TalentCateGrpService service;
+  
+  @Autowired
+  private TalentCategoryRepository cateRepository;
+  
+  @Autowired
+  private TalentCateGrpRepository grpRepository;
   
   
   public TalentCateGrpController() {
@@ -68,17 +76,36 @@ public class TalentCateGrpController {
       return ResponseEntity.ok(updateDto);
   }
   
-  /**
-   * 주어진 grpno를 가진 TalentCateGrp 데이터를 삭제하는 컨트롤러 메서드
-   *
-   * @param grpno 삭제할 TalentCateGrp의 고유 번호 (경로 변수로 전달됨)
-   * @return 삭제 성공 메시지를 포함한 HTTP 200 응답
-   */
-  @DeleteMapping("/delete/{grpno}")
-  public ResponseEntity<String> deleteCateGrp(@PathVariable(name="grpno") Long grpno) {
-      service.delete(grpno); // 서비스에서 삭제 처리
-      return ResponseEntity.ok("삭제 성공"); // 응답 반환
+//  /**
+//   * 주어진 grpno를 가진 TalentCateGrp 데이터를 삭제하는 컨트롤러 메서드
+//   *
+//   * @param grpno 삭제할 TalentCateGrp의 고유 번호 (경로 변수로 전달됨)
+//   * @return 삭제 성공 메시지를 포함한 HTTP 200 응답
+//   */
+//  @DeleteMapping("/delete/{grpno}")
+//  public ResponseEntity<String> deleteCateGrp(@PathVariable(name="grpno") Long grpno) {
+//      service.delete(grpno); // 서비스에서 삭제 처리
+//      return ResponseEntity.ok("삭제 성공"); // 응답 반환
+//  }
+  
+  //TalentCateGrpController.java  
+  @GetMapping("/check-deletable/{cateGrpno}")
+  public ResponseEntity<Integer> checkDeletable(@PathVariable(name="cateGrpno") Long cateGrpno) {
+     int count = cateRepository.countByCateGrpCateGrpno(cateGrpno);
+     return ResponseEntity.ok(count); // 프론트에서 자식 개수 받아서 판단
   }
+  
+  @DeleteMapping("/delete/{cateGrpno}")
+  public ResponseEntity<String> deleteCateGrp(@PathVariable(name="cateGrpno") Long cateGrpno) {
+    //  1. 자식 먼저 삭제
+    int deletedCount = cateRepository.deleteByCateGrpCateGrpno(cateGrpno);
+    // 2. 부모 삭제
+    grpRepository.deleteById(cateGrpno);
+
+    return ResponseEntity.ok("대분류 및 소분류 " + deletedCount + "개 삭제 완료");
+  }
+
+
   
   
   /**
@@ -91,8 +118,8 @@ public class TalentCateGrpController {
    */
   @GetMapping("/list")
   public ResponseEntity<Page<TalentCateGrpListDTO>> listTypes(
-      @RequestParam(defaultValue = "") String keyword,
-      @PageableDefault(size = 10, sort = "grpno", direction = Sort.Direction.DESC)
+      @RequestParam(name = "keyword", defaultValue = "") String keyword,
+      @PageableDefault(size = 10, sort = "cateGrpno", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
       Page<TalentCateGrpListDTO> list = service.list(keyword, pageable);

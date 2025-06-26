@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import dev.mvc.team5.talentcategory.TalentCategoryRepository;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpCreateDTO;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpListDTO;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpResponseDTO;
@@ -17,12 +18,16 @@ import dev.mvc.team5.talenttype.talenttypedto.TalentTypeCreateDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeListDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeResponseDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeUpdateDTO;
+import jakarta.transaction.Transactional;
 
 @Service
 public class TalentCateGrpService {
 
   @Autowired
-  TalentCateGrpRepository grpRepository;
+  private TalentCateGrpRepository grpRepository;
+  
+  @Autowired
+  private TalentCategoryRepository cateRepository;
   
   /**
    * TalentCateGrp 엔티티를 TalentCateGrpResponseDTO로 변환하는 헬퍼 메서드
@@ -42,8 +47,11 @@ public class TalentCateGrpService {
    * @return 저장된 엔티티를 응답용 DTO로 변환하여 반환
    */
   public TalentCateGrpResponseDTO save(TalentCateGrpCreateDTO dto) {
+    if (grpRepository.existsByName(dto.getName())) {
+      throw new IllegalArgumentException("이미 존재하는 카테고리입니다.");
+  }
     TalentCateGrp grp = dto.toEntity(); // DTO를 엔티티로 변환
-    TalentCateGrp saved = grpRepository.save(grp); // 변환된 엔티티를 DB에 저장
+    TalentCateGrp saved = grpRepository.save(grp); // 변환된 엔티티를 DB에 저장   
     
     return toCateGrpResponseDTO(saved); // 저장된 엔티티를 응답 DTO로 변환하여 반환
   }
@@ -57,7 +65,7 @@ public class TalentCateGrpService {
    */
   public TalentCateGrpResponseDTO update(TalentCateGrpUpdateDTO dto) {
     // typeno로 기존 데이터 조회
-    TalentCateGrp existing = grpRepository.findById(dto.getCateGrpNo())
+    TalentCateGrp existing = grpRepository.findById(dto.getCateGrpno())
                                .orElseThrow(() -> new RuntimeException("해당 타입이 존재하지 않습니다."));
 
     // 변경할 값만 업데이트
@@ -78,15 +86,18 @@ public class TalentCateGrpService {
    * @param grpno 삭제할 TalentCateGrp의 고유 번호
    * @throws RuntimeException 삭제 대상이 존재하지 않을 경우 예외 발생
    */
+  @Transactional
   public void delete(Long grpno) {
       // 1) 해당 grpno가 DB에 존재하는지 확인 (선택 사항)
       boolean exists = grpRepository.existsById(grpno);
       if (!exists) {
           throw new RuntimeException("삭제할 타입이 존재하지 않습니다.");
-      }
-
-      // 2) 삭제 수행
+      }      
+      // 2) 자식 소분류부터 모두 삭제
+      cateRepository.deleteByCateGrpCateGrpno(grpno);
+      // 3) 부모 대분류 삭제
       grpRepository.deleteById(grpno);
+      
   }
   
   public List<TalentCateGrpListDTO> list() {
