@@ -37,6 +37,13 @@ public class UserService {
         return userRepository.findByUserId(userId) != null;
     }
 
+     // userno로 사용자 찾기
+    public User findById(Long userno) {
+      return userRepository.findById(userno)
+          .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+  }
+
+
     // 회원가입
     public void create(UserDTO userDTO) {
         User user = new User();
@@ -67,7 +74,7 @@ public class UserService {
               session.setAttribute("userno", user.getUserno());   // userno 저장
               session.setAttribute("username", user.getUsername());   // username 저장
               session.setAttribute("userId", user.getUserId());
-              session.setAttribute("schoolname", user.getSchool());
+             // session.setAttribute("schoolname", user.getSchool());
               session.setAttribute("role", user.getRole());
               return true;
           }

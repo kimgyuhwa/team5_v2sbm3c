@@ -51,6 +51,7 @@ public class School {
 
   }
     
+    
     /**
      * 생성자
      * @param schoolname

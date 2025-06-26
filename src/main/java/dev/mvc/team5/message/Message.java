@@ -2,8 +2,13 @@ package dev.mvc.team5.message;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import dev.mvc.team5.chatroom.ChatRoom;
 import dev.mvc.team5.user.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,25 +24,28 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "messages")
+@Table(name = "message")
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "messages_seq")
-    @SequenceGenerator(name = "messages_seq", sequenceName = "MESSAGES_SEQ", allocationSize = 1)
-   
-    private Long messagesno;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message_seq")
+    @SequenceGenerator(name = "message_seq", sequenceName = "MESSAGES_SEQ", allocationSize = 1)   
+    private Long messageno;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatRoom")
+    @JoinColumn(name = "chatRoomno")
+    @JsonIgnore
     private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno")
+    @JsonIgnore
     private User sender;
 
     private String content;
 
+    @CreationTimestamp
+    @Column(name="sent_at")
     private LocalDateTime sentAt;
-// zz
+
 }

@@ -10,6 +10,7 @@ import UserSession from './user/UserSession';
 import UserRegister from './user/UserRegister';
 import UserProfile from './user/UserProfile';
 import FindUserId from './user/FindUserId';
+import ChatRoom from './chat/ChatRoom';
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
           <Route path="/user/register" element={<UserRegister />} />  
           <Route path="/user/profile" element={<UserProfile />} />  
           <Route path="/user/findId" element={<FindUserId />} /> 
+          <Route path="/chat" element={<ChatRoom />} /> 
+
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>
