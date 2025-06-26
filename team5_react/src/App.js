@@ -10,8 +10,9 @@ import UserSession from './user/UserSession';
 import UserRegister from './user/UserRegister';
 import UserProfile from './user/UserProfile';
 import ChatRoom from './chat/ChatRoom';
-import TalentCateGrp from './talent/categrp/TalentCateCrp';
+import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCategory from './talent/category/TalentCategory';
+import TalentType from './talent/type/TalentType';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           <Route path="/chat" element={<ChatRoom />} /> 
           <Route path="/talent/categrp" element={<TalentCateGrp />} /> 
           <Route path="/talent/category" element={<TalentCategory />} /> 
+          <Route path="/talent/type" element={<TalentType />} /> 
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

@@ -6,25 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import dev.mvc.team5.talentcategory.TalentCategoryRepository;
-import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpCreateDTO;
-import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpListDTO;
-import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpResponseDTO;
-import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpUpdateDTO;
-import dev.mvc.team5.talenttype.talenttypedto.TalentTypeCreateDTO;
-import dev.mvc.team5.talenttype.talenttypedto.TalentTypeListDTO;
-import dev.mvc.team5.talenttype.talenttypedto.TalentTypeResponseDTO;
-import dev.mvc.team5.talenttype.talenttypedto.TalentTypeUpdateDTO;
+import dev.mvc.team5.talentcategrp.talentcategrpdto.*;
 import jakarta.transaction.Transactional;
 
 @RestController
@@ -40,90 +25,82 @@ public class TalentCateGrpController {
   @Autowired
   private TalentCateGrpRepository grpRepository;
   
-  
   public TalentCateGrpController() {
-    // System.out.println("-> TalentCateGrpController created.");
+    // 생성자 - 필요시 로깅 추가 가능
   }
   
   /**
-   * 카테고리 대분류 등록
+   * 대분류 카테고리 등록
    * 
-   * grpno가 없는 상태로 전달되면 새로운 데이터로 인식되어 INSERT 쿼리가 실행됩니다.
-   *
-   * @param entity 등록할 TalentCateGrp 객체 (요청 본문에 포함됨)
-   * @return 등록된 TalentCateGrp 객체를 포함한 HTTP 200 응답
+   * grpno가 없으면 신규 등록으로 처리됩니다.
+   * 
+   * @param dto 등록할 대분류 DTO
+   * @return 등록된 대분류 정보를 담은 응답
    */
-  @PostMapping(path="/save")
+  @PostMapping("/save")
   public ResponseEntity<TalentCateGrpResponseDTO> createCateGrp(@RequestBody TalentCateGrpCreateDTO dto) {
-      // System.out.println("-> 카테고리 대분류 추가: " + entity.getName());
     TalentCateGrpResponseDTO savedDto = service.save(dto);
-      return ResponseEntity.ok(savedDto);
+    return ResponseEntity.ok(savedDto);
   }
 
   /**
-   * 카테고리 타입 수정
+   * 대분류 카테고리 수정
    * 
-   * grpno가 포함된 상태로 전달되면 기존 데이터로 인식되어 UPDATE 쿼리가 실행됩니다.
-   *
-   * @param entity 수정할 TalentCateGrp 객체 (요청 본문에 포함됨)
-   * @return 수정된 TalentCateGrp 객체를 포함한 HTTP 200 응답
+   * grpno가 있으면 해당 데이터 수정으로 처리됩니다.
+   * 
+   * @param dto 수정할 대분류 DTO
+   * @return 수정된 대분류 정보를 담은 응답
    */
   @PutMapping("/update")
   public ResponseEntity<TalentCateGrpResponseDTO> updateType(@RequestBody TalentCateGrpUpdateDTO dto) {
-      // System.out.println("-> 카테고리 대분류 수정: " + entity.getName());
-
     TalentCateGrpResponseDTO updateDto = service.update(dto);
-      return ResponseEntity.ok(updateDto);
-  }
-  
-//  /**
-//   * 주어진 grpno를 가진 TalentCateGrp 데이터를 삭제하는 컨트롤러 메서드
-//   *
-//   * @param grpno 삭제할 TalentCateGrp의 고유 번호 (경로 변수로 전달됨)
-//   * @return 삭제 성공 메시지를 포함한 HTTP 200 응답
-//   */
-//  @DeleteMapping("/delete/{grpno}")
-//  public ResponseEntity<String> deleteCateGrp(@PathVariable(name="grpno") Long grpno) {
-//      service.delete(grpno); // 서비스에서 삭제 처리
-//      return ResponseEntity.ok("삭제 성공"); // 응답 반환
-//  }
-  
-  //TalentCateGrpController.java  
+    return ResponseEntity.ok(updateDto);
+  }  
+
+  /**
+   * 해당 대분류에 속한 소분류 개수 조회
+   * 
+   * @param cateGrpno 대분류 번호
+   * @return 해당 대분류에 속한 소분류 개수
+   */
   @GetMapping("/check-deletable/{cateGrpno}")
   public ResponseEntity<Integer> checkDeletable(@PathVariable(name="cateGrpno") Long cateGrpno) {
-     int count = cateRepository.countByCateGrpCateGrpno(cateGrpno);
-     return ResponseEntity.ok(count); // 프론트에서 자식 개수 받아서 판단
+    int count = cateRepository.countByCateGrpCateGrpno(cateGrpno);
+    return ResponseEntity.ok(count);
   }
   
+  /**
+   * 대분류 및 해당하는 소분류 삭제
+   * 
+   * 1. 해당 대분류에 속한 소분류 먼저 삭제
+   * 2. 대분류 삭제
+   * 
+   * @param cateGrpno 대분류 번호
+   * @return 삭제 결과 메시지
+   */
   @DeleteMapping("/delete/{cateGrpno}")
   public ResponseEntity<String> deleteCateGrp(@PathVariable(name="cateGrpno") Long cateGrpno) {
-    //  1. 자식 먼저 삭제
     int deletedCount = cateRepository.deleteByCateGrpCateGrpno(cateGrpno);
-    // 2. 부모 삭제
     grpRepository.deleteById(cateGrpno);
-
     return ResponseEntity.ok("대분류 및 소분류 " + deletedCount + "개 삭제 완료");
   }
 
-
-  
-  
   /**
-   * 전체 목록 조회 (검색 + 정렬 + 페이징 처리)
+   * 대분류 목록 조회 (검색, 페이징, 정렬 포함)
    * 
-   * 기본 정렬은 grpno 내림차순 (최근순)
+   * 기본 정렬: cateGrpno 내림차순
    * 
    * @param keyword 검색 키워드 (기본: "")
-   * @param pageable 페이지/정렬 정보 (기본: size=10, grpno desc)
+   * @param pageable 페이징 및 정렬 정보 (기본: size=10, cateGrpno desc)
+   * @return 페이징된 대분류 목록 DTO 페이지
    */
   @GetMapping("/list")
   public ResponseEntity<Page<TalentCateGrpListDTO>> listTypes(
       @RequestParam(name = "keyword", defaultValue = "") String keyword,
-      @PageableDefault(size = 10, sort = "cateGrpno", direction = Sort.Direction.DESC)
-      Pageable pageable
-  ) {
-      Page<TalentCateGrpListDTO> list = service.list(keyword, pageable);
-      return ResponseEntity.ok(list);
+      @PageableDefault(size = 10, sort = "cateGrpno", direction = Sort.Direction.DESC) Pageable pageable) {
+    
+    Page<TalentCateGrpListDTO> list = service.list(keyword, pageable);
+    return ResponseEntity.ok(list);
   }
   
 }

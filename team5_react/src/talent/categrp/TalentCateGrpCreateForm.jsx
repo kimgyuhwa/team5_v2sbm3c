@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const TalentCateGrpCreateForm = () => {
+const TalentCateGrpCreateForm = ({onCreated}) => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
 
@@ -15,6 +15,7 @@ const TalentCateGrpCreateForm = () => {
       const response = await axios.post('/talent_cate_grp/save', dto);
       setMessage(`등록 성공: ${response.data.name}`);
       setName('');
+      if (onCreated) onCreated();
     } catch (error) {
       console.error('등록 실패', error);
       setMessage('등록 중 오류가 발생했습니다.');
