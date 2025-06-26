@@ -118,9 +118,9 @@ public class UserController {
             result.put("sw", false);
             result.put("msg", "로그인 상태가 아닙니다.");
         } else {
-            User user = userService.findByIdOrThrow(userno);
-            result.put("sw", true);
-            result.put("user", user);  // 엔티티 통째로 리턴 → 자동 JSON 변환됨
+          UserDTO userDTO = userService.getUserByNo(userno);
+          result.put("sw", true);
+          result.put("user", userDTO); //  DTO 사용 → 직렬화 안전
         }
         return result;
     }

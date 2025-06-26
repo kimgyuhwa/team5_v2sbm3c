@@ -20,9 +20,12 @@ public class RealtimeChatService {
 
     // WebSocket으로 들어온 메시지를 DB에 저장
     public Message saveMessage(RealtimeMessageDTO dto) {
-      if (dto.getChatRoomno() == null || dto.getSenderno() == null) {
-        throw new IllegalArgumentException("ChatRoomno 또는 Senderno가 null입니다.");
+      if (dto.getChatRoomno() == null) {
+        throw new IllegalArgumentException("ChatRoomno가 null입니다.");
+    }else if (dto.getSenderno() == null) {
+      throw new IllegalArgumentException("Senderno가 null입니다.");
     }
+      
         ChatRoom chatRoom = chatRoomService.findById(dto.getChatRoomno());
         User sender = userService.findById(dto.getSenderno());
         if (chatRoom == null || sender == null) {

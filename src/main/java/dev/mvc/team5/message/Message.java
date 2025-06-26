@@ -39,7 +39,6 @@ public class Message {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userno")
-    @JsonIgnore
     private User sender;
 
     private String content;

@@ -42,7 +42,25 @@ public class UserService {
       return userRepository.findById(userno)
           .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
   }
+    public UserDTO getUserByNo(Long userno) {
+      User user = userRepository.findById(userno).orElse(null);
+      if (user == null) return null;
 
+      UserDTO dto = new UserDTO();
+      dto.setUserno(user.getUserno());
+      dto.setUserId(user.getUserId());
+      dto.setName(user.getName());
+      dto.setUsername(user.getUsername());
+      dto.setEmail(user.getEmail());
+      dto.setPhone(user.getPhone());
+      dto.setZipcode(user.getZipcode());
+      dto.setAddress(user.getAddress());
+      dto.setLanguage(user.getLanguage());
+      dto.setLocation(user.getLocation());
+      dto.setBio(user.getBio());
+      dto.setRole(user.getRole());
+      return dto;
+  }
 
     // 회원가입
     public void create(UserDTO userDTO) {

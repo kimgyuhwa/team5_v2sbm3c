@@ -161,10 +161,12 @@ public class User {
     
     /** 채팅방 멤버 목록 - User가 속한 채팅방과 일대다 관계 */
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
     /** 보낸 메시지 목록 - User가 메시지 송신자(sender)인 일대다 관계 */
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Message> messages = new ArrayList<>();
     
     /** 요청 - User가 리뷰 작성자(user)인 일대다 관계  */
