@@ -1,5 +1,6 @@
 package dev.mvc.team5.notification;
 
+
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,4 +41,5 @@ public class NotificationService {
     public void delete(Long id) {
         repo.deleteById(id);
     }
+
 }

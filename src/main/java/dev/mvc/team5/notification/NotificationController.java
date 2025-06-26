@@ -1,5 +1,6 @@
 package dev.mvc.team5.notification;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +39,6 @@ public class NotificationController {
         dto.setRead(n.getRead());
         dto.setCreatedAt(n.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         return dto;
+
     }
 }
