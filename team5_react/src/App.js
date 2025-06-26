@@ -11,6 +11,9 @@ import UserRegister from './user/UserRegister';
 import UserProfile from './user/UserProfile';
 import FindUserId from './user/FindUserId';
 import ChatRoom from './chat/ChatRoom';
+import TalentCateGrp from './talent/categrp/TalentCateGrp';
+import TalentCategory from './talent/category/TalentCategory';
+import TalentType from './talent/type/TalentType';
 
 function App() {
   return (
@@ -28,7 +31,9 @@ function App() {
           <Route path="/user/profile" element={<UserProfile />} />  
           <Route path="/user/findId" element={<FindUserId />} /> 
           <Route path="/chat" element={<ChatRoom />} /> 
-
+          <Route path="/talent/categrp" element={<TalentCateGrp />} /> 
+          <Route path="/talent/category" element={<TalentCategory />} /> 
+          <Route path="/talent/type" element={<TalentType />} /> 
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

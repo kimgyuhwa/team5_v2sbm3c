@@ -10,12 +10,12 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class TalentCategoryCreateDTO {
-    private Long cateGrpNo;
+    private Long cateGrpno;
     private String name;
     
     public TalentCategory toEntity() {
       TalentCateGrp grp = new TalentCateGrp();
-      grp.setCateGrpno(this.cateGrpNo);  // 외래키 객체로 설정
+      grp.setCateGrpno(this.cateGrpno);  // 외래키 객체로 설정
 
       TalentCategory category = new TalentCategory();
       category.setName(this.name);      // 일반 필드 설정

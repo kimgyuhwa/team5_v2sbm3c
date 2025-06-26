@@ -10,4 +10,5 @@ import lombok.Setter;
 public class TalentCategoryListDTO {
     private Long categoryno;
     private String name;
+    private String cateGrpName;
 }

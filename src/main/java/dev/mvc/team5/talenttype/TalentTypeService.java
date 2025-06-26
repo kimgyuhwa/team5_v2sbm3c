@@ -17,7 +17,7 @@ import dev.mvc.team5.talenttype.talenttypedto.TalentTypeUpdateDTO;
 public class TalentTypeService {
 
   @Autowired 
-  TalentTypeRepository typeRepository;
+  private TalentTypeRepository typeRepository;
   
   /**
    * TalentType 엔티티를 TalentTypeResponseDTO로 변환하는 헬퍼 메서드

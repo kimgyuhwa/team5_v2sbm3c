@@ -30,7 +30,7 @@ import dev.mvc.team5.talenttype.talenttypedto.TalentTypeUpdateDTO;
 public class TalentCategoryController {
 
   @Autowired
-  TalentCategoryService service;
+  private TalentCategoryService service;
   
   
   public TalentCategoryController() {
@@ -91,7 +91,7 @@ public class TalentCategoryController {
    */
   @GetMapping("/list")
   public ResponseEntity<Page<TalentCategoryListDTO>> listTypes(
-      @RequestParam(defaultValue = "") String keyword,
+      @RequestParam(name="keyword", defaultValue = "") String keyword,
       @PageableDefault(size = 10, sort = "cateno", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
