@@ -38,7 +38,7 @@ public class TalentCategoryService {
         t.getCateGrp() != null ? t.getCateGrp().getCateGrpno() : null,  // 외래키 ID만
         t.getCateGrp() != null ? t.getCateGrp().getName() : null
     );
-}
+  }
   
   /**
    * 타입 정보를 저장하는 메서드
@@ -73,7 +73,7 @@ public class TalentCategoryService {
 
     TalentCategory updated = cateRepository.save(existing);
     return toCategoryResponseDTO(updated);
-}
+  }
 
   
   
@@ -106,20 +106,35 @@ public class TalentCategoryService {
             t.getName(),
             t.getCateGrp() != null ? t.getCateGrp().getName() : ""))  // 대분류 이름 추가
         .collect(Collectors.toList());
+  }
+
+  /**
+   * 검색어가 있으면 name 기준 필터링,
+   * 없으면 전체 목록 가져오되 cateno 기준 정렬 + 페이징
+   */
+  public Page<TalentCategoryListDTO> list(String keyword, Pageable pageable) {
+      Page<TalentCategory> entityPage = cateRepository.findByNameContainingWithGroup(keyword, pageable);
+  
+      return entityPage.map(t -> new TalentCategoryListDTO(
+          t.getCategoryno(),
+          t.getName(),
+          t.getCateGrp() != null ? t.getCateGrp().getName() : ""));
+  }
+
+  public List<TalentCategoryResponseDTO> findByCateGrpno(Long cateGrpno) {
+    List<TalentCategory> list = cateRepository.findByCateGrpCateGrpno(cateGrpno);
+
+    return list.stream()
+        .map(category -> new TalentCategoryResponseDTO(
+            category.getCategoryno(),
+            category.getName(),
+            category.getCateGrp().getCateGrpno(),
+            category.getCateGrp().getName()
+        ))
+        .toList();
 }
 
-/**
- * 검색어가 있으면 name 기준 필터링,
- * 없으면 전체 목록 가져오되 cateno 기준 정렬 + 페이징
- */
-public Page<TalentCategoryListDTO> list(String keyword, Pageable pageable) {
-    Page<TalentCategory> entityPage = cateRepository.findByNameContainingWithGroup(keyword, pageable);
 
-    return entityPage.map(t -> new TalentCategoryListDTO(
-        t.getCategoryno(),
-        t.getName(),
-        t.getCateGrp() != null ? t.getCateGrp().getName() : ""));
-}
 
   
 }

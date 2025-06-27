@@ -35,5 +35,7 @@ public interface TalentCategoryRepository extends JpaRepository<TalentCategory, 
   // 자식 레코드 삭제
   @Transactional
   int deleteByCateGrpCateGrpno(@Param("cateGrpno") Long cateGrpno);
+  
+  List<TalentCategory> findByCateGrpCateGrpno(Long cateGrpno);
 
 }

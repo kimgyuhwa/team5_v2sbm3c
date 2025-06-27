@@ -1,5 +1,7 @@
 package dev.mvc.team5.talentcategory;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,12 +94,19 @@ public class TalentCategoryController {
   @GetMapping("/list")
   public ResponseEntity<Page<TalentCategoryListDTO>> listTypes(
       @RequestParam(name="keyword", defaultValue = "") String keyword,
-      @PageableDefault(size = 10, sort = "cateno", direction = Sort.Direction.DESC)
+      @PageableDefault(size = 10, sort = "categoryno", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
       Page<TalentCategoryListDTO> list = service.list(keyword, pageable);
       return ResponseEntity.ok(list);
   }
+  
+  @GetMapping("/list-by-categrp/{cateGrpno}")
+  public ResponseEntity<List<TalentCategoryResponseDTO>> listByCateGrp(@PathVariable(name="cateGrpno") Long cateGrpno) {
+      List<TalentCategoryResponseDTO> list = service.findByCateGrpno(cateGrpno);
+      return ResponseEntity.ok(list);
+  }
+
   
   
 }

@@ -53,14 +53,17 @@ public class UserController {
         boolean success = userService.login(userDTO, session);
         if (success) {
             UserDTO loginUser = userService.getUserById(userDTO.getUserId());
+            
             session.setAttribute("userno", loginUser.getUserno());
             session.setAttribute("username", loginUser.getUsername()); // 이름
             session.setAttribute("schoolname", loginUser.getSchoolId());
+            session.setAttribute("role", loginUser.getRole());
 
             json.put("sw", true);
             json.put("msg", "로그인 성공!");
             json.put("userno", loginUser.getUserno());
             json.put("username", loginUser.getUsername());
+            json.put("role", loginUser.getRole());
         } else {
             json.put("sw", false);
             json.put("msg", "로그인 실패!");
@@ -74,6 +77,7 @@ public class UserController {
         JSONObject json = new JSONObject();
         Long userno = (Long) session.getAttribute("userno");
         String username = (String) session.getAttribute("username");
+        String role = (String) session.getAttribute("role");
 
         if (userno == null) {
             json.put("sw", false);
@@ -82,6 +86,7 @@ public class UserController {
             json.put("sw", true);
             json.put("userno", userno);
             json.put("username", username);
+            json.put("role", role);
         }
         return json.toString();
     }

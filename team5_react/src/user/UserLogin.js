@@ -15,7 +15,9 @@ function UserLogin() {
   const [saveId, setSaveId] = useState(false);
   const [passwd, setPasswd] = useState('');
   const [savePasswd, setSavePasswd] = useState(false);
-  const { sw, setSw, userno, setUserno } = useContext(GlobalContext);
+  const { sw, setSw, userno, setUserno, loginUser, setLoginUser } = useContext(GlobalContext);
+
+  
 
   const idChange = (e) => {
     setId(e.target.value);
@@ -97,6 +99,18 @@ function UserLogin() {
             .then(res => res.json())
             .then(data => {
               console.log('session ->', data);
+              // 로그인 성공 시 localStorage 저장
+              localStorage.setItem("loginUser", JSON.stringify({
+                userno: data.userno,
+                username: data.username,
+                role: data.role
+              }));
+              // GlobalContext 상태 갱신
+              setLoginUser({
+                userno: data.userno,
+                username: data.username,
+                role: data.role
+              });
               setSw(true);
               setUserno(data.userno);
             });
@@ -110,7 +124,7 @@ function UserLogin() {
   };
 
   const test = () => {
-    setId('admin');
+    setId('testId');
     setPasswd('1234');
   };
 
@@ -174,7 +188,7 @@ function UserLogin() {
             </div>
             <div style={{ textAlign: 'center' }}>
               <button id='btnSend' type="submit" className="btn btn-primary" style={{ marginRight: '10px' }}>로그인</button>
-              <button id='btnTest' type="button" className="btn btn-primary" onClick={test}>테스트 계정</button>
+              <button id='btnTest' type="button" className="btn btn-primary" onClick={test}>테스트 계정(관리자)</button>
             </div>
           </form>
         </>

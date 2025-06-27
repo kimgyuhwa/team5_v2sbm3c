@@ -79,6 +79,7 @@ public class UserService {
       dto.setUserId(user.getUserId());
       dto.setUsername(user.getUsername());
       dto.setEmail(user.getEmail());
+      dto.setRole(user.getRole()); 
       // 필요하다면 schoolId 등도 추가
       return dto;
   }

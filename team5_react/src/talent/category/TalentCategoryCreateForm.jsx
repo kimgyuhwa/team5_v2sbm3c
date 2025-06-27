@@ -8,7 +8,7 @@ const TalentCategoryCreateForm = ({ onCreated }) => {
   const [cateGrpList, setCateGrpList] = useState([]); // 대분류 목록 상태
 
   useEffect(() => {
-    // 대분류 목록을 API로 받아오기 (예시)
+    // 대분류 목록을 API로 받아오기
     axios.get('/talent_cate_grp/list')
       .then(res => setCateGrpList(res.data.content)) // API 구조에 맞게 조정
       .catch(err => console.error('대분류 목록 조회 실패', err));
