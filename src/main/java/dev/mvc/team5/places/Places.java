@@ -39,10 +39,7 @@ public class Places {
     @Column(name = "placeno")
     private Long place;
 
-
-
     @ManyToOne(fetch = FetchType.LAZY)
-
     @JoinColumn(name = "schoolgwanno", nullable = false)
     private SchoolGwan schoolGwan;
 
