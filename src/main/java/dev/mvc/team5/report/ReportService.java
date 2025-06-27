@@ -42,6 +42,12 @@ public class ReportService {
 
         return repo.save(report);
     }
+    // 상태 변경
+    public void updateStatus(Long id, String status) {
+      Report r = repo.findById(id).orElseThrow();
+      r.setStatus(status);
+      repo.save(r);
+  }
 
     public void delete(Long id) {
         repo.deleteById(id);

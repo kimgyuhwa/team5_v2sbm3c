@@ -45,9 +45,6 @@ public class Review {
     @JoinColumn(name = "receiver", nullable = false)
     private User receiver;
 
-    @Column(name = "reviewer_id")
-    private Integer reviewerId;  // 보통 이건 필요 없을 수 있음. giverno랑 중복 역할?
-
     private Integer rating;
 
 

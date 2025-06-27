@@ -26,6 +26,24 @@ public class NotificationService {
     public Optional<Notification> findById(Long id) {
         return repo.findById(id);
     }
+    // 사용자 본인 알람만 볼수있음
+    public List<Notification> findByUser(Long userno) {
+      return repo.findAll().stream()
+                 .filter(n -> n.getUser().getUserno().equals(userno))
+                 .toList();
+  }
+    //사용자가 알림을 클릭하면 read = true로 업데이트
+    public void markAsRead(Long id) {
+      Notification n = repo.findById(id).orElseThrow();
+      n.setRead(true);
+      repo.save(n);
+  }
+    // 프론트 상단 미확인알림 숫자 표시용
+    public Long countUnread(Long userno) {
+      return repo.findByUserUsernoOrderByCreatedAtDesc(userno).stream()
+                 .filter(n -> !n.getRead())
+                 .count();
+  }
 
     public Notification save(NotificationDTO dto) {
         Notification n = new Notification();

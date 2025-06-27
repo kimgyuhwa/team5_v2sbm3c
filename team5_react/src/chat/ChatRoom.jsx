@@ -16,7 +16,7 @@ const ChatRoom = ({ chatRoomno = 21 }) => {
   useEffect(() => {
   axios.get(SESSION_API, { withCredentials: true }).then(res => {
     if (res.data.sw) {
-      const loginUser = { userno: res.data.userno, username: res.data.username };
+      const loginUser = { userno: res.data.user.userno, username: res.data.user.username };
       console.log("세션 유저 확인:", loginUser);
       setUser(loginUser);
 
@@ -59,7 +59,7 @@ const ChatRoom = ({ chatRoomno = 21 }) => {
     if (!input.trim() || !user) return;
     const message = {
       chatRoomno,
-      senderno: 41,
+      senderno: user.userno,
       userName: user.username,
       content: input
     };

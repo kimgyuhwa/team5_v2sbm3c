@@ -22,6 +22,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven{url 'https://jitpack.io'}
 }
 
 dependencies {
@@ -55,6 +56,9 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'                // 개발 편의용 자동 재시작 등
     testImplementation 'org.springframework.boot:spring-boot-starter-test'          // 테스트용 스프링 부트 테스트 라이브러리
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'                     // JUnit 플랫폼 런처
+    
+    // --- 대학 인증 ---
+    implementation 'com.github.in-seo:univcert:master-SNAPSHOT'
 }
 
 

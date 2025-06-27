@@ -33,6 +33,16 @@ public class BlockController {
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
+    
+    @GetMapping("/me/{userno}")
+    public List<BlockDTO> getMyBlocks(@PathVariable Long userno) {
+        return service.findByBlocker(userno).stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
+    @GetMapping("/isBlocked")
+    public boolean isBlocked(@RequestParam(name="blocker", defaultValue="") Long blocker, @RequestParam(name="blocked", defaultValue="") Long blocked) {
+        return service.isBlocked(blocker, blocked);
+    }
 
     private BlockDTO toDTO(Block b) {
         BlockDTO dto = new BlockDTO();

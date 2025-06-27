@@ -175,5 +175,10 @@ public class UserService {
       Optional<User> userOpt = userRepository.findByUsernameAndEmail(username, email);
       return userOpt.map(this::toDTO).orElse(null);
   }
+
+    public void updateSchool(String schoolName) {
+      
+      
+    }
     
     }

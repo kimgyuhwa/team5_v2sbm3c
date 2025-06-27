@@ -24,6 +24,21 @@ public class NotificationController {
     public NotificationDTO create(@RequestBody NotificationDTO dto) {
         return toDTO(service.save(dto));
     }
+    // 사용자는 본인의 알림만 볼수잇음
+    @GetMapping("/user/{userno}")
+    public List<NotificationDTO> getByUser(@PathVariable Long userno) {
+        return service.findByUser(userno).stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    // 사용자가 알림을 클릭하면 read = true로 업데이트
+    @PutMapping("/read/{id}")
+    public void markAsRead(@PathVariable Long id) {
+        service.markAsRead(id);
+    }
+    // 프론트 상단 미확인알림 숫자 표시용
+    @GetMapping("/user/{userno}/unreadCount")
+    public Long getUnreadCount(@PathVariable Long userno) {
+        return service.countUnread(userno);
+    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

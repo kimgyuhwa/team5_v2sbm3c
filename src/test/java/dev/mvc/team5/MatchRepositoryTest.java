@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 package dev.mvc.team5;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +80,7 @@ public class MatchRepositoryTest {
         talent = talentRepository.save(new Talent(giver, school, talentType, category,
                 "기타 레슨", "자세히 알려드려요", "Korean"));
     }
-=======
+
 //package dev.mvc.team5;
 //
 //import static org.assertj.core.api.Assertions.assertThat;
@@ -162,7 +162,7 @@ public class MatchRepositoryTest {
 //        talent = talentRepository.save(new Talent(giver, school, talentType, category,
 //                "기타 레슨", "자세히 알려드려요", "Korean"));
 //    }
->>>>>>> bdf052dad36f03bea5df6f167ff6140bf9c80096
+
 //
 //    @Test
 //    @DisplayName("매칭 생성 및 저장 테스트")
@@ -182,8 +182,8 @@ public class MatchRepositoryTest {
 //        
 //        assertThat(saved.getCompletedAt()).isEqualTo(completedTime);        
 //    }
-<<<<<<< HEAD
+
 }
-=======
+
 //}
->>>>>>> bdf052dad36f03bea5df6f167ff6140bf9c80096
+
