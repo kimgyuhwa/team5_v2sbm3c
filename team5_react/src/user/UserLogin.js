@@ -101,9 +101,9 @@ function UserLogin() {
                 })
               );
               setLoginUser({
-                userno: data.userno,
-                username: data.username,
-                role: data.role,
+                userno: data.user.userno,
+                username: data.user.username,
+                role: data.user.role,
               });
               setSw(true);
               setUserno(data.userno);

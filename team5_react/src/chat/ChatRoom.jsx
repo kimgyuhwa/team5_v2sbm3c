@@ -16,13 +16,8 @@ const ChatRoom = ({ chatRoomno = 21 }) => {
   useEffect(() => {
   axios.get(SESSION_API, { withCredentials: true }).then(res => {
     if (res.data.sw) {
-<<<<<<< HEAD
-      const loginUser = { userno: res.data.userno, username: res.data.username };
-      console.log(loginUser)
-=======
       const loginUser = { userno: res.data.user.userno, username: res.data.user.username };
       console.log("세션 유저 확인:", loginUser);
->>>>>>> 49ee96a0445d501b4105cbe814237517a83e933e
       setUser(loginUser);
 
       // ✅ 세션 확인 후 메시지 가져오기

@@ -39,9 +39,7 @@ function App() {
           <Route path="/user/findId" element={<FindUserId />} /> 
           <Route path="/user/univCert" element={<UnivCertPage />} /> 
           <Route path="/chat" element={<ChatRoom />} /> 
-
           <Route path="/talent/post" element={<Talent />} />
-
           <Route path="/talent/type" element={<TalentType />} />
           <Route path="/talent/category" element={<TalentCategory />} />
           <Route path="/talent/categrp" element={<TalentCateGrp />} />
