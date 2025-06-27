@@ -14,6 +14,9 @@ import ChatRoom from './chat/ChatRoom';
 import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCategory from './talent/category/TalentCategory';
 import TalentType from './talent/type/TalentType';
+import ReservationsManager from './reservation/Reservation';
+import PlacesList from './place/Place';
+import MainPage from './components/Main';
 
 function App() {
   return (
@@ -24,6 +27,7 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />
           <Route path="/user/session" element={<UserSession />} /> 
@@ -31,6 +35,8 @@ function App() {
           <Route path="/user/profile" element={<UserProfile />} />  
           <Route path="/user/findId" element={<FindUserId />} /> 
           <Route path="/chat" element={<ChatRoom />} /> 
+          <Route path='/reservation/Reservation' element={<ReservationsManager />} /> 
+          <Route path='/reservation/Place' element={<PlacesList />} /> 
           <Route path="/talent/categrp" element={<TalentCateGrp />} /> 
           <Route path="/talent/category" element={<TalentCategory />} /> 
           <Route path="/talent/type" element={<TalentType />} /> 
