@@ -28,9 +28,9 @@ public class PlacesController {
     }
 
     // 단건 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<?> read(@PathVariable Long id) {
-        return placesService.findById(id)
+    @GetMapping("/{placeno}")
+    public ResponseEntity<?> read(@PathVariable Long placeno){
+        return placesService.findById(placeno)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

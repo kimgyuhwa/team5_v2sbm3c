@@ -14,12 +14,12 @@ import ChatRoom from './chat/ChatRoom';
 import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCategory from './talent/category/TalentCategory';
 import TalentType from './talent/type/TalentType';
-<<<<<<< HEAD
 import Talent from './talent/post/Talent';
-=======
+import ReservationsManager from './reservation/Reservation';
+import PlacesList from './place/Place';
+import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
->>>>>>> 49ee96a0445d501b4105cbe814237517a83e933e
 
 function App() {
   return (
@@ -30,6 +30,7 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />
           <Route path="/user/session" element={<UserSession />} /> 
@@ -38,18 +39,18 @@ function App() {
           <Route path="/user/findId" element={<FindUserId />} /> 
           <Route path="/user/univCert" element={<UnivCertPage />} /> 
           <Route path="/chat" element={<ChatRoom />} /> 
-<<<<<<< HEAD
+
           <Route path="/talent/post" element={<Talent />} />
 
           <Route path="/talent/type" element={<TalentType />} />
           <Route path="/talent/category" element={<TalentCategory />} />
           <Route path="/talent/categrp" element={<TalentCateGrp />} />
-=======
+          <Route path='/reservation/Reservation' element={<ReservationsManager />} /> 
+          <Route path='/reservation/Place' element={<PlacesList />} /> 
           <Route path="/talent/categrp" element={<TalentCateGrp />} /> 
           <Route path="/talent/category" element={<TalentCategory />} /> 
           <Route path="/talent/type" element={<TalentType />} /> 
           <Route path="/review/review" element={<ReviewPage />} /> 
->>>>>>> 49ee96a0445d501b4105cbe814237517a83e933e
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>
