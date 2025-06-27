@@ -32,8 +32,8 @@ function UserSession() {
   return (
     <div>
       <h3>사용자 세션 정보</h3>
-      <p>회원번호: {user.userno}</p>
-      <p>이름: {user.username}</p>
+      <p>회원번호: {user.user.userno}</p>
+      <p>이름: {user.user.username}</p>
     </div>
   );
 }

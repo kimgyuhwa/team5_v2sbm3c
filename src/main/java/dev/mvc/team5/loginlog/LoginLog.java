@@ -21,7 +21,7 @@ public class LoginLog {
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="login_seq")
     @SequenceGenerator(name="login_seq", sequenceName="LOGIN_SEQ", allocationSize=1)
-    private Integer loginno;
+    private Long loginno;
 
     @ManyToOne
     @JoinColumn(name = "userno")

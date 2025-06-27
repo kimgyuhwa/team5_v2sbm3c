@@ -19,4 +19,17 @@ public class UserDTO {
     private String role;    // 역할(ADMIN, USER)
     private Long schoolId;   // 학교 아이디  
     
+    
+    @Data
+    public static class MailRequestDto{
+      private String email;
+      private String schoolName;
+    }
+    
+    @Data
+    public static class VerifyCodeDto {
+        private String email;
+        private String schoolName;
+        private int code;
+    }
 }

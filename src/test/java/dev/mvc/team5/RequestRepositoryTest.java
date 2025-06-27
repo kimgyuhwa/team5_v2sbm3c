@@ -92,4 +92,6 @@
 //        List<Request> requestsByTalent = requestRepository.findByTalent_talentno(talent.getTalentno());
 //        assertThat(requestsByTalent).hasSize(2);
 //    }
+
+
 //}

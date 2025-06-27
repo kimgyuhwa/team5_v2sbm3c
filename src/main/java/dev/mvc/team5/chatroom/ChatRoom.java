@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.message.Message;
 import jakarta.persistence.Column;

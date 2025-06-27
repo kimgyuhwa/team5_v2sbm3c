@@ -3,6 +3,10 @@ package dev.mvc.team5.activitylog;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import dev.mvc.team5.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,13 +32,14 @@ public class ActivityLog {
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="actlog_seq")
     @SequenceGenerator(name="actlog_seq", sequenceName="ACTLOG_SEQ", allocationSize=1)
-    private Integer actlogno;
+    private Long actlogno;
 
 //    @Column(nullable = false)
 //    private Long userno;
     
     //양방향 ㅋㅋ 
     @ManyToOne
+    @JsonIgnore  // 이거안하면 무한으로 참조
     @JoinColumn(name = "userno")
     private User user;
 
@@ -43,7 +48,8 @@ public class ActivityLog {
 
     @Lob
     private String detail;
-
+    
+    @CreationTimestamp
     private LocalDateTime createdAt;
     
     

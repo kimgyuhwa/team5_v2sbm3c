@@ -124,7 +124,11 @@ function UserLogin() {
   };
 
   const test = () => {
+<<<<<<< HEAD
     setId('testId');
+=======
+    setId('kimgyuhwa123');
+>>>>>>> 49ee96a0445d501b4105cbe814237517a83e933e
     setPasswd('1234');
   };
 
@@ -188,7 +192,13 @@ function UserLogin() {
             </div>
             <div style={{ textAlign: 'center' }}>
               <button id='btnSend' type="submit" className="btn btn-primary" style={{ marginRight: '10px' }}>로그인</button>
+<<<<<<< HEAD
               <button id='btnTest' type="button" className="btn btn-primary" onClick={test}>테스트 계정(관리자)</button>
+=======
+              <button id='btnTest' type="button" className="btn btn-primary" onClick={test}>테스트 계정</button>
+              <Link to="/user/univCert">학교 인증하기</Link>
+              <Link to="/user/findId">아이디 찾기</Link>
+>>>>>>> 49ee96a0445d501b4105cbe814237517a83e933e
             </div>
           </form>
         </>

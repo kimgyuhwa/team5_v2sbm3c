@@ -7,6 +7,7 @@ import dev.mvc.team5.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,10 +22,24 @@ public class ReservationsServiceImpl implements ReservationsService {
     @Override
     public ReservationsResponseDTO create(ReservationsRequestDTO dto) {
     	
+      Places place = placesRepository.findById(dto.getPlaceno())
+          .orElseThrow(() -> new IllegalArgumentException("장소 없음"));
+    	
+      // 1. 강의 시간대와 겹치면 안 됨
+      if (!isOutsidePlaceTime(place, dto.getStart_time(), dto.getEnd_time())) {
+          throw new IllegalArgumentException("해당 장소의 강의 시간에는 예약이 불가능합니다.");
+      }
+
+      // 2. 이미 겹치는 예약이 있으면 안 됨
+      List<Reservations> conflict = reservationsRepository.findConflict(
+          dto.getPlaceno(), dto.getStart_time(), dto.getEnd_time());
+
+      if (!conflict.isEmpty()) {
+          throw new IllegalArgumentException("해당 시간에는 이미 예약이 존재합니다.");
+      }
+      
         User user = userRepository.findById(dto.getUserno())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
-        Places place = placesRepository.findById(dto.getPlaceno())
-                .orElseThrow(() -> new IllegalArgumentException("장소 없음"));
 
         Reservations reservation = new Reservations(
                 user,
@@ -39,6 +54,11 @@ public class ReservationsServiceImpl implements ReservationsService {
         return toResponseDTO(saved);
     }
 
+    private boolean isOutsidePlaceTime(Places place, LocalDateTime start, LocalDateTime end) {
+      // 예약 시간이 강의 시간 안에 포함되어 있다면 예약 불가 → false
+      return end.isBefore(place.getStart_time()) || start.isAfter(place.getEnd_time());
+  }
+    
     @Override
     public ReservationsResponseDTO read(Long reservationno) {
         Reservations reservation = reservationsRepository.findById(reservationno)
@@ -73,12 +93,17 @@ public class ReservationsServiceImpl implements ReservationsService {
 
         return toResponseDTO(reservationsRepository.save(reservation));
     }
+    
 
+
+    
     @Override
     public void delete(Long reservationno) {
         reservationsRepository.deleteById(reservationno);
     }
-
+    
+    
+    
     private ReservationsResponseDTO toResponseDTO(Reservations r) {
         ReservationsResponseDTO dto = new ReservationsResponseDTO();
         dto.setReservationno(r.getReservationno());
@@ -92,4 +117,5 @@ public class ReservationsServiceImpl implements ReservationsService {
         dto.setStatus(r.getStatus());
         return dto;
     }
+    
 }
