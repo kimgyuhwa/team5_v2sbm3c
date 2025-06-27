@@ -14,9 +14,14 @@ import ChatRoom from './chat/ChatRoom';
 import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCategory from './talent/category/TalentCategory';
 import TalentType from './talent/type/TalentType';
+<<<<<<< HEAD
 import ReservationsManager from './reservation/Reservation';
 import PlacesList from './place/Place';
 import MainPage from './components/Main';
+=======
+import UnivCertPage from './user/UnivCertPage';
+import ReviewPage from './review/ReviewPage';
+>>>>>>> 49ee96a0445d501b4105cbe814237517a83e933e
 
 function App() {
   return (
@@ -34,12 +39,14 @@ function App() {
           <Route path="/user/register" element={<UserRegister />} />  
           <Route path="/user/profile" element={<UserProfile />} />  
           <Route path="/user/findId" element={<FindUserId />} /> 
+          <Route path="/user/univCert" element={<UnivCertPage />} /> 
           <Route path="/chat" element={<ChatRoom />} /> 
           <Route path='/reservation/Reservation' element={<ReservationsManager />} /> 
           <Route path='/reservation/Place' element={<PlacesList />} /> 
           <Route path="/talent/categrp" element={<TalentCateGrp />} /> 
           <Route path="/talent/category" element={<TalentCategory />} /> 
           <Route path="/talent/type" element={<TalentType />} /> 
+          <Route path="/review/review" element={<ReviewPage />} /> 
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

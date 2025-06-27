@@ -19,6 +19,7 @@ function Menu() {
       <Link to="/talent/categrp">CateGrp(대분류)</Link> |{" "}
       <Link to="/talent/category">Category(소분류)</Link>  |{" "}
       <Link to="/talent/type">type</Link>
+      <Link to="/review/review">리뷰</Link>
 
     </nav>
   );

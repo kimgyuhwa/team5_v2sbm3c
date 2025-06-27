@@ -41,4 +41,14 @@ public class BlockService {
     public void delete(Long id) {
         repo.deleteById(id);
     }
+ // 사용자가 차단한 사람 목록 보기
+    public List<Block> findByBlocker(Long userno) {
+      return repo.findAll().stream()
+              .filter(b -> b.getBlocker().getUserno().equals(userno))
+              .toList();
+  }
+    // 차단 여부( 되어있는지 아닌지)
+    public boolean isBlocked(Long blocker, Long blocked) {
+      return repo.existsByBlockerUsernoAndBlockedUserno(blocker, blocked);
+  }
 }

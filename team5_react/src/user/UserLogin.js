@@ -214,6 +214,7 @@ function UserLogin() {
           </div>
         </div>
       ) : (
+<<<<<<< HEAD
         // 로그인 전 폼들 가운데 정렬 
         <div style={{ display: 'flex', width: '100%', gap: '50px', justifyContent: 'center',alignItems: 'center'}}>
           <div style={{
@@ -367,6 +368,63 @@ function UserLogin() {
                   아이디 찾기
                 </button>
               </div>
+=======
+        <>
+          <h3>사용자 로그인</h3>
+          <form onSubmit={send} style={{ margin: '10px auto', width: '30%', textAlign: 'left' }}>
+            <div className="mb-3 mt-3">
+              <label className="form-label">아이디:</label>
+              <input
+                type="text"
+                className="form-control"
+                id="id"
+                placeholder="아이디"
+                name="id"
+                autoFocus='autoFocus'
+                onKeyDown={e => enter_chk(e, 'passwd')}
+                onChange={idChange}
+                value={id}
+              />
+            </div>
+            <div className="mb-3">
+              <input
+                type="checkbox"
+                id="saveId"
+                checked={saveId}
+                className="form-check-input"
+                onChange={saveIdChange}
+              />
+              <label className="form-check-label" htmlFor='saveId'>아이디 저장</label>
+            </div>
+            <div className="mb-3">
+              <label className="form-label">패스워드:</label>
+              <input
+                type="password"
+                className="form-control"
+                id="passwd"
+                placeholder="패스워드"
+                name="passwd"
+                onKeyDown={e => enter_chk(e, 'btnSend')}
+                onChange={passwdChange}
+                value={passwd}
+              />
+            </div>
+            <div className="mb-3">
+              <input
+                type="checkbox"
+                id="savePasswd"
+                checked={savePasswd}
+                className="form-check-input"
+                onChange={savePasswdChange}
+              />
+              <label className="form-check-label" htmlFor='savePasswd'>패스워드 저장</label>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <button id='btnSend' type="submit" className="btn btn-primary" style={{ marginRight: '10px' }}>로그인</button>
+              <button id='btnTest' type="button" className="btn btn-primary" onClick={test}>테스트 계정</button>
+              <Link to="/user/univCert">학교 인증하기</Link>
+              <Link to="/user/findId">아이디 찾기</Link>
+>>>>>>> 49ee96a0445d501b4105cbe814237517a83e933e
             </div>
           </div>
           

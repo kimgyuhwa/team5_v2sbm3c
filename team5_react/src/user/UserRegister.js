@@ -1,6 +1,6 @@
 // src/pages/UserRegister.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate,useLocation } from 'react-router-dom';
 
 function UserRegister() {
   const navigate = useNavigate();
@@ -19,6 +19,20 @@ function UserRegister() {
     role: '',
     schoolId: '', // 학교 선택 시 사용
   });
+
+  const location = useLocation(); // 👈 추가
+  const certifiedEmail = location.state?.email || '';
+  const certifiedSchool = location.state?.schoolName || '';
+
+  useEffect(() => {
+    if (certifiedEmail || certifiedSchool) {
+      setForm(prev => ({
+        ...prev,
+        email: certifiedEmail || '',
+        schoolId: certifiedSchool || ''
+      }));
+    }
+  }, [certifiedEmail, certifiedSchool]);
 
   const [idCheckMsg, setIdCheckMsg] = useState('');
   const [isIdChecked, setIsIdChecked] = useState(false); // 중복확인 완료 여부
@@ -110,7 +124,7 @@ function UserRegister() {
         <input name="location" placeholder="위치" value={form.location} onChange={handleChange} /><br />
         <textarea name="bio" placeholder="자기소개" value={form.bio} onChange={handleChange} /><br />
         {/* <input name="role" placeholder="역할 (ex: USER)" value={form.role} onChange={handleChange} /><br /> */}
-        {/* <input name="schoolId" placeholder="학교 ID" value={form.schoolId} onChange={handleChange} /><br /> */}
+         <input name="schoolId" placeholder="학교 이름" value={form.schoolName} onChange={handleChange} /><br />
         <button type="submit">회원가입</button>
       </form>
     </div>

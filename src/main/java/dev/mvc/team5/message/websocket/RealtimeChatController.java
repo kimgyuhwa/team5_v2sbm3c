@@ -22,7 +22,7 @@ public class RealtimeChatController {
     // @SendTo("/topic/public")  // 모든 구독자에게 메시지 브로드캐스트
     public RealtimeMessageDTO sendMessage(RealtimeMessageDTO messageDTO) {
 //        System.out.println(">>> 채팅방 번호: " + messageDTO.getChatRoomno());
-//        System.out.println(">>> 유저 번호: " + messageDTO.getSenderno());
+     System.out.println(">>> 유저 번호: " + messageDTO.getSenderno());
         // DB 저장
         realtimeChatService.saveMessage(messageDTO);
         

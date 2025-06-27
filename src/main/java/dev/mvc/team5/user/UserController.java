@@ -3,12 +3,18 @@ package dev.mvc.team5.user;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.univcert.api.UnivCert;
+
 import dev.mvc.team5.activitylog.ActivityLogService;
 import dev.mvc.team5.tool.MailService;
+import dev.mvc.team5.user.UserDTO.MailRequestDto;
+import dev.mvc.team5.user.UserDTO.VerifyCodeDto;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +30,45 @@ public class UserController {
     
     @Autowired
     private ActivityLogService activityLogService; // 로그 기록용
+    
+    /** 대학 인증 보내기 */
+    @PostMapping("/univ/sendCode")
+    public ResponseEntity<String> sendUnivCertMail(@RequestBody MailRequestDto dto) throws IOException {
+      String UNIV_KEY = "5d57fdce-3a2d-43ad-9aed-fc23369462e2";
+      // 기존 인증 제거
+      UnivCert.clear(UNIV_KEY, dto.getEmail());
+      // 학교 유효성 확인
+      boolean univ_check = false;
+      Map<String,Object> check = UnivCert.check(dto.getSchoolName());
+      boolean success = (boolean) check.get("success");
+      if(success) univ_check = true;
+      // 인증 코드 발송 요청
+      Map<String, Object> result = UnivCert.certify(UNIV_KEY, dto.getEmail(), dto.getSchoolName(), univ_check);
+
+      if ((boolean) result.get("success")) {
+        userService.updateSchool(dto.getSchoolName());
+        return ResponseEntity.ok("이메일이 성공적으로 보내졌습니다.");
+    } else {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body("이메일 인증 실패 ");
+    }
+    }
+    
+    @PostMapping("/univ/verifyCode")
+    public ResponseEntity verifyCode(@RequestBody VerifyCodeDto dto) throws IOException {
+        String UNIV_KEY = "5d57fdce-3a2d-43ad-9aed-fc23369462e2";
+        
+        Map<String, Object> result = UnivCert.certifyCode(UNIV_KEY, dto.getEmail(), dto.getSchoolName(), dto.getCode());
+        
+        if ((boolean) result.get("success")) {
+            return ResponseEntity.ok(" 인증에 성공했습니다.");
+        } else {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("인증 실패: " + result.get("message"));
+        }
+    }
 
     /** 회원가입 */
     @PostMapping("/register")
@@ -118,9 +163,9 @@ public class UserController {
             result.put("sw", false);
             result.put("msg", "로그인 상태가 아닙니다.");
         } else {
-            User user = userService.findByIdOrThrow(userno);
-            result.put("sw", true);
-            result.put("user", user);  // 엔티티 통째로 리턴 → 자동 JSON 변환됨
+          UserDTO userDTO = userService.getUserByNo(userno);
+          result.put("sw", true);
+          result.put("user", userDTO); //  DTO 사용 → 직렬화 안전
         }
         return result;
     }
