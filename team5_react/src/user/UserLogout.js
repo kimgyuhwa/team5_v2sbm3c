@@ -4,10 +4,10 @@ import { GlobalContext } from '../components/GlobalContext';
 import { getIP } from '../components/Tool';
 
 function UserLogout() {
-  const { setSw, setUserno } = useContext(GlobalContext);
+  const { setSw, setUserno, setLoginUser } = useContext(GlobalContext);
 
   useEffect(() => {
-    fetch(`http://${getIP()}:9093/user/logout`, {
+    fetch(`/user/logout`, {
       method: 'GET'
     })
       .then(result => result.text())
@@ -15,6 +15,10 @@ function UserLogout() {
         console.log('->', text);
         setSw(false);
         setUserno(0);
+        setLoginUser(null);
+        sessionStorage.removeItem('sw');
+        sessionStorage.removeItem('userno');
+        localStorage.removeItem("loginUser");
       })
       .catch(err => console.error(err));
   }, [setSw, setUserno]);

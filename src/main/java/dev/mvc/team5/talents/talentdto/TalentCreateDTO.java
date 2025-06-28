@@ -18,7 +18,6 @@ public class TalentCreateDTO {
     private Long schoolno;
     private Long typeno;
     private Long categoryno;
-    private Long subcategoryno;  // 필요하다면 활용
     private String title;
     private String description;
     private String language;

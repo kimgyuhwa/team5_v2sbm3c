@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class TalentCateGrpUpdateDTO {
-    private Long cateGrpNo;
+    private Long cateGrpno;
     private String name;
 }

@@ -23,7 +23,7 @@ public class Notification {
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="notification_seq")
     @SequenceGenerator(name="notification_seq", sequenceName="NOTIFICATION_SEQ", allocationSize=1)
-    private Integer notificationno;
+    private Long notificationno;
 
     @ManyToOne
     @JoinColumn(name = "userno")
