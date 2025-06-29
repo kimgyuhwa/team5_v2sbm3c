@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus } from 'lucide-react';
+import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
 
 export default function MainPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -9,7 +9,7 @@ export default function MainPage() {
   const [posts, setPosts] = useState([
     {
       id: 1,
-      title: "첫 번째 게시물",
+      title: "첫 번째 게시물 나중에 바꿔야함",
       content: "이것은 첫 번째 게시물의 내용입니다. 리액트로 만든 메인페이지가 잘 작동하고 있습니다.",
       author: "사용자1",
       date: "2025-06-27",
@@ -52,9 +52,14 @@ export default function MainPage() {
     setSearchQuery(e.target.value);
   };
 
-  // const mainLogo = () => {
-  //   onClick.MainPage
-  // }
+  const handleChatClick = () => {
+    console.log('채팅 버튼 클릭');
+  };
+
+  const handleNotificationClick = () => {
+    console.log('알림 버튼 클릭');
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -79,8 +84,6 @@ export default function MainPage() {
             height: '64px'
           }}>
             {/* 로고 */}
-            
-            
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <a href='/components/main'>
               <h1 style={{
@@ -94,130 +97,221 @@ export default function MainPage() {
               </a>
             </div>
             
-
-            {/* 마이페이지 드롭다운 메뉴 */}
-            <div style={{ position: 'relative' }}>
+            {/* 오른쪽 메뉴 영역 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {/* 채팅 아이콘 버튼 */}
               <button
-                onClick={toggleDropdown}
+                onClick={handleChatClick}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: '#007bff',
+                  justifyContent: 'center',
+                  width: '48px',
+                  height: '48px',
+                  backgroundColor: '#17a2b8',
                   color: 'white',
-                  padding: '12px 20px',
                   border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  fontWeight: '600',
+                  borderRadius: '50%',
                   cursor: 'pointer',
-                  transition: 'background-color 0.3s',
-                  outline: 'none'
+                  transition: 'all 0.3s',
+                  outline: 'none',
+                  position: 'relative'
                 }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = '#138496';
+                  e.target.style.transform = 'scale(1.05)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = '#17a2b8';
+                  e.target.style.transform = 'scale(1)';
+                }}
               >
-                <User size={20} />
-                <span>마이페이지</span>
-                <ChevronDown size={16} style={{
-                  transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.3s'
-                }} />
+                <MessageCircle size={20} />
+                {/* 채팅 알림 뱃지 (옵션) */}
+                <span style={{
+                  position: 'absolute',
+                  top: '-2px',
+                  right: '-2px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  fontSize: '10px',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  minWidth: '18px',
+                  textAlign: 'center'
+                }}>
+                  3
+                </span>
               </button>
 
-              {/* 드롭다운 메뉴 */}
-              {isDropdownOpen && (
-                <div style={{
+              {/* 알림 아이콘 버튼 */}
+              <button
+                onClick={handleNotificationClick}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '48px',
+                  height: '48px',
+                  backgroundColor: '#ffc107',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  outline: 'none',
+                  position: 'relative'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = '#e0a800';
+                  e.target.style.transform = 'scale(1.05)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = '#ffc107';
+                  e.target.style.transform = 'scale(1)';
+                }}
+              >
+                <Bell size={20} />
+                {/* 알림 뱃지 (옵션) */}
+                <span style={{
                   position: 'absolute',
-                  right: 0,
-                  marginTop: '8px',
-                  width: '200px',
-                  backgroundColor: 'white',
+                  top: '-2px',
+                  right: '-2px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  fontSize: '10px',
+                  padding: '2px 6px',
                   borderRadius: '10px',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-                  border: '1px solid #e1e5e9',
-                  zIndex: 50,
-                  overflow: 'hidden'
+                  minWidth: '18px',
+                  textAlign: 'center'
                 }}>
-                  <div style={{ padding: '4px 0' }}>
-                    <button style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      width: '100%',
-                      padding: '12px 16px',
-                      fontSize: '14px',
-                      color: '#333',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                    >
-                      <User size={16} style={{ marginRight: '12px' }} />
-                      프로필 보기
-                    </button>
-                    <button style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      width: '100%',
-                      padding: '12px 16px',
-                      fontSize: '14px',
-                      color: '#333',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                    >
-                      <Settings size={16} style={{ marginRight: '12px' }} />
-                      설정
-                    </button>
-                    <button style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      width: '100%',
-                      padding: '12px 16px',
-                      fontSize: '14px',
-                      color: '#333',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                    >
-                      <Bell size={16} style={{ marginRight: '12px' }} />
-                      알림
-                    </button>
-                    <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
-                    <button style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      width: '100%',
-                      padding: '12px 16px',
-                      fontSize: '14px',
-                      color: '#dc3545',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                    >
-                      <LogOut size={16} style={{ marginRight: '12px' }} />
-                      로그아웃
-                    </button>
+                  7
+                </span>
+              </button>
+
+              {/* 마이페이지 드롭다운 메뉴 */}
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={toggleDropdown}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    padding: '12px 20px',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s',
+                    outline: 'none'
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+                  onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+                >
+                  <User size={20} />
+                  <span>마이페이지</span>
+                  <ChevronDown size={16} style={{
+                    transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.3s'
+                  }} />
+                </button>
+                  
+                {/* 드롭다운 메뉴 */}
+                {isDropdownOpen && (
+                  <div style={{
+                    position: 'absolute',
+                    right: 0,
+                    marginTop: '8px',
+                    width: '200px',
+                    backgroundColor: 'white',
+                    borderRadius: '10px',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+                    border: '1px solid #e1e5e9',
+                    zIndex: 50,
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{ padding: '4px 0' }}>
+                      <button style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        padding: '12px 16px',
+                        fontSize: '14px',
+                        color: '#333',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                      onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                      >
+                        <User size={16} style={{ marginRight: '12px' }} />
+                        프로필 보기
+                      </button>
+                      <button style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        padding: '12px 16px',
+                        fontSize: '14px',
+                        color: '#333',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                      onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                      >
+                        <Settings size={16} style={{ marginRight: '12px' }} />
+                        설정
+                      </button>
+                      <button style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        padding: '12px 16px',
+                        fontSize: '14px',
+                        color: '#333',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                      onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                      >
+                        <Bell size={16} style={{ marginRight: '12px' }} />
+                        알림
+                      </button>
+                      <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
+                      <button style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        padding: '12px 16px',
+                        fontSize: '14px',
+                        color: '#dc3545',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s'
+                      }}
+                      onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                      onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                      >
+                        <LogOut size={16} style={{ marginRight: '12px' }} />
+                        로그아웃
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-            야호
           </div>
         </div>
       </div>
@@ -254,7 +348,7 @@ export default function MainPage() {
               marginBottom: '20px',
               textAlign: 'center'
             }}>
-              @@ 대학교
+              솔데 대학교
             </h2>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -278,7 +372,7 @@ export default function MainPage() {
               onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
               >
                 <Plus size={20} />
-                <span>새 게시물</span>
+                <span>내 글 등록</span>
               </button>
               
               <button style={{
@@ -305,35 +399,6 @@ export default function MainPage() {
               </button>
             </div>
           </div>
-
-          {/* 통계 정보
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '20px',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-            padding: '30px',
-            boxSizing: 'border-box'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              color: '#333',
-              marginBottom: '15px',
-              textAlign: 'center'
-            }}>
-              통계
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#666' }}>
-                <span>전체 게시물</span>
-                <span style={{ fontWeight: '600', color: '#333' }}>{posts.length}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#666' }}>
-                <span>총 좋아요</span>
-                <span style={{ fontWeight: '600', color: '#333' }}>{posts.reduce((sum, post) => sum + post.likes, 0)}</span>
-              </div>
-            </div>
-          </div> */}
         </div>
 
         {/* 중앙 컨텐츠 영역 */}
@@ -349,10 +414,13 @@ export default function MainPage() {
             backgroundColor: 'white',
             borderRadius: '20px',
             boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-            padding: '30px',
+            padding: '20px',
             boxSizing: 'border-box'
           }}>
             <div style={{ position: 'relative' }}>
+              <div style={{textAlign: 'left', marginBottom: '10px'}} >
+              홈 > 재능
+              </div>
               <div style={{ position: 'relative' }}>
                 <Search style={{
                   position: 'absolute',
@@ -383,6 +451,7 @@ export default function MainPage() {
                 />
               </div>
             </div>
+            
           </div>
 
           {/* 게시물 영역 */}
@@ -390,14 +459,15 @@ export default function MainPage() {
             backgroundColor: 'white',
             borderRadius: '20px',
             boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-            padding: '30px',
+            padding: '20px',
             boxSizing: 'border-box'
+
           }}>
             <h2 style={{
-              fontSize: '24px',
-              fontWeight: '700',
+              fontWeight: '550',
               color: '#333',
-              marginBottom: '25px'
+              marginTop: '20px',
+              marginBottom: '20px'
             }}>
               {searchQuery ? `"${searchQuery}" 검색 결과` : '최근 게시물'}
             </h2>
@@ -405,14 +475,14 @@ export default function MainPage() {
             {filteredPosts.length === 0 ? (
               <div style={{
                 textAlign: 'center',
-                padding: '40px',
+                padding: '30px',
                 color: '#666',
                 fontSize: '16px'
               }}>
                 검색 결과가 없습니다.
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>   {/* 게시물 하나하나 */}
                 {filteredPosts.map((post) => (
                   <div key={post.id} style={{
                     border: '1px solid #e1e5e9',
@@ -511,10 +581,7 @@ export default function MainPage() {
               </div>
             )}
           </div>
-          {/*게시물 밑 자리*/}
         </div>
-        {/*챗봇 또는 다른거 넣을 자리*/}
-
       </div>
     </div>
   );
