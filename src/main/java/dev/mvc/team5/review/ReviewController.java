@@ -22,19 +22,19 @@ public class ReviewController {
 
     // 특정 리뷰 ID 조회
     @GetMapping("/{id}")
-    public ReviewDTO get(@PathVariable Long id) {
+    public ReviewDTO get(@PathVariable("id") Long id) {
         return toDTO(service.findById(id).orElseThrow());
     }
 
     // 특정 작성자(userno) 기준 리뷰 목록 조회
     @GetMapping("/giver/{userno}")
-    public List<ReviewDTO> getByGiver(@PathVariable Long userno) {
+    public List<ReviewDTO> getByGiver(@PathVariable("userno") Long userno) {
         return service.findByGiver(userno).stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     // 특정 대상자(userno) 기준 리뷰 목록 조회
     @GetMapping("/receiver/{userno}")
-    public List<ReviewDTO> getByReceiver(@PathVariable Long userno) {
+    public List<ReviewDTO> getByReceiver(@PathVariable("userno") Long userno) {
         return service.findByReceiver(userno).stream().map(this::toDTO).collect(Collectors.toList());
     }
 
@@ -46,7 +46,7 @@ public class ReviewController {
 
     // 리뷰 삭제
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable("id") Long id) {
         service.delete(id);
     }
 

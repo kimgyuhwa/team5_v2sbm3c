@@ -419,7 +419,7 @@ export default function MainPage() {
           }}>
             <div style={{ position: 'relative' }}>
               <div style={{textAlign: 'left', marginBottom: '10px'}} >
-              홈 > 재능
+              홈 {'>'} 재능
               </div>
               <div style={{ position: 'relative' }}>
                 <Search style={{
