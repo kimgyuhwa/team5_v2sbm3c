@@ -48,7 +48,7 @@ function App() {
           <Route path="/talent/categrp" element={<TalentCateGrp />} /> 
           <Route path="/talent/category" element={<TalentCategory />} /> 
           <Route path="/talent/type" element={<TalentType />} /> 
-          <Route path="/review/review" element={<ReviewPage />} /> 
+          <Route path="/review/review" element={<ReviewPage />} />
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

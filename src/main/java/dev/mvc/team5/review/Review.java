@@ -33,7 +33,7 @@ public class Review {
   @Id
   @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="review_seq")
   @SequenceGenerator(name="review_seq", sequenceName="REVIEW_SEQ", allocationSize=1)
-    private String reviewno;
+    private Long reviewno;
 
     // giverno: 리뷰를 작성한 사용자
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,8 +46,7 @@ public class Review {
     private User receiver;
 
     private Integer rating;
-
-
+    
     @Column
     private String comments;
 

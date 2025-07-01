@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext,useEffect, useState } from 'react';
 import axios from 'axios';
-
-const ReviewPage = ({ userno }) => {
+import { GlobalContext } from '../components/GlobalContext';
+const ReviewPage = () => {
+  const {userno} = useContext(GlobalContext);
   const [receivedReviews, setReceivedReviews] = useState([]);
   const [givenReviews, setGivenReviews] = useState([]);
   const [form, setForm] = useState({
@@ -9,6 +10,10 @@ const ReviewPage = ({ userno }) => {
     rating: '',
     comments: ''
   });
+
+  console.log(userno)
+  const context = useContext(GlobalContext);
+console.log('GlobalContext:', context);
 
   // 받은 리뷰 가져오기
   const fetchReceived = async () => {

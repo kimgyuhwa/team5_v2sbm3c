@@ -1,10 +1,13 @@
-// src/talent/TalentList.jsx
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const TalentList = ({ refresh, onUpdated, onDeleted }) => {
   const [talents, setTalents] = useState([]);
   const [editId, setEditId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [typeList, setTypeList] = useState([]);
+  const [cateGrpList, setCateGrpList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
 
   useEffect(() => {
     fetch('/talent/list')
@@ -13,14 +16,35 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
       .catch((e) => alert('목록 불러오기 실패: ' + e.message));
   }, [refresh]);
 
+  useEffect(() => {
+    axios.get('/talent_type/list')
+      .then(res => setTypeList(res.data.content))
+      .catch(err => console.error('타입 목록 불러오기 실패', err));
+
+    axios.get('/talent_cate_grp/list')
+      .then(res => setCateGrpList(res.data.content))
+      .catch(err => console.error('대분류 목록 불러오기 실패', err));
+  }, []);
+
+  useEffect(() => {
+    if (editForm.cateGrpno) {
+      axios.get(`/talent_category/list-by-categrp/${editForm.cateGrpno}`)
+        .then(res => setCategoryList(res.data))
+        .catch(err => setCategoryList([]));
+    } else {
+      setCategoryList([]);
+    }
+  }, [editForm.cateGrpno]);
+
   const startEdit = (talent) => {
     setEditId(talent.talentno);
     setEditForm({
       title: talent.title,
       description: talent.description,
       language: talent.language,
-      type: talent.type,
-      category: talent.category,
+      typeno: talent.type,
+      cateGrpno: talent.cateGrpno,
+      categoryno: talent.category,
     });
   };
 
@@ -41,8 +65,8 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
         title: editForm.title,
         description: editForm.description,
         language: editForm.language,
-        type: editForm.type ? Number(editForm.type) : null,
-        category: editForm.category ? Number(editForm.category) : null,
+        typeno: Number(editForm.typeno),
+        categoryno: Number(editForm.categoryno),
       };
 
       const res = await fetch('/talent/update', {
@@ -89,8 +113,8 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
             <th>제목</th>
             <th>설명</th>
             <th>언어</th>
-            <th>타입 번호</th>
-            <th>카테고리 번호</th>
+            <th>타입</th>
+            <th>카테고리</th>
             <th>관리</th>
           </tr>
         </thead>
@@ -100,12 +124,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
               <tr key={t.talentno}>
                 <td>{t.talentno}</td>
                 <td>
-                  <input
-                    name="title"
-                    value={editForm.title}
-                    onChange={handleEditChange}
-                    required
-                  />
+                  <input name="title" value={editForm.title} onChange={handleEditChange} required />
                 </td>
                 <td>
                   <input name="description" value={editForm.description} onChange={handleEditChange} />
@@ -114,20 +133,27 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
                   <input name="language" value={editForm.language} onChange={handleEditChange} />
                 </td>
                 <td>
-                  <input
-                    name="type"
-                    type="number"
-                    value={editForm.type || ''}
-                    onChange={handleEditChange}
-                  />
+                  <select name="typeno" value={editForm.typeno} onChange={handleEditChange} required>
+                    <option value="">타입 선택</option>
+                    {typeList.map((type) => (
+                      <option key={type.typeno} value={type.typeno}>{type.name}</option>
+                    ))}
+                  </select>
                 </td>
                 <td>
-                  <input
-                    name="category"
-                    type="number"
-                    value={editForm.category || ''}
-                    onChange={handleEditChange}
-                  />
+                  <select name="cateGrpno" value={editForm.cateGrpno} onChange={handleEditChange} required>
+                    <option value="">대분류 선택</option>
+                    {cateGrpList.map((grp) => (
+                      <option key={grp.cateGrpno} value={grp.cateGrpno}>{grp.name}</option>
+                    ))}
+                  </select>
+                  <br />
+                  <select name="categoryno" value={editForm.categoryno} onChange={handleEditChange} required>
+                    <option value="">소분류 선택</option>
+                    {categoryList.map((cat) => (
+                      <option key={cat.categoryno} value={cat.categoryno}>{cat.name}</option>
+                    ))}
+                  </select>
                 </td>
                 <td>
                   <button onClick={submitEdit}>저장</button>

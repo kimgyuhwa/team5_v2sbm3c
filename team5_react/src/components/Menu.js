@@ -19,6 +19,7 @@ function Menu() {
       <Link to="/reservation/Place">강의실조회</Link> |{" "}
       <Link to="/user/session">Session Info</Link> |{" "}
       <Link to="/chat">Chat</Link> |{" "}
+      <Link to="/talent/post">게시물</Link>
       {loginUser && loginUser.role === "admin" && (
         <>
           {" | "}<Link to="/talent/categrp">CateGrp(대분류)</Link>
