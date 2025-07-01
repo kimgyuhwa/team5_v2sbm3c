@@ -37,6 +37,29 @@ function UserLogin() {
     }).catch((err) => console.error('세션 복원 오류:', err));
   }, []);
 
+   useEffect(() => {
+      fetch('/user/session', {
+        method: 'GET',
+        credentials: 'include',
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.sw && data.user) {
+            setSw(true);
+            setUserno(data.user.userno);
+            setLoginUser(data.user);
+            //localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
+          } else {
+            setSw(false);
+            setUserno(0);
+            setLoginUser(null);
+          }
+        })
+        .catch(err => {
+          console.error('세션 확인 실패:', err);
+        });
+    }, []);
+
   const idChange = (e) => {
     const value = e.target.value;
     setId(value);
@@ -95,15 +118,17 @@ function UserLogin() {
               localStorage.setItem(
                 'loginUser',
                 JSON.stringify({
-                  userno: data.userno,
-                  username: data.username,
-                  role: data.role,
+                  loginUser: data.user.loginUser
+                  // userno: data.userno,
+                  // username: data.username,
+                  // role: data.role,
                 })
               );
               setLoginUser({
-                userno: data.user.userno,
-                username: data.user.username,
-                role: data.user.role,
+                loginUser: data.user
+                // userno: data.user.userno,
+                // username: data.user.username,
+                // role: data.user.role,
               });
               setSw(true);
               setUserno(data.userno);
@@ -121,7 +146,7 @@ function UserLogin() {
   };
 
   const test = () => {
-    setId('testId');
+    setId('kimgyuhwa123');
     setPasswd('1234');
   };
 

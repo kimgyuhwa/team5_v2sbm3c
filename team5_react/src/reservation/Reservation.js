@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext,useEffect, useState } from "react";
+import { GlobalContext } from "../components/GlobalContext";
 
 const ReservationsManager = () => {
+  const { userno } = useContext(GlobalContext);
+  const { loginUser } = useContext(GlobalContext);
+  console.log("reservation: " +  loginUser)
   const [reservations, setReservations] = useState([]);
   const [form, setForm] = useState({
     userno: "",
@@ -11,7 +15,7 @@ const ReservationsManager = () => {
     status: "예약완료"
   });
 
-  const API_BASE = "http://localhost:9093/reservations";
+  const API_BASE = "/reservations";
 
   // 전체 예약 조회
   const fetchReservations = async () => {

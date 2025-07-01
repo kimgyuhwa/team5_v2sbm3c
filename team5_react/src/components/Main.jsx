@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext,useState } from 'react';
 import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
 import SearchBar from '../searchBar/SearchBar';
-
+import { GlobalContext } from './GlobalContext';
 
 export default function MainPage() {
+  const { loginUser } = useContext(GlobalContext);
+  console.log("main:" , loginUser);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredCategory, setHoveredCategory] = useState(null);
+  
   // 샘플 게시물 데이터
   const [posts, setPosts] = useState([
     {
@@ -413,7 +416,7 @@ export default function MainPage() {
               marginBottom: '20px',
               textAlign: 'center'
             }}>
-              솔데 대학교
+              {loginUser.shcoolname}
             </h2>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

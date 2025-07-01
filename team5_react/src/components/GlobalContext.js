@@ -7,28 +7,42 @@ const GlobalProvider = ({ children }) => {
   const [userno, setUserno] = useState(0);     // 사용자 고유번호
   const [loginUser, setLoginUser] = useState(null); // 로그인한 유저 정보 (객체)
 
+  // sw 상태가 바뀔 때마다 sessionStorage에 저장
   useEffect(() => {
-    fetch('/user/session', {
-      method: 'GET',
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.sw && data.user) {
-          setSw(true);
-          setUserno(data.user.userno);
-          setLoginUser(data.user);
-          localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
-        } else {
-          setSw(false);
-          setUserno(0);
-          setLoginUser(null);
-        }
-      })
-      .catch(err => {
-        console.error('세션 확인 실패:', err);
-      });
-  }, []);
+    sessionStorage.setItem('sw', sw ? 'true' : 'false');
+  }, [sw]);
+
+  // employeeno가 바뀔 때마다 sessionStorage에 저장/삭제
+  useEffect(() => {
+    if (userno) {
+      sessionStorage.setItem('userno', userno);
+    } else {
+      sessionStorage.removeItem('userno');
+    }}, [userno]);
+
+
+  // useEffect(() => {
+  //   fetch('/user/session', {
+  //     method: 'GET',
+  //     credentials: 'include',
+  //   })
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       if (data.sw && data.user) {
+  //         setSw(true);
+  //         setUserno(data.user.userno);
+  //         setLoginUser(data.user);
+  //         //localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
+  //       } else {
+  //         setSw(false);
+  //         setUserno(0);
+  //         setLoginUser(null);
+  //       }
+  //     })
+  //     .catch(err => {
+  //       console.error('세션 확인 실패:', err);
+  //     });
+  // }, []);
 
   return (
     <GlobalContext.Provider value={{ sw, setSw, userno, setUserno, loginUser, setLoginUser }}>
