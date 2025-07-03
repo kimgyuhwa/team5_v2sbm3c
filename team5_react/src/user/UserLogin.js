@@ -31,34 +31,30 @@ function UserLogin() {
       setPasswd(storedPasswd);
       setSavePasswd(true);
     }
-
-    fetch(`/user/session`, {
-      credentials: 'include',
-    }).catch((err) => console.error('세션 복원 오류:', err));
   }, []);
 
-   useEffect(() => {
-      fetch('/user/session', {
-        method: 'GET',
-        credentials: 'include',
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.sw && data.user) {
-            setSw(true);
-            setUserno(data.user.userno);
-            setLoginUser(data.user);
-            //localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
-          } else {
-            setSw(false);
-            setUserno(0);
-            setLoginUser(null);
-          }
-        })
-        .catch(err => {
-          console.error('세션 확인 실패:', err);
-        });
-    }, []);
+  //  useEffect(() => {
+  //     fetch('/user/session', {
+  //       method: 'GET',
+  //       credentials: 'include',
+  //     })
+  //       .then(res => res.json())
+  //       .then(data => {
+  //         if (data.sw && data.user) {
+  //           setSw(true);
+  //           setUserno(data.user.userno);
+  //           setLoginUser(data.user);
+  //           //localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
+  //         } else {
+  //           setSw(false);
+  //           setUserno(0);
+  //           setLoginUser(null);
+  //         }
+  //       })
+  //       .catch(err => {
+  //         console.error('세션 확인 실패:', err);
+  //       });
+  //   }, []);
 
   const idChange = (e) => {
     const value = e.target.value;
@@ -112,27 +108,26 @@ function UserLogin() {
       .then((res) => res.text())
       .then((text) => {
         if (text.includes('성공')) {
-          fetch(`/user/session`)
-            .then((res) => res.json())
-            .then((data) => {
-              localStorage.setItem(
-                'loginUser',
-                JSON.stringify({
-                  loginUser: data.user.loginUser
-                  // userno: data.userno,
-                  // username: data.username,
-                  // role: data.role,
-                })
-              );
-              setLoginUser({
-                loginUser: data.user
-                // userno: data.user.userno,
-                // username: data.user.username,
-                // role: data.user.role,
-              });
-              setSw(true);
-              setUserno(data.userno);
-            });
+          fetch('/user/session', {
+        method: 'GET',
+        credentials: 'include',
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.sw && data.user) {
+            setSw(true);
+            setUserno(data.user.userno);
+            setLoginUser(data.user);
+            //localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
+          } else {
+            setSw(false);
+            setUserno(0);
+            setLoginUser(null);
+          }
+        })
+        .catch(err => {
+          console.error('세션 확인 실패:', err);
+        });
         } else {
           alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');
           setSw(false);

@@ -127,6 +127,7 @@ export default function MainPage() {
   const handleCategoryClick = (categoryId, subcategoryId = null) => {
     console.log('카테고리 클릭:', categoryId, subcategoryId);
   };
+  
 
   return (
     <div style={{
@@ -416,7 +417,7 @@ export default function MainPage() {
               marginBottom: '20px',
               textAlign: 'center'
             }}>
-              {loginUser.shcoolname}
+              {loginUser.schoolname}
             </h2>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
