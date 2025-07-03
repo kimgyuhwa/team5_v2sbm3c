@@ -103,6 +103,32 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
     }
   };
 
+  const sendRequest = async (talent) => {
+  const loginUser = JSON.parse(localStorage.getItem('loginUser'));
+  if (!loginUser) {
+    alert("로그인이 필요합니다.");
+    return;
+  }
+
+  const dto = {
+    talentno: talent.talentno,
+    giverno: loginUser.userno,
+    receiverno: talent.userno, // 게시물 작성자가 요청 받는 사람
+    status: 'pending',
+    message: '재능 요청합니다.'
+  };
+
+  try {
+    const res = await axios.post('/request/save', dto);
+    alert('요청 성공!');
+    console.log(res.data);
+  } catch (e) {
+    console.log("보내는 요청:", dto);
+    alert('요청 실패: ' + e.message);
+  }
+};
+
+
   return (
     <div>
       <h3>재능 목록</h3>
@@ -171,6 +197,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
                 <td>
                   <button onClick={() => startEdit(t)}>수정</button>
                   <button onClick={() => deleteTalent(t.talentno)}>삭제</button>
+                  <button onClick={() => sendRequest(t)}>요청</button>
                 </td>
               </tr>
             )

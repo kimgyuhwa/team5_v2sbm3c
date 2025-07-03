@@ -3,6 +3,7 @@ package dev.mvc.team5.request;
 import dev.mvc.team5.request.requestdto.RequestCreateDTO;
 import dev.mvc.team5.request.requestdto.RequestListDTO;
 import dev.mvc.team5.request.requestdto.RequestResponseDTO;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,11 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor  
 @RequestMapping("/request")
 public class RequestController {
 
-    @Autowired
-    private RequestService service;
+    private final RequestService service;
 
     /**
      * 요청 생성

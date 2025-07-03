@@ -28,7 +28,7 @@ function Menu() {
         </>
 
       )}
-      <Link to="/review/review">리뷰</Link>
+       |{" "}<Link to="/review/review">리뷰</Link>
     </nav>
   );
 }

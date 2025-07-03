@@ -53,12 +53,20 @@ public class Request {
     private Talent talent;
 
     /**
-     * 요청과 관련된 회원 정보
+     * 요청한 회원 정보
      * User 엔티티와 일대일 관계
      */
     @ManyToOne
-    @JoinColumn(name = "userno")
-    private User user;
+    @JoinColumn(name = "giverno")
+    private User giver;
+    
+    /**
+     * 요청받은 회원 정보
+     * User 엔티티와 일대일 관계
+     */
+    @ManyToOne
+    @JoinColumn(name = "receiverno")
+    private User receiver;
 
     /**
 
@@ -91,10 +99,11 @@ public class Request {
      * @param status 요청 상태
      * @param message 요청 메세지
      */
-    public Request(Talent talent, User user,
+    public Request(Talent talent, User giver, User receiver,
         String status, String message) {
       this.talent = talent;
-      this.user = user;
+      this.giver = giver;
+      this.receiver = receiver;
       this.status = status;
       this.message = message;
   }

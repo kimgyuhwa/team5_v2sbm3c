@@ -170,8 +170,12 @@ public class User {
     private List<Message> messages = new ArrayList<>();
     
     /** 요청 - User가 리뷰 작성자(user)인 일대다 관계  */
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Request> requests = new ArrayList<>();
+    @OneToMany(mappedBy = "giver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Request> giverRequests = new ArrayList<>();
+    
+    /** 요청 - User가 리뷰 작성자(user)인 일대다 관계  */
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Request> receiverRequests = new ArrayList<>();
     
     /** 게시물(Talent) - User가 작성자(user)인 일대다 관계  */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -166,7 +166,8 @@ public class TalentService {
                 t.getTitle(),
                 t.getLanguage(),
                 t.getCategory() != null ? t.getCategory().getName() : "없음",
-                t.getType() != null ? t.getType().getName() : "없음"
+                t.getType() != null ? t.getType().getName() : "없음",
+                t.getUser().getUserno()
         );
     }
 

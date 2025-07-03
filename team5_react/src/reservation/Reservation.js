@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext,useEffect, useState } from "react";
+import { GlobalContext } from "../components/GlobalContext";
 
 const ReservationsManager = () => {
   const [reservations, setReservations] = useState([]);
+  const { loginUser } = useContext(GlobalContext);// 로그인 유저 가져오기
+
   const [form, setForm] = useState({
-    userno: "",
+    userno: "",  // 초기엔 비워두고 useEffect에서 채움
     placeno: "",
     start_time: "",
     end_time: "",
@@ -11,36 +14,45 @@ const ReservationsManager = () => {
     status: "예약완료"
   });
 
-  const API_BASE = "http://localhost:9093/reservations";
+  const API_BASE = "/reservations";
 
-  // 전체 예약 조회
+  useEffect(() => {
+    fetchReservations();
+
+    // 🔹 로그인된 유저 정보로 userno 설정
+    if (loginUser?.userno) {
+      setForm((prev) => ({ ...prev, userno: loginUser.userno }));
+    }
+  }, []);
+
   const fetchReservations = async () => {
     const res = await fetch(API_BASE);
     const data = await res.json();
     setReservations(data);
   };
 
-  useEffect(() => {
-    fetchReservations();
-  }, []);
-
-  // 입력 값 핸들링
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 예약 등록
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.userno) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     const res = await fetch(API_BASE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form)
     });
+
     if (res.ok) {
       alert("예약 완료!");
       setForm({
-        userno: "",
+        userno: loginUser.userno,  // 다시 설정!
         placeno: "",
         start_time: "",
         end_time: "",
@@ -51,7 +63,6 @@ const ReservationsManager = () => {
     }
   };
 
-  // 예약 삭제
   const deleteReservation = async (id) => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
@@ -62,12 +73,8 @@ const ReservationsManager = () => {
     <div className="p-6 max-w-2xl mx-auto">
       <h2 className="text-xl font-bold mb-4">📅 예약 관리</h2>
 
-      {/* 예약 등록 폼 */}
       <form onSubmit={handleSubmit} className="space-y-3 mb-8 border p-4 rounded-lg shadow">
-        <div>
-          <label>유저번호:</label>
-          <input type="number" name="userno" value={form.userno} onChange={handleChange} className="border ml-2 px-2" required />
-        </div>
+
         <div>
           <label>장소번호:</label>
           <input type="number" name="placeno" value={form.placeno} onChange={handleChange} className="border ml-2 px-2" required />
