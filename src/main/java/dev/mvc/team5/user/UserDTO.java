@@ -17,9 +17,14 @@ public class UserDTO {
     private String location;   // 위치 
     private String bio;   // 자기소개
     private String role;    // 역할(ADMIN, USER)
-    private Long schoolId;   // 학교 아이디  
+    private Long schoolno;   // 학교 번호  
+    private String schoolname; // 학교이름
     
-    
+    @Data
+    public static class SchoolInfo{
+      private Long schoolno;
+      private String schoolName;
+    }    
     @Data
     public static class MailRequestDto{
       private String email;

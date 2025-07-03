@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import com.univcert.api.UnivCert;
 
 import dev.mvc.team5.activitylog.ActivityLogService;
+import dev.mvc.team5.school.SchoolDTO;
+import dev.mvc.team5.school.SchoolService;
+import dev.mvc.team5.school.SchoolServiceImpl;
 import dev.mvc.team5.tool.MailService;
 import dev.mvc.team5.user.UserDTO.MailRequestDto;
 import dev.mvc.team5.user.UserDTO.VerifyCodeDto;
@@ -24,6 +27,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private SchoolServiceImpl schoolService;
     
     @Autowired
     private MailService mailService;
@@ -108,10 +114,10 @@ public class UserController {
 
         if (success) {
             UserDTO loginUser = userService.getUserById(userDTO.getUserId());
-            
+            System.out.println(loginUser);
             session.setAttribute("userno", loginUser.getUserno());
             session.setAttribute("username", loginUser.getUsername());
-            session.setAttribute("schoolname", loginUser.getSchoolId());
+            session.setAttribute("schoolno", loginUser.getSchoolno());
             
          // IP & User-Agent
             String ip = request.getHeader("X-Forwarded-For");

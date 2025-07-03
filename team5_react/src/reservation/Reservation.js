@@ -2,6 +2,8 @@ import React, { useContext,useEffect, useState } from "react";
 import { GlobalContext } from "../components/GlobalContext";
 
 const ReservationsManager = () => {
+  const { userno } = useContext(GlobalContext);
+  console.log("reservation: " +  loginUser)
   const [reservations, setReservations] = useState([]);
   const { loginUser } = useContext(GlobalContext);// 로그인 유저 가져오기
 
@@ -15,15 +17,6 @@ const ReservationsManager = () => {
   });
 
   const API_BASE = "/reservations";
-
-  useEffect(() => {
-    fetchReservations();
-
-    // 🔹 로그인된 유저 정보로 userno 설정
-    if (loginUser?.userno) {
-      setForm((prev) => ({ ...prev, userno: loginUser.userno }));
-    }
-  }, []);
 
   const fetchReservations = async () => {
     const res = await fetch(API_BASE);

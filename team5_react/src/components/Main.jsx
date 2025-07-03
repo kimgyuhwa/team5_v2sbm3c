@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext,useState } from 'react';
 import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
+import SearchBar from '../searchBar/SearchBar';
+import { GlobalContext } from './GlobalContext';
 
 export default function MainPage() {
+  const { loginUser } = useContext(GlobalContext);
+  console.log("main:" , loginUser);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [hoveredCategory, setHoveredCategory] = useState(null);
+  
   // 샘플 게시물 데이터
   const [posts, setPosts] = useState([
     {
@@ -59,6 +64,70 @@ export default function MainPage() {
   const handleNotificationClick = () => {
     console.log('알림 버튼 클릭');
   };
+
+    // 카테고리 데이터
+  const categories = [
+    {
+      id: 1,
+      name: '학업',
+      icon: '📚',
+      subcategories: [
+        { id: 11, name: '수업 정보' },
+        { id: 12, name: '시험 정보' },
+        { id: 13, name: '과제 도움' },
+        { id: 14, name: '학점 관리' }
+      ]
+    },
+    {
+      id: 2,
+      name: '동아리',
+      icon: '🎭',
+      subcategories: [
+        { id: 21, name: '동아리 모집' },
+        { id: 22, name: '동아리 활동' },
+        { id: 23, name: '공연/전시' },
+        { id: 24, name: '봉사활동' }
+      ]
+    },
+    {
+      id: 3,
+      name: '취업',
+      icon: '💼',
+      subcategories: [
+        { id: 31, name: '인턴십' },
+        { id: 32, name: '취업 정보' },
+        { id: 33, name: '자격증' },
+        { id: 34, name: '스펙 관리' }
+      ]
+    },
+    {
+      id: 4,
+      name: '생활',
+      icon: '🏠',
+      subcategories: [
+        { id: 41, name: '기숙사' },
+        { id: 42, name: '맛집 정보' },
+        { id: 43, name: '교통 정보' },
+        { id: 44, name: '알바 정보' }
+      ]
+    },
+    {
+      id: 5,
+      name: '자유게시판',
+      icon: '💬',
+      subcategories: [
+        { id: 51, name: '잡담' },
+        { id: 52, name: '질문' },
+        { id: 53, name: '후기' },
+        { id: 54, name: '건의사항' }
+      ]
+    }
+  ];
+
+  const handleCategoryClick = (categoryId, subcategoryId = null) => {
+    console.log('카테고리 클릭:', categoryId, subcategoryId);
+  };
+  
 
   return (
     <div style={{
@@ -348,7 +417,7 @@ export default function MainPage() {
               marginBottom: '20px',
               textAlign: 'center'
             }}>
-              솔데 대학교
+              {loginUser.schoolname}
             </h2>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -395,10 +464,110 @@ export default function MainPage() {
               onMouseOut={(e) => e.target.style.backgroundColor = '#6f42c1'}
               >
                 <Menu size={20} />
-                <span>카테고리</span>
+                <span>장소보기</span>
               </button>
             </div>
           </div>
+
+
+
+          {/* 카테고리 섹션 */}
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '20px',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+            padding: '30px',
+            boxSizing: 'border-box',
+            position: 'relative'
+          }}>
+            <h3 style={{
+              fontSize: '20px',
+              fontWeight: '600',
+              color: '#333',
+              marginBottom: '20px',
+              textAlign: 'center'
+            }}>
+              카테고리
+            </h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {categories.map((category) => (
+                <div
+                  key={category.id}
+                  style={{ position: 'relative' }}
+                  onMouseEnter={() => setHoveredCategory(category.id)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                >
+                  <button
+                    onClick={() => handleCategoryClick(category.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      backgroundColor: hoveredCategory === category.id ? '#f8f9fa' : 'transparent',
+                      border: '1px solid #e1e5e9',
+                      borderRadius: '10px',
+                      fontSize: '14px',
+                      color: '#333',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      outline: 'none',
+                      gap: '12px'
+                    }}
+                  >
+                    <span style={{ fontSize: '16px' }}>{category.icon}</span>
+                    <span style={{ fontWeight: '500' }}>{category.name}</span>
+                  </button>
+
+                  {/* 서브카테고리 드롭다운 */}
+                  {hoveredCategory === category.id && (
+                    <div style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: '100%',
+                      marginLeft: '12px',
+                      width: '180px',
+                      backgroundColor: 'white',
+                      borderRadius: '12px',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+                      border: '1px solid #e1e5e9',
+                      zIndex: 100,
+                      overflow: 'hidden',
+                      animation: 'slideDown 0.2s ease-out'
+                    }}>
+                      <div style={{ padding: '8px 0' }}>
+                        {category.subcategories.map((subcategory) => (
+                          <button
+                            key={subcategory.id}
+                            onClick={() => handleCategoryClick(category.id, subcategory.id)}
+                            style={{
+                              display: 'block',
+                              width: '100%',
+                              padding: '10px 16px',
+                              fontSize: '13px',
+                              color: '#555',
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'background-color 0.2s',
+                              textAlign: 'left'
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                          >
+                            {subcategory.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        
+
         </div>
 
         {/* 중앙 컨텐츠 영역 */}
@@ -452,6 +621,7 @@ export default function MainPage() {
               </div>
             </div>
             
+            {/*여기는 게시물 검색 밑부분 */}
           </div>
 
           {/* 게시물 영역 */}
@@ -519,8 +689,10 @@ export default function MainPage() {
                     <p style={{
                       color: '#555',
                       marginBottom: '20px',
+                      marginLeft: '20px',
                       lineHeight: '1.6',
-                      fontSize: '16px'
+                      fontSize: '16px',
+                      textAlign: 'left'
                     }}>
                       {post.content}
                     </p>
