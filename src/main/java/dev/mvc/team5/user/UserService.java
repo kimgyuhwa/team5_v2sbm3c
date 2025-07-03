@@ -170,6 +170,21 @@ public class UserService {
       user.setRole(userDTO.getRole());
       userRepository.save(user);
   }
+    // 비밀번호 변경
+    public boolean updatePassword(String username,String userId, String email, String newPassword) {
+      Optional<User> userOpt = userRepository.findByUsernameAndUserIdAndEmail(username,userId, email);
+      if (userOpt.isPresent()) {
+          User user = userOpt.get();
+
+          // 비밀번호 암호화 (반드시 해야 함)
+          String encodedPassword = security.aesEncode(newPassword);
+          user.setPassword(encodedPassword);
+
+          userRepository.save(user);
+          return true;
+      }
+      return false;
+  }
     // 회원 탈퇴
     public void delete(Long userno) {
       userRepository.deleteById(userno);

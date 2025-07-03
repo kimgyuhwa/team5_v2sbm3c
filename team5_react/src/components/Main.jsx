@@ -5,7 +5,7 @@ import { GlobalContext } from './GlobalContext';
 
 export default function MainPage() {
   const { loginUser } = useContext(GlobalContext);
-  console.log("main:" , loginUser);
+  //console.log("main:" , loginUser);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredCategory, setHoveredCategory] = useState(null);
@@ -66,7 +66,7 @@ export default function MainPage() {
   };
 
     // 카테고리 데이터
-  const categories = [
+  const categories = [  
     {
       id: 1,
       name: '학업',

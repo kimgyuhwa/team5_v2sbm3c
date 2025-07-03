@@ -27,10 +27,9 @@ public class PlacesController {
         return ResponseEntity.ok(placesService.findAll());
     }
 
-    // 단건 조회
     @GetMapping("/{placeno}")
-    public ResponseEntity<?> read(@PathVariable Long placeno){
-        return placesService.findById(placeno)
+    public ResponseEntity<PlacesDTO> read(@PathVariable(name="placeno") Long placeno) {
+        return placesService.findByPlaceno(placeno)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -59,7 +58,7 @@ public class PlacesController {
 
     // 특정 학교관에 속한 강의실만 조회
     @GetMapping("/schoolgwan/{schoolgwanno}")
-    public ResponseEntity<List<Places>> listBySchoolGwan(@PathVariable Long schoolgwanno) {
+    public ResponseEntity<List<PlacesDTO>> listBySchoolGwan(@PathVariable(name="schoolgwanno") Long schoolgwanno) {
         return ResponseEntity.ok(placesService.findBySchoolGwanNo(schoolgwanno));
     }
     

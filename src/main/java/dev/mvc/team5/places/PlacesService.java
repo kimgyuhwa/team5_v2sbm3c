@@ -49,6 +49,9 @@ public interface PlacesService {
 		List<Places> searchByPlacename(String keyword);
 		
 //		특정 학교관에 속한 강의실만 조회
-		List<Places> findBySchoolGwanNo(Long schoolgwanno);
+		List<PlacesDTO> findBySchoolGwanNo(Long schoolgwanno);
+		
+	// 상세보기
+    Optional<PlacesDTO> findByPlaceno(Long placeno);
 		
 }
