@@ -103,4 +103,12 @@ public class TalentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    
+    @GetMapping("/list-by-school/{schoolno}")
+    public ResponseEntity<List<TalentListDTO>> getTalentsBySchool(@PathVariable(name="schoolno") Long schoolno) {
+        List<TalentListDTO> list = service.findBySchoolno(schoolno);
+        return ResponseEntity.ok(list);
+    }
+
+    
 }

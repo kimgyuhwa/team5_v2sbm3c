@@ -109,7 +109,7 @@ public class ReservationsServiceImpl implements ReservationsService {
         dto.setReservationno(r.getReservationno());
         dto.setUserno(r.getUser().getUserno());
         dto.setUsername(r.getUser().getName()); // 필요시 엔티티에 getName() 추가
-        dto.setPlaceno(r.getPlace().getPlace());
+        dto.setPlaceno(r.getPlace().getPlaceno());
         dto.setPlacename(r.getPlace().getPlacename());
         dto.setStart_time(r.getStart_time());
         dto.setEnd_time(r.getEnd_time());

@@ -307,7 +307,95 @@ public class UserController {
 
         return result;
     }
+    //1 
+    @PostMapping("/verifyCodePwd")
+    public Map<String, Object> verifyCodeForPwd(@RequestBody Map<String, String> payload, HttpSession session) {
+        String code = payload.get("code");
+        String username = payload.get("username");
+        String userId = payload.get("userId");  // 추가
+        String email = payload.get("email");
 
+        String sessionCode = (String) session.getAttribute("verify_code");
+        String sessionUsername = (String) session.getAttribute("verify_username");
+        String sessionUserId = (String) session.getAttribute("verify_userId");
+        String sessionEmail = (String) session.getAttribute("verify_email");
+
+        Map<String, Object> result = new HashMap<>();
+        if (sessionCode != null && sessionCode.equals(code)
+                && sessionUsername.equals(username)
+                && sessionUserId.equals(userId)
+                && sessionEmail.equals(email)) {
+            result.put("sw", true);
+            result.put("msg", "비밀번호 찾기 인증 성공");
+        } else {
+            result.put("sw", false);
+            result.put("msg", "인증 실패");
+        }
+
+        return result;
+    }
+    //2 
+    @PostMapping("/sendCodePwd")
+    public Map<String, Object> sendCodeForPwd(@RequestBody Map<String, String> payload, HttpSession session) {
+        String username = payload.get("username");
+        String userId = payload.get("userId");
+        String email = payload.get("email");
+
+        String code = String.valueOf((int) (Math.random() * 900000) + 100000);
+
+        boolean sent = mailService.sendAuthCode(email, code);
+
+        Map<String, Object> result = new HashMap<>();
+        if (sent) {
+            session.setAttribute("verify_code", code);
+            session.setAttribute("verify_username", username);
+            session.setAttribute("verify_userId", userId);
+            session.setAttribute("verify_email", email);
+            result.put("sw", true);
+            result.put("msg", "비밀번호 찾기용 인증번호 발송");
+        } else {
+            result.put("sw", false);
+            result.put("msg", "인증번호 전송 실패");
+        }
+
+        return result;
+    }
+ // 3) 비밀번호 재설정 - 인증 후 새로운 비밀번호 등록
+    @PostMapping("/resetPwd")
+    public Map<String, Object> resetPassword(@RequestBody Map<String, String> payload, HttpSession session) {
+        String code = payload.get("code");
+        String username = payload.get("username");
+        String userId = payload.get("userId");
+        String email = payload.get("email");
+        String newPassword = payload.get("newPassword");
+
+        String sessionCode = (String) session.getAttribute("verify_code");
+        String sessionUsername = (String) session.getAttribute("verify_username");
+        String sessionEmail = (String) session.getAttribute("verify_email");
+        String sessionId = (String) session.getAttribute("verify_userId");
+
+        Map<String, Object> result = new HashMap<>();
+        if (sessionCode != null && sessionCode.equals(code)
+                && sessionUsername.equals(username)
+                && sessionEmail.equals(email)
+                && sessionId.equals(userId)){
+
+            boolean updated = userService.updatePassword(username, userId,email, newPassword);
+
+            if (updated) {
+                result.put("sw", true);
+                result.put("msg", "비밀번호가 성공적으로 변경되었습니다.");
+            } else {
+                result.put("sw", false);
+                result.put("msg", "사용자 정보가 일치하지 않습니다.");
+            }
+        } else {
+            result.put("sw", false);
+            result.put("msg", "인증번호 불일치 또는 만료됨");
+        }
+
+        return result;
+    }
     /** 회원 탈퇴 */
     @DeleteMapping("/delete")
     public Map<String, Object> delete(HttpSession session) {

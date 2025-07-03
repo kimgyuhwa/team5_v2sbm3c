@@ -10,6 +10,7 @@ import UserSession from './user/UserSession';
 import UserRegister from './user/UserRegister';
 import UserProfile from './user/UserProfile';
 import FindUserId from './user/FindUserId';
+import FindUserPwd from './user/FindUserPwd';
 import ChatRoom from './chat/ChatRoom';
 import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCategory from './talent/category/TalentCategory';
@@ -38,6 +39,7 @@ function App() {
           <Route path="/user/register" element={<UserRegister />} />  
           <Route path="/user/profile" element={<UserProfile />} />  
           <Route path="/user/findId" element={<FindUserId />} /> 
+          <Route path="/user/findPwd" element={<FindUserPwd />} />
           <Route path="/user/univCert" element={<UnivCertPage />} /> 
           <Route path="/chat" element={<ChatRoom />} /> 
           <Route path="/talent/post" element={<Talent />} />

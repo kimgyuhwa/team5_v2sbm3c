@@ -332,10 +332,16 @@ function UserLogin() {
 
             <div style={{ marginTop: '10px' }}>
               <Link to="/user/univCert" style={{ marginRight: '10px' }}>
-                학교 인증하기
+                학교 인증하기   
               </Link>
-              <Link to="/user/findId">아이디 찾기</Link>
+              <Link to="/user/findId">    
+                아이디 찾기   
+              </Link>
 
+              
+              <Link to="/user/findPwd">  
+                비밀번호 찾기  
+              </Link>
             </div>
           </div>
           </div>

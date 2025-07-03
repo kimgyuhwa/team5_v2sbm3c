@@ -1,45 +1,62 @@
-import React, { useContext,useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
+
 import SearchBar from '../searchBar/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import Header from './header/Header';
 import MainSideBar from './sidebar/MainSideBar';
 import { GlobalContext } from './GlobalContext';
+import '../style/MainPage.css';
+import TalentList from '../talent/post/TalentList';
+import TalentCreateForm from '../talent/post/TalentCreateForm';
+import ChatWidget from '../ai/ChatWidget';
 
 export default function MainPage() {
   const { loginUser } = useContext(GlobalContext);
-  console.log("main:" , loginUser);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredCategory, setHoveredCategory] = useState(null);
+  const [refresh, setRefresh] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
   
-  // 샘플 게시물 데이터
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "첫 번째 게시물 나중에 바꿔야함",
-      content: "이것은 첫 번째 게시물의 내용입니다. 리액트로 만든 메인페이지가 잘 작동하고 있습니다.",
-      author: "사용자1",
-      date: "2025-06-27",
-      likes: 12
-    },
-    {
-      id: 2,
-      title: "두 번째 게시물",
-      content: "두 번째 게시물입니다. 검색 기능과 다양한 컴포넌트들이 포함되어 있습니다.",
-      author: "사용자2",
-      date: "2025-06-26",
-      likes: 8
-    },
-    {
-      id: 3,
-      title: "세 번째 게시물",
-      content: "마지막 게시물입니다. 반응형 디자인으로 모바일에서도 잘 보입니다.",
-      author: "사용자3",
-      date: "2025-06-25",
-      likes: 15
-    }
-  ]);
+  const toggleCreateForm = () => setShowCreateForm((prev) => !prev);
+  const triggerRefresh = () => setRefresh((prev) => !prev);
+
+  // // 샘플 게시물 데이터
+  // const [posts, setPosts] = useState([
+  //   {
+  //     id: 1,
+  //     title: "첫 번째 게시물 나중에 바꿔야함",
+  //     content: "이것은 첫 번째 게시물의 내용입니다. 리액트로 만든 메인페이지가 잘 작동하고 있습니다.",
+  //     author: "사용자1",
+  //     date: "2025-06-27",
+  //     likes: 12
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "두 번째 게시물",
+  //     content: "두 번째 게시물입니다. 검색 기능과 다양한 컴포넌트들이 포함되어 있습니다.",
+  //     author: "사용자2",
+  //     date: "2025-06-26",
+  //     likes: 8
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "세 번째 게시물",
+  //     content: "마지막 게시물입니다. 반응형 디자인으로 모바일에서도 잘 보입니다.",
+  //     author: "사용자3",
+  //     date: "2025-06-25",
+  //     likes: 15
+  //   }
+  // ]);
+    const handleUpdated = () => {
+  setRefresh(prev => !prev);  // refresh 값 토글해서 useEffect 다시 실행
+  };
+
+  const handleDeleted = () => {
+    setRefresh(prev => !prev);
+  };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -51,10 +68,10 @@ export default function MainPage() {
     }
   };
 
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredPosts = posts.filter(post =>
+  //   post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //   post.content.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
   const searchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -136,138 +153,58 @@ export default function MainPage() {
                 />
               </div>
             </div>
-            
-            {/*여기는 게시물 검색 밑부분 */}
           </div>
 
-          {/* 게시물 영역 */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '20px',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-            boxSizing: 'border-box'
-
-          }}>
-            <h2 style={{
-              fontWeight: '550',
-              color: '#333',
-              marginTop: '20px',
-              marginBottom: '20px'
-            }}>
+          {/* <div className="posts-box">
+            <h2 className="posts-title">
               {searchQuery ? `"${searchQuery}" 검색 결과` : '최근 게시물'}
             </h2>
-            
+
             {filteredPosts.length === 0 ? (
-              <div style={{
-                textAlign: 'center',
-                padding: '30px',
-                color: '#666',
-                fontSize: '16px'
-              }}>
-                검색 결과가 없습니다.
-              </div>
+              <div className="no-results">검색 결과가 없습니다.</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>   {/* 게시물 하나하나 */}
-                {filteredPosts.map((post) => (
-                  <div key={post.id} style={{
-                    border: '1px solid #e1e5e9',
-                    borderRadius: '15px',
-                    padding: '25px',
-                    transition: 'box-shadow 0.3s, transform 0.2s',
-                    cursor: 'pointer'
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      marginBottom: '15px'
-                    }}>
-                      <h3 style={{
-                        fontSize: '20px',
-                        fontWeight: '600',
-                        color: '#333',
-                        margin: 0
-                      }}>
-                        {post.title}
-                      </h3>
-                      <span style={{ fontSize: '14px', color: '#666' }}>{post.date}</span>
+              filteredPosts.map((post) => (
+                <article key={post.id} className="post-item">
+                  <header className="post-header">
+                    <h3 className="post-title">{post.title}</h3>
+                    <time className="post-date">{post.date}</time>
+                  </header>
+                  <p className="post-content">{post.content}</p>
+                  <footer className="post-footer">
+                    <span className="post-author">작성자: {post.author}</span>
+                    <div className="post-actions">
+                      <button className="likes" onMouseOver={(e) => e.target.style.color = '#c82333'} onMouseOut={(e) => e.target.style.color = '#dc3545'}>
+                        ❤️ {post.likes}
+                      </button>
+                      <button className="comments" onMouseOver={(e) => e.target.style.color = '#0056b3'} onMouseOut={(e) => e.target.style.color = '#007bff'}>
+                        댓글
+                      </button>
+                      <button className="share" onMouseOver={(e) => e.target.style.color = '#495057'} onMouseOut={(e) => e.target.style.color = '#6c757d'}>
+                        공유
+                      </button>
                     </div>
-                    <p style={{
-                      color: '#555',
-                      marginBottom: '20px',
-                      marginLeft: '20px',
-                      lineHeight: '1.6',
-                      fontSize: '16px',
-                      textAlign: 'left'
-                    }}>
-                      {post.content}
-                    </p>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
-                      <span style={{ fontSize: '14px', color: '#666' }}>작성자: {post.author}</span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <button style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          background: 'none',
-                          border: 'none',
-                          color: '#dc3545',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          transition: 'color 0.2s'
-                        }}
-                        onMouseOver={(e) => e.target.style.color = '#c82333'}
-                        onMouseOut={(e) => e.target.style.color = '#dc3545'}
-                        >
-                          <span>❤️</span>
-                          <span>{post.likes}</span>
-                        </button>
-                        <button style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#007bff',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          transition: 'color 0.2s'
-                        }}
-                        onMouseOver={(e) => e.target.style.color = '#0056b3'}
-                        onMouseOut={(e) => e.target.style.color = '#007bff'}
-                        >
-                          댓글
-                        </button>
-                        <button style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#6c757d',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          transition: 'color 0.2s'
-                        }}
-                        onMouseOver={(e) => e.target.style.color = '#495057'}
-                        onMouseOut={(e) => e.target.style.color = '#6c757d'}
-                        >
-                          공유
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  </footer>
+                </article>
+              ))
             )}
+          </div> */}
+          {showCreateForm && (
+            <TalentCreateForm
+              onCreated={() => {
+                setShowCreateForm(false); // 작성 후 폼 닫기
+                triggerRefresh();         // 리스트 새로고침
+              }}
+            />
+          )}
+
+          <div className="posts-box">
+            {/* <h2> 이런 제목은 TalentList 내부에서 관리하거나 여기에 그대로 놔도 됩니다 */}
+            <TalentList
+              refresh={refresh}
+              onUpdated={handleUpdated}
+              onDeleted={handleDeleted}
+            />
+            <ChatWidget />
           </div>
         </div>
       
