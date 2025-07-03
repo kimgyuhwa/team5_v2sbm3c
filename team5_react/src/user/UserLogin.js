@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import '../App.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { GlobalContext } from '../components/GlobalContext';
-
+import SearchBar  from '../searchBar/SearchBar';
 function enter_chk(event, nextTag) {
   if (event.keyCode === 13) {
     document.getElementById(nextTag).focus();
@@ -145,6 +145,7 @@ function UserLogin() {
     setPasswd('1234');
   };
 
+  
   return (
     <div
       style={{
@@ -156,9 +157,11 @@ function UserLogin() {
         fontFamily: 'Arial, sans-serif',
       }}
     >
+      
       {sw === true ? (
         <div style={{ display: 'flex', gap: '50px', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ width: '600px', height: '400px', backgroundColor: 'white', borderRadius: '20px', boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontSize: '18px', color: '#333' }}>
+            
             <div style={{ marginBottom: '20px' }}>사용자 로그인 성공했습니다.</div>
             <button
               onClick={() => navigate('/components/main')}
@@ -178,6 +181,7 @@ function UserLogin() {
           {/* 옆 이미지 생략 가능 */}
         </div>
       ) : (
+        
         <form onSubmit={send} style={{ margin: '10px auto', width: '30%', textAlign: 'left' }}>
           <h3 style={{ textAlign: 'center' }}>사용자 로그인</h3>
           <div className="mb-3 mt-3">
