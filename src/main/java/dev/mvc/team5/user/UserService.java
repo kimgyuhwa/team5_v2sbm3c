@@ -14,6 +14,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    
 
     @Autowired
     private dev.mvc.team5.school.SchoolRepository schoolRepository; // 선택: School 엔티티 주입
@@ -59,6 +61,8 @@ public class UserService {
       dto.setLocation(user.getLocation());
       dto.setBio(user.getBio());
       dto.setRole(user.getRole());
+      dto.setSchoolno(user.getSchool().getSchoolno());
+      dto.setSchoolname(user.getSchool().getSchoolname());
       return dto;
   }
 
@@ -92,7 +96,7 @@ public class UserService {
               session.setAttribute("userno", user.getUserno());   // userno 저장
               session.setAttribute("username", user.getUsername());   // username 저장
               session.setAttribute("userId", user.getUserId());
-             // session.setAttribute("schoolname", user.getSchool());
+              session.setAttribute("schoolname", user.getSchool().getSchoolname());
               session.setAttribute("role", user.getRole());
               return true;
           }
@@ -117,7 +121,8 @@ public class UserService {
       dto.setLocation(user.getLocation());
       dto.setBio(user.getBio());
       dto.setRole(user.getRole());
-      //dto.setSchoolId(user.getSchool() != null ? user.getSchool().getId() : null);
+      dto.setSchoolno(user.getSchool() != null ? user.getSchool().getSchoolno() : null);
+      dto.setSchoolname(user.getSchool().getSchoolname());
       return dto;
   }
     // 로그아웃

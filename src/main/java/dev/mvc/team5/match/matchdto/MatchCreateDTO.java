@@ -16,31 +16,4 @@ public class MatchCreateDTO {
     private Long talentno;
     private Long reservationno;
     
-    public Match toEntity() {
-      // 연관 엔티티들을 ID만 세팅한 상태로 생성
-      Request request = new Request();
-      request.setRequestno(this.requestno);
-
-      User giver = new User();
-      giver.setUserno(this.giverno);
-
-      User receiver = new User();
-      receiver.setUserno(this.receiverno);
-
-      Talent talent = new Talent();
-      talent.setTalentno(this.talentno);
-
-      Reservations reservation = new Reservations();
-      reservation.setReservationno(this.reservationno);
-
-      // Match 엔티티에 설정
-      Match match = new Match();
-      match.setRequest(request);
-      match.setGiver(giver);
-      match.setReceiver(receiver);
-      match.setTalent(talent);
-      match.setReservation(reservation);
-
-      return match;
-  }
 }

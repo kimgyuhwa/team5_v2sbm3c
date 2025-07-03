@@ -14,7 +14,7 @@ public interface ReservationsRepository extends JpaRepository<Reservations, Long
 
 	@Query("SELECT r FROM Reservations r WHERE r.place.place = :placeno " +
       "AND :start < r.end_time AND :end > r.start_time")
-List<Reservations> findConflict(@Param("placeno") Long placeno,
+	List<Reservations> findConflict(@Param("placeno") Long placeno,
                                 @Param("start") LocalDateTime start,
                                 @Param("end") LocalDateTime end);
 	

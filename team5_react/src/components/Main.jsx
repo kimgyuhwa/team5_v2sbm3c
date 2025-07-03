@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useContext,useState } from 'react';
 import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
 import SearchBar from '../searchBar/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import Header from './header/Header';
 import MainSideBar from './sidebar/MainSideBar';
+import { GlobalContext } from './GlobalContext';
 
 export default function MainPage() {
+  const { loginUser } = useContext(GlobalContext);
+  console.log("main:" , loginUser);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const navigate = useNavigate();
+  const [hoveredCategory, setHoveredCategory] = useState(null);
+  
   // 샘플 게시물 데이터
   const [posts, setPosts] = useState([
     {

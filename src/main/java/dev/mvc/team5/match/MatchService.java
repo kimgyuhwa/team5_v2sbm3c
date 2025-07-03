@@ -4,10 +4,15 @@ import dev.mvc.team5.match.matchdto.MatchResponseDTO;
 import dev.mvc.team5.match.matchdto.MatchCreateDTO;
 import dev.mvc.team5.match.matchdto.MatchListDTO;
 import dev.mvc.team5.match.MatchRepository;
+import dev.mvc.team5.reservations.Reservations;
 import dev.mvc.team5.reservations.ReservationsRepository;
+import dev.mvc.team5.request.Request;
 import dev.mvc.team5.request.RequestRepository;
+import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.talents.TalentRepository;
+import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,28 +22,23 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MatchService {
 
-    @Autowired
-    private MatchRepository matchRepository;
-
-    @Autowired
-    private ReservationsRepository reservationsRepository;
-
-    @Autowired
-    private RequestRepository requestRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TalentRepository talentRepository;
+    private final MatchRepository matchRepository;
+    private final ReservationsRepository reservationsRepository;
+    private final RequestRepository requestRepository;
+    private final UserRepository userRepository;
+    private final TalentRepository talentRepository;
+   
+    private final ReservationsRepository reservationRepository;
     
  // Entity -> DTO 변환 헬퍼 메서드
     private MatchResponseDTO toMatchResponseDTO(Match match) {
         return new MatchResponseDTO(
             match.getMatchno(),
             match.getRequest().getRequestno(),
+            match.getReservation() != null ? match.getReservation().getReservationno() : null,
             match.getGiver().getName(),
             match.getReceiver().getName(),
             match.getTalent().getTitle(),
@@ -49,19 +49,18 @@ public class MatchService {
 
     // 매칭 생성
     public MatchResponseDTO save(MatchCreateDTO dto) {
-      // DTO -> Entity 변환
-      Match match = dto.toEntity();
+      Request request = requestRepository.findById(dto.getRequestno())
+          .orElseThrow(() -> new RuntimeException("해당 요청이 존재하지 않습니다."));
+      User giver = userRepository.findById(dto.getGiverno())
+          .orElseThrow(() -> new RuntimeException("해당 요청 회원ID가 존재하지 않습니다."));
+      User receiver = userRepository.findById(dto.getReceiverno())
+          .orElseThrow(() -> new RuntimeException("해당 요청받은 회원ID 존재하지 않습니다."));
+      Talent talent = talentRepository.findById(dto.getTalentno())
+          .orElseThrow(() -> new RuntimeException("해당 게시물이 존재하지 않습니다."));
+      Reservations reservation = reservationRepository.findById(dto.getReservationno())
+          .orElseThrow(() -> new RuntimeException("해당 예약이 존재하지 않습니다."));
 
-      // 예약 엔티티 조회 후 세팅
-      reservationsRepository.findById(dto.getReservationno())
-          .ifPresent(match::setReservation);
-
-      // 요청 상태를 accepted로 바꿔줌
-      requestRepository.findById(dto.getRequestno())
-          .ifPresent(request -> {
-              request.setStatus("accepted"); // 또는 RequestStatus.ACCEPTED
-              requestRepository.save(request); // 상태 변경 저장
-          });
+      Match match = new Match(request, giver, receiver, talent, reservation);
 
       Match saved = matchRepository.save(match);
 
