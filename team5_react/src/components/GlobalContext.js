@@ -6,10 +6,10 @@ const GlobalProvider = ({ children }) => {
   // const [sw, setSw] = useState(false);         // 로그인 여부
   // const [userno, setUserno] = useState(0);     // 사용자 고유번호
   // const [loginUser, setLoginUser] = useState(null); // 로그인한 유저 정보 (객체)
-    const [sw, setSw] = useState(() => sessionStorage.getItem('sw') === 'true');
+  const [sw, setSw] = useState(() => sessionStorage.getItem('sw') === 'true');
   const [userno, setUserno] = useState(() => parseInt(sessionStorage.getItem('userno') || 0));
   const [loginUser, setLoginUser] = useState(() => {
-    const storedUser = sessionStorage.getItem('loginUser');
+  const storedUser = sessionStorage.getItem('loginUser');
 return storedUser ? JSON.parse(storedUser) : null;
   });
   // sw 상태가 바뀔 때마다 sessionStorage에 저장
