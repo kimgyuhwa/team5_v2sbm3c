@@ -37,4 +37,12 @@ public class UserDTO {
         private String schoolName;
         private int code;
     }
+    
+    @Data
+    public static class ResetPasswordDto {
+        private String email;
+        private String schoolName;
+        private int code; // 인증번호
+        private String newPassword; // 새 비밀번호
+    }
 }

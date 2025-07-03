@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 
+
 const PlacesList = () => {
   const [places, setPlaces] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const API_BASE = "http://localhost:9093/places";
+  const [schoolGwanNo, setSchoolGwanNo] = useState(61);  // 이건 고르는거 안해서 하드코딩햇음
+  const API_BASE = "/places";
 
-  // 전체 강의실 목록 가져오기
+  // 특정 학교관 번호로 강의실 목록 조회
   const fetchPlaces = async () => {
     try {
-      const res = await fetch(API_BASE);
+      const res = await fetch(`${API_BASE}/schoolgwan/${schoolGwanNo}`);
       const data = await res.json();
       setPlaces(data);
     } catch (err) {
-      console.error("강의실 불러오기 실패", err);
+      console.error("강의실 목록 불러오기 실패:", err);
     }
   };
 

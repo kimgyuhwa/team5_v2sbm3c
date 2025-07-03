@@ -2,6 +2,7 @@ package dev.mvc.team5.places;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -79,11 +80,37 @@ public class PlacesServiceImpl implements PlacesService {
         return placesRepository.findByPlacenameContaining(keyword);
     }
 
-    //학교관 번호로 필터링
+    //학교관 에 잇는 강의실만 볼수 있게
     @Override
-    public List<Places> findBySchoolGwanNo(Long schoolgwanno) {
-        return placesRepository.findBySchoolGwan_Schoolgwanno(schoolgwanno);
+    public List<PlacesDTO> findBySchoolGwanNo(Long schoolgwanno) {
+        return placesRepository.findBySchoolGwan_Schoolgwanno(schoolgwanno)
+            .stream()
+            .map(entity -> {
+                PlacesDTO dto = new PlacesDTO();
+                dto.setPlaceno(entity.getPlaceno());
+                dto.setPlacename(entity.getPlacename());
+                dto.setHosu(entity.getHosu());
+                dto.setStart_time(entity.getStart_time());
+                dto.setEnd_time(entity.getEnd_time());
+                dto.setSchoolgwanno(entity.getSchoolGwan().getSchoolgwanno());
+                return dto;
+            })
+            .collect(Collectors.toList());
     }
+    // 상세보기
+    public Optional<PlacesDTO> findByPlaceno(Long placeno) {
+      return placesRepository.findById(placeno)
+          .map(place -> {
+              PlacesDTO dto = new PlacesDTO();
+              dto.setPlaceno(place.getPlaceno());
+              dto.setPlacename(place.getPlacename());
+              dto.setHosu(place.getHosu());
+              dto.setStart_time(place.getStart_time());
+              dto.setEnd_time(place.getEnd_time());
+              dto.setSchoolgwanno(place.getSchoolGwan().getSchoolgwanno());
+              return dto;
+          });
+  }
     
     
 }

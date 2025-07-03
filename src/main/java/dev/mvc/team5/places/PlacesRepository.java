@@ -2,6 +2,7 @@ package dev.mvc.team5.places;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,7 @@ public interface PlacesRepository extends JpaRepository<Places, Long> {
 
     // 3. 학교관 번호로 강의실 조회
     List<Places> findBySchoolGwan_Schoolgwanno(Long schoolgwanno);
+    
+    // 상세보기
+    Optional<PlacesDTO> findByPlaceno(Long placeno);
 }

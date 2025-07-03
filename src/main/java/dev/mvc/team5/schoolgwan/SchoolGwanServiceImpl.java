@@ -2,6 +2,7 @@ package dev.mvc.team5.schoolgwan;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -62,7 +63,16 @@ public class SchoolGwanServiceImpl implements SchoolGwanService {
     }
 
     @Override
-    public List<SchoolGwan> findBySchoolNo(Long schoolno) {
-        return schoolGwanRepository.findBySchool_Schoolno(schoolno);
+    public List<SchoolGwanDTO> findBySchoolNo(Long schoolno) {
+        return schoolGwanRepository.findBySchool_Schoolno(schoolno)
+            .stream()
+            .map(entity -> {
+                SchoolGwanDTO dto = new SchoolGwanDTO();
+                dto.setSchoolgwanno(entity.getSchoolgwanno());
+                dto.setSchoolno(entity.getSchool().getSchoolno());
+                dto.setSchoolgwanname(entity.getSchoolgwanname());
+                return dto;
+            })
+            .collect(Collectors.toList());
     }
 }

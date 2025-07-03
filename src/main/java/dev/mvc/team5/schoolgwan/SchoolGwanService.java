@@ -21,5 +21,5 @@ public interface SchoolGwanService {
     void delete(Long schoolgwanno);
     
     // 특정 학교의 관 조회
-    List<SchoolGwan> findBySchoolNo(Long schoolno); 
+    List<SchoolGwanDTO> findBySchoolNo(Long schoolno);
 }

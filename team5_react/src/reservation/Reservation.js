@@ -2,13 +2,11 @@ import React, { useContext,useEffect, useState } from "react";
 import { GlobalContext } from "../components/GlobalContext";
 
 const ReservationsManager = () => {
-  const { userno } = useContext(GlobalContext);
-  console.log("reservation: " +  loginUser)
+  const { userno,sw,loginUser } = useContext(GlobalContext);
   const [reservations, setReservations] = useState([]);
-  const { loginUser } = useContext(GlobalContext);// 로그인 유저 가져오기
-
+  console.log("reservation: " +  loginUser)
   const [form, setForm] = useState({
-    userno: "",  // 초기엔 비워두고 useEffect에서 채움
+    userno: loginUser.userno,  // 초기엔 비워두고 useEffect에서 채움
     placeno: "",
     start_time: "",
     end_time: "",
@@ -24,6 +22,10 @@ const ReservationsManager = () => {
     setReservations(data);
   };
 
+  useEffect(() => {
+  fetchReservations();  // 컴포넌트 마운트 시 예약 목록 가져오기
+}, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -31,7 +33,7 @@ const ReservationsManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.userno) {
+    if (!sw) {
       alert("로그인이 필요합니다.");
       return;
     }
