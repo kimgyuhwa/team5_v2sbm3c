@@ -33,9 +33,25 @@ def summarize_tool(input: str) -> str:
 
 # ✅ 도구 3: 일반 응답
 def chat_tool(input: str) -> str:
+    # 1) AI 답변 생성
     prompt = PromptTemplate.from_template("너는 유용한 AI 도우미야. 사용자 메시지: {message}")
     chain = prompt | llm | StrOutputParser()
-    return chain.invoke({"message": input})
+    response = chain.invoke({"message": input})
+
+    # 2) 주요 정보 추출
+    key_info = extract_key_info(response)
+
+    # 3) 주요 정보가 일정 길이 이상이면 DB에 저장 (예: 10자 이상)
+    if len(key_info.strip()) >= 2:
+        try:
+            import requests
+            # userno는 실제 로그인 유저 번호로 바꿔야 함
+            requests.post("http://localhost:5000/chatbot/save", json={
+                "userno": ,
+                "content": key_info
+            })
+        except Exception as e:
+            print("저장 실패:", e)
 
 # ✅ tools로 등록
 tools = [

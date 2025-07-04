@@ -182,6 +182,13 @@ public class TalentService {
         );
     }
     
+    //  특정학교내  특정카테고리 글
+    public List<TalentListDTO> findBySchoolnoAndCategoryno(Long schoolno, Long categoryno) {
+      return talentRepository.findBySchool_SchoolnoAndCategory_Categoryno(schoolno, categoryno)
+                             .stream()
+                             .map(this::toListDTO)
+                             .collect(Collectors.toList());
+  }
    
 
     
