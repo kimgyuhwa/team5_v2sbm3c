@@ -22,6 +22,7 @@ import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
+import TalentCreateForm from './talent/post/TalentCreateForm';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="/talent/post" element={<Talent />} />
           <Route path="/talent/type" element={<TalentType />} />
           <Route path="/talent/category" element={<TalentCategory />} />
+          <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
           <Route path="/place/PlacesPage" element={<PlacesPage />} />
           <Route path="/talent/categrp" element={<TalentCateGrp />} />
           <Route path='/reservation/Reservation' element={<ReservationsManager />} /> 

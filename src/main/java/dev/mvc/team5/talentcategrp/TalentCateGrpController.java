@@ -1,5 +1,7 @@
 package dev.mvc.team5.talentcategrp;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -103,4 +105,15 @@ public class TalentCateGrpController {
     return ResponseEntity.ok(list);
   }
   
+  /**
+   * 대분류와 해당 중분류까지 포함된 전체 카테고리 구조 반환
+   * - React 사이드바 등에 사용하기 적합
+   * - 트리형 JSON 구조로 반환
+   */
+  @GetMapping("/all-with-sub")
+  public ResponseEntity<List<TalentCateGrpWithSubDTO>> getAllWithSub() {
+    List<TalentCateGrpWithSubDTO> result = service.getAllCateWithSub();
+    return ResponseEntity.ok(result);
+  }
 }
+

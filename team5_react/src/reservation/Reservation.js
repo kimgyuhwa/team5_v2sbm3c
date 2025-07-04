@@ -7,11 +7,11 @@ const ReservationsManager = () => {
   console.log("reservation: " +  loginUser)
   const [form, setForm] = useState({
     userno: loginUser.userno,  // 초기엔 비워두고 useEffect에서 채움
-    placeno: "",
+    placeno: 44,
     start_time: "",
     end_time: "",
     placesinfo: "",
-    status: "예약완료"
+    status: "대기중"
   });
 
   const API_BASE = "/reservations";
@@ -52,7 +52,7 @@ const ReservationsManager = () => {
         start_time: "",
         end_time: "",
         placesinfo: "",
-        status: "예약완료"
+        status: "대기중"
       });
       fetchReservations();
     }

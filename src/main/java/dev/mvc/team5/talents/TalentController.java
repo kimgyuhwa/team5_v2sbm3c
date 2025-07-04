@@ -103,12 +103,18 @@ public class TalentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-    
+    // 특정 학교 글만 보여주기
     @GetMapping("/list-by-school/{schoolno}")
     public ResponseEntity<List<TalentListDTO>> getTalentsBySchool(@PathVariable(name="schoolno") Long schoolno) {
         List<TalentListDTO> list = service.findBySchoolno(schoolno);
         return ResponseEntity.ok(list);
     }
-
-    
+ // 특정 학교의 특정 카테고리 글만 보여주기
+    @GetMapping("/list-by-school-and-category")
+    public ResponseEntity<List<TalentListDTO>> getTalentsBySchoolAndCategory(
+            @RequestParam(name = "schoolno") Long schoolno,
+            @RequestParam(name = "categoryno") Long categoryno) {
+        List<TalentListDTO> list = service.findBySchoolnoAndCategoryno(schoolno, categoryno);
+        return ResponseEntity.ok(list);
+    }
 }

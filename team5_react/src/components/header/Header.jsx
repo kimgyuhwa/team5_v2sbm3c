@@ -1,12 +1,13 @@
 import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
-import React, { useState } from 'react';
+import React, {useContext, useState, useEffect } from 'react';
+import { GlobalContext } from '../GlobalContext';
 
 function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isChatDropdownOpen, setIsChatDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const { setSw, setUserno, setLoginUser } = useContext(GlobalContext);
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -39,6 +40,8 @@ function Header() {
     { id: 3, title: '회의 알림', content: '오후 3시 팀 회의가 예정되어 있습니다.', time: '1시간 전', type: 'meeting' },
     { id: 4, title: '시스템 공지', content: '시스템 점검이 예정되어 있습니다.', time: '2시간 전', type: 'system' },
   ];
+
+  
 
   return (
     <div style={{
