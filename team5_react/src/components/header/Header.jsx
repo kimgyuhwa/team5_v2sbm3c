@@ -1,5 +1,8 @@
 import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
-import React, {useContext, useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import UserLogout from '../../user/UserLogout';
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
 import { GlobalContext } from '../GlobalContext';
 
 function Header() {
@@ -7,7 +10,37 @@ function Header() {
   const [isChatDropdownOpen, setIsChatDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
   const { setSw, setUserno, setLoginUser } = useContext(GlobalContext);
+
+  const handleMyPage = () => {
+    navigate('/mypage/MyPage');
+  }
+const handleLogout = () => {
+  fetch('/user/logout', {
+    method: 'GET'
+  })
+    .then(result => result.text())
+    .then(text => {
+      console.log('->', text);
+      setSw(false);
+      setUserno(0);
+      setLoginUser(null);
+      sessionStorage.removeItem('sw');
+      sessionStorage.removeItem('userno');
+      localStorage.removeItem('loginUser');
+
+      alert("로그아웃 되었습니다.");
+      navigate('/'); // 로그아웃 후 홈으로 이동
+    })
+    .catch(err => {
+      console.error(err);
+      alert("로그아웃 중에 문제가 발생했습니다..");
+    });
+
+};
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -125,7 +158,7 @@ function Header() {
               </button>
 
               {/* 채팅 드롭다운 메뉴 */}
-              {isChatDropdownOpen && (
+              {isChatDropdownOpen && (  
                 <div style={{
                   position: 'absolute',
                   right: 0,
@@ -415,7 +448,9 @@ function Header() {
                   overflow: 'hidden'
                 }}>
                   <div style={{ padding: '4px 0' }}>
-                    <button style={{
+                    <button 
+                    onClick={handleMyPage}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       width: '100%',
@@ -427,11 +462,13 @@ function Header() {
                       cursor: 'pointer',
                       transition: 'background-color 0.2s'
                     }}
+                    
                     onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
                       <User size={16} style={{ marginRight: '12px' }} />
                       프로필 보기
+                      
                     </button>
                     <button style={{
                       display: 'flex',
@@ -470,7 +507,10 @@ function Header() {
                       알림
                     </button>
                     <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
-                    <button style={{
+                    <button 
+                    
+                    onClick={handleLogout}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       width: '100%',
@@ -482,10 +522,12 @@ function Header() {
                       cursor: 'pointer',
                       transition: 'background-color 0.2s'
                     }}
+                    
                     onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
                       <LogOut size={16} style={{ marginRight: '12px' }} />
+                      
                       로그아웃
                     </button>
                   </div>

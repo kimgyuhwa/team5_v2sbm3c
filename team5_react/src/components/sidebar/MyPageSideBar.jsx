@@ -1,53 +1,73 @@
-import React, { useEffect,useContext,useState } from 'react';
+import React, { useState } from 'react';
 import { Plus, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { GlobalContext } from '../GlobalContext';
-import axios from "axios";
 
 
 function MainSideBar() {
   const [hoveredCategory, setHoveredCategory] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const { loginUser , setSelectedCategoryNo } = useContext(GlobalContext);
   const navigate = useNavigate();
   const handleCategoryClick = (categoryId, subcategoryId = null) => {
     console.log('카테고리 클릭:', categoryId, subcategoryId);
-    if (subcategoryId !== null) {
-    // 소분류 클릭한 경우 → 전역 상태 변경
-    setSelectedCategoryNo(subcategoryId);
-  } else {
-    // 대분류만 클릭한 경우 → 전체 보이게 하려면 null 설정
-    setSelectedCategoryNo(null);
-  }
   };
-  
-useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const grpRes = await axios.get('/talent_cate_grp/list?keyword=');
-        const cateGrpList = grpRes.data.content; // Page 객체의 content만 꺼냄
+    // 카테고리 데이터
+  const categories = [
+    {
+      id: 1,
+      name: '학업',
+      icon: '📚',
+      subcategories: [
+        { id: 11, name: '수업 정보' },
+        { id: 12, name: '시험 정보' },
+        { id: 13, name: '과제 도움' },
+        { id: 14, name: '학점 관리' }
+      ]
+    },
+    {
+      id: 2,
+      name: '동아리',
+      icon: '🎭',
+      subcategories: [
+        { id: 21, name: '동아리 모집' },
+        { id: 22, name: '동아리 활동' },
+        { id: 23, name: '공연/전시' },
+        { id: 24, name: '봉사활동' }
+      ]
+    },
+    {
+      id: 3,
+      name: '취업',
+      icon: '💼',
+      subcategories: [
+        { id: 31, name: '인턴십' },
+        { id: 32, name: '취업 정보' },
+        { id: 33, name: '자격증' },
+        { id: 34, name: '스펙 관리' }
+      ]
+    },
+    {
+      id: 4,
+      name: '생활',
+      icon: '🏠',
+      subcategories: [
+        { id: 41, name: '기숙사' },
+        { id: 42, name: '맛집 정보' },
+        { id: 43, name: '교통 정보' },
+        { id: 44, name: '알바 정보' }
+      ]
+    },
+    {
+      id: 5,
+      name: '자유게시판',
+      icon: '💬',
+      subcategories: [
+        { id: 51, name: '잡담' },
+        { id: 52, name: '질문' },
+        { id: 53, name: '후기' },
+        { id: 54, name: '건의사항' }
+      ]
+    }
+  ];
 
-        const result = await Promise.all(cateGrpList.map(async (grp) => {
-          const cateRes = await axios.get(`/talent_category/list-by-categrp/${grp.cateGrpno}`);
-          return {
-            id: grp.cateGrpno,
-            name: grp.name,
-            icon: '📁', // 임시 아이콘
-            subcategories: cateRes.data.map(c => ({
-              id: c.categoryno,
-              name: c.name
-            }))
-          };
-        }));
-
-        setCategories(result);
-      } catch (error) {
-        console.error('카테고리 불러오기 실패', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
 
 
 
@@ -78,7 +98,7 @@ useEffect(() => {
             marginBottom: '20px',
             textAlign: 'center'
           }}>
-            {loginUser.schoolname}
+            솔데 대학교
           </h2>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -100,7 +120,6 @@ useEffect(() => {
             }}
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
-            onClick={() => navigate('/talent/TalentCreateForm')}
             >
               <Plus size={20} />
               <span>내 글 등록</span>

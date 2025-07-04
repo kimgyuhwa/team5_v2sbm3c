@@ -197,7 +197,7 @@ export default function MainPage() {
             />
           )}
 
-          <div className="posts-box">
+          
             {/* <h2> 이런 제목은 TalentList 내부에서 관리하거나 여기에 그대로 놔도 됩니다 */}
             <TalentList
               refresh={refresh}
@@ -205,7 +205,7 @@ export default function MainPage() {
               onDeleted={handleDeleted}
             />
             <ChatWidget />
-          </div>
+          
         </div>
       
       </div>

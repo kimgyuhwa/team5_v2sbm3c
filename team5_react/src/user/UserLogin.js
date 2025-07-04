@@ -145,7 +145,11 @@ function UserLogin() {
     setPasswd('1234');
   };
 
-  
+  const handleClick = () => {
+
+    navigate('/components/Main'); // 페이지 이동
+  }
+
   return (
     <div style={{ 
       display: 'flex', 
@@ -174,7 +178,7 @@ function UserLogin() {
               사용자 로그인 성공했습니다.
             </div>
             <button 
-              onClick={() => setSw(false)}
+              onClick={handleClick}
               style={{
                 padding: '12px 24px',
                 backgroundColor: '#007bff',
@@ -184,6 +188,7 @@ function UserLogin() {
                 fontSize: '16px',
                 cursor: 'pointer',
                 textDecoration: 'none'
+                
               }}
             >
               메인으로 돌아가기
