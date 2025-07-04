@@ -1,46 +1,33 @@
-from flask import Flask, request, jsonify #, render_template
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-import apitool
+import apitool  # agent가 정의된 파일
 
 app = Flask(__name__)
 CORS(app)
 
-# 위젯처럼 띄울거여서 필요없음
-# @app.get('/chat') # http://192.168.12.141:5000/translator
-# def translator_form():
-#     return render_template('chat.html') # /templates/translator.html
+import requests
 
-@app.post('/chat')
+@app.post("/chat")
 def chat_proc():
     data = request.json
-    message = data['message']
+    message = data.get("message", "")
+    user_id = data.get("userId")  # React에서 넘겨줘야 함
 
-    # 번역 요청 예: "번역: 안녕하세요 영어 10살"
-    if message.startswith('번역:'):
+    result = apitool.agent.invoke({"input": message})
+    output = result["output"]
+
+    # 🔥 주요 내용 저장 조건 예시 (원하는 조건으로 바꿔도 됨)
+    if user_id and len(output) > 20:  # 대충 요약/번역 결과라면
         try:
-            _, rest = message.split('번역:', 1)
-            sentence, lang, age = rest.strip().rsplit(' ', 2)
-        except ValueError:
-            return jsonify({'res': '번역 형식이 잘못되었어요. 예: 번역: 안녕하세요 영어 10살'})
+            save_res = requests.post("http://localhost:8080/api/chatbot/save", json={
+                "userno": user_id,
+                "content": output
+            })
+            print("✅ Spring에 저장 결과:", save_res.json())
+        except Exception as e:
+            print("❌ 저장 실패:", e)
 
-        response = apitool.translate(sentence, lang, age)
-        return jsonify(response)
+    return jsonify({"res": output})
 
-    # 요약 요청 예: "요약: 긴 글 ..."
-    elif message.startswith('요약:'):
-        content = message.replace('요약:', '').strip()
-        response = apitool.summarize(content)
-        return jsonify(response)
-
-    # 일반 질문
-    else:
-        response = apitool.general_chat(message)
-        return jsonify(response)
 
 app.run(host="0.0.0.0", port=5000, debug=True)
-
-'''
-(base) C:\kd\ws_java\team5_v2sbm3c\team5_react>activate ai
-(ai) C:\kd\ws_java\team5_v2sbm3c\team5_react\ai>cd ai
-(ai) C:\kd\ws_java\team5_v2sbm3c\team5_react\ai>python translator.py
-'''

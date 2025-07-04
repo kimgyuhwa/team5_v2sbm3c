@@ -2,11 +2,13 @@ package dev.mvc.team5.request.requestdto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class RequestListDTO {
     private Long requestno;       // 요청 번호

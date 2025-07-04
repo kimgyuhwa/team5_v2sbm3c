@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext  } from 'react';
+import { GlobalContext } from '../components/GlobalContext';
 
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const { loginUser } = useContext(GlobalContext);
 
   // 서버에 메시지 보내고 응답 받기
   const sendMessage = async () => {
@@ -16,7 +18,7 @@ function ChatWidget() {
     const res = await fetch('http://localhost:5000/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: input }),
+      body: JSON.stringify({ message: input, userno: loginUser?.userno }),
     });
     const data = await res.json();
 
