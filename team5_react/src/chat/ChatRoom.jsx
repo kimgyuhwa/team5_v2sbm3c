@@ -1,15 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import axios from "axios";
+import { GlobalContext } from "../components/GlobalContext";
 
-const SOCKET_URL = "/ws-chat";
-const SESSION_API = "/user/session";
+const SOCKET_URL = "http://localhost:9093/ws-chat";
+// const SESSION_API = "/user/session";
 
 const ChatRoom = ({ chatRoomno = 21 }) => {
+  const { loginUser } = useContext(GlobalContext);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [user, setUser] = useState(null);
   const [isConnected, setIsConnected] = useState(false); // 🔥 연결 여부
   const stompClient = useRef(null);
 
@@ -20,7 +21,7 @@ const ChatRoom = ({ chatRoomno = 21 }) => {
       webSocketFactory: () => socket,
       onConnect: () => {
         console.log("✅ 웹소켓 연결 완료");
-        setIsConnected(true); // 🔥 연결 완료 시 true
+        setIsConnected(true);
 
         // 채팅방 구독
         stompClient.current.subscribe(`/topic/chatroom/${chatRoomno}`, msg => {
@@ -35,36 +36,28 @@ const ChatRoom = ({ chatRoomno = 21 }) => {
 
     stompClient.current.activate();
 
-    // 2. 세션 및 이전 메시지 로드
-    axios.get(SESSION_API, { withCredentials: true }).then(res => {
-      if (res.data.sw) {
-        const loginUser = {
-          userno: res.data.user.userno,
-          username: res.data.user.username
-        };
-        console.log("세션 유저 확인:", loginUser);
-        setUser(loginUser);
+    // 2. 로그인 유저가 있다면 메시지 불러오기
+    if (loginUser) {
+      axios.get(`/message/chatroom/${chatRoomno}`, { withCredentials: true })
+        .then(res => setMessages(res.data))
+        .catch(err => console.error("❌ 메시지 로딩 실패:", err));
+    } else {
+      alert("로그인이 필요합니다.");
+    }
 
-        axios.get(`/message/chatroom/${chatRoomno}`, { withCredentials: true })
-          .then(res => setMessages(res.data))
-          .catch(err => console.error("❌ 메시지 로딩 실패:", err));
-      } else {
-        alert("로그인이 필요합니다.");
-      }
-    });
-
+    // cleanup
     return () => {
       stompClient.current?.deactivate();
     };
-  }, [chatRoomno]);
+  }, [chatRoomno, loginUser]);
 
   const sendMessage = () => {
-    if (!input.trim() || !user || !isConnected) return;
+    if (!input.trim() || !loginUser || !isConnected) return;
 
     const message = {
       chatRoomno,
-      senderno: user.userno,
-      userName: user.username,
+      senderno: loginUser.userno,
+      userName: loginUser.username,
       content: input
     };
 
@@ -78,7 +71,7 @@ const ChatRoom = ({ chatRoomno = 21 }) => {
 
   return (
     <div>
-      <h3>채팅방 #{chatRoomno} (User: {user?.username})</h3>
+      <h3>채팅방 #{chatRoomno} (User: {loginUser?.username})</h3>
 
       {!isConnected ? (
         <div style={{ padding: 20, fontWeight: "bold" }}>🔌 채팅 서버에 연결 중입니다...</div>

@@ -48,6 +48,7 @@ function App() {
           <Route path="/talent/post" element={<Talent />} />
           <Route path="/talent/type" element={<TalentType />} />
           <Route path="/talent/category" element={<TalentCategory />} />
+          <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
           <Route path="/place/PlacesPage" element={<PlacesPage />} />
           <Route path="/talent/categrp" element={<TalentCateGrp />} />
           <Route path='/reservation/Reservation' element={<ReservationsManager />} /> 

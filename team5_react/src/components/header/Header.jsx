@@ -74,6 +74,8 @@ const handleLogout = () => {
     { id: 4, title: '시스템 공지', content: '시스템 점검이 예정되어 있습니다.', time: '2시간 전', type: 'system' },
   ];
 
+  
+
   return (
     <div style={{
       backgroundColor: 'white',

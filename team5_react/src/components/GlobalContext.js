@@ -8,8 +8,11 @@ const GlobalProvider = ({ children }) => {
   // const [loginUser, setLoginUser] = useState(null); // 로그인한 유저 정보 (객체)
   const [sw, setSw] = useState(() => sessionStorage.getItem('sw') === 'true');
   const [userno, setUserno] = useState(() => parseInt(sessionStorage.getItem('userno') || 0));
+  const [selectedCategoryNo, setSelectedCategoryNo] = useState(null);
   const [loginUser, setLoginUser] = useState(() => {
   const storedUser = sessionStorage.getItem('loginUser');
+  
+
 return storedUser ? JSON.parse(storedUser) : null;
   });
   // sw 상태가 바뀔 때마다 sessionStorage에 저장
@@ -59,7 +62,7 @@ return storedUser ? JSON.parse(storedUser) : null;
   // }, []);
 
   return (
-    <GlobalContext.Provider value={{ sw, setSw, userno, setUserno, loginUser, setLoginUser }}>
+    <GlobalContext.Provider value={{ sw, setSw, userno, setUserno, loginUser, setLoginUser,selectedCategoryNo, setSelectedCategoryNo }}>
       {children}
     </GlobalContext.Provider>
   );

@@ -10,21 +10,26 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
   const [typeList, setTypeList] = useState([]);
   const [cateGrpList, setCateGrpList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-
-  const { loginUser } = useContext(GlobalContext);
+  const { loginUser , selectedCategoryNo } = useContext(GlobalContext);
   const schoolno = loginUser?.schoolno;
+  //const categoryno = categoryList?.categoryno;
+  
 
   useEffect(() => {
-    if (!schoolno) return;
+  if (!schoolno) return;
 
-    fetch(`/talent/list-by-school/${schoolno}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('서버 응답 오류: ' + res.status);
-        return res.json();
-      })
-      .then((data) => setTalents(data))
-      .catch((e) => alert('목록 불러오기 실패: ' + e.message));
-  }, [refresh, schoolno]);
+  const url = selectedCategoryNo
+    ? `/talent/list-by-school-and-category?schoolno=${schoolno}&categoryno=${selectedCategoryNo}`  // <-- 이거 새로 추가
+    : `/talent/list-by-school/${schoolno}`;  // 기존 로직
+
+  fetch(url)
+    .then((res) => {
+      if (!res.ok) throw new Error('서버 응답 오류: ' + res.status);
+      return res.json();
+    })
+    .then((data) => setTalents(data))
+    .catch((e) => alert('목록 불러오기 실패: ' + e.message));
+  }, [refresh, schoolno, selectedCategoryNo]); // categoryId 변화 감지
 
   useEffect(() => {
     axios.get('/talent_type/list')
