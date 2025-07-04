@@ -22,6 +22,8 @@ import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
+import MyPage from './mypage/MyPage';
+
 
 function App() {
   return (
@@ -32,6 +34,7 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/mypage/MyPage" element={<MyPage />} />
           <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />

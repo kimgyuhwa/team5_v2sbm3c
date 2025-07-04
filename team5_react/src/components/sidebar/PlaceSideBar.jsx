@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 function PlaceSideBar({setSelectedCategory}) {
   const [hoveredCategory, setHoveredCategory] = useState(null);
-
+  const navigate = useNavigate();
+  
   const handleCategoryClick = (categoryId, subcategoryId = null) => {
     setSelectedCategory({ categoryId, subcategoryId });
     setHoveredCategory(null);
@@ -114,6 +115,7 @@ const categories = [
             </button>
             
             <button style={{
+              
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -131,6 +133,7 @@ const categories = [
             }}
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
+            onClick={() => navigate('/components/Main')}
             >
               <Menu size={20} />
               <span>카테고리 보기</span>

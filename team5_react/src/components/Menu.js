@@ -11,11 +11,10 @@ function Menu() {
   return (
    <nav>
   <Link to="/">홈</Link> |{" "}
-  <Link to="/components/main">메인창</Link> |{" "}
 
   {sw ? (
     <>
-      <Link to="/user/logout">로그아웃</Link> |{" "}
+      <Link to="/components/main">메인창</Link> |{" "}
       <Link to="/user/profile">회원정보</Link> |{" "}
       <Link to="/reservation/Reservation">예약ex</Link> |{" "}
       <Link to="/reservation/Place">강의실조회</Link> |{" "}
