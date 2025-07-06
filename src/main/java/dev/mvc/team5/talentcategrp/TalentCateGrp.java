@@ -43,7 +43,7 @@ public class TalentCateGrp {
      * orphanRemoval = true : 그룹에서 제거된 카테고리는 DB에서 삭제 
      */
     @OneToMany(mappedBy = "cateGrp", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TalentCategory> categorys = new ArrayList<>();
+    private List<TalentCategory> categories = new ArrayList<>();
     
     /** 
      * 기본 생성자 외에,

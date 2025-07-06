@@ -2,8 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import '../App.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { GlobalContext } from '../components/GlobalContext';
-
-
+import SearchBar  from '../searchBar/SearchBar';
 function enter_chk(event, nextTag) {
   if (event.keyCode === 13) {
     document.getElementById(nextTag).focus();
@@ -33,11 +32,30 @@ function UserLogin() {
       setPasswd(storedPasswd);
       setSavePasswd(true);
     }
-
-    fetch(`/user/session`, {
-      credentials: 'include',
-    }).catch((err) => console.error('세션 복원 오류:', err));
   }, []);
+
+  //  useEffect(() => {
+  //     fetch('/user/session', {
+  //       method: 'GET',
+  //       credentials: 'include',
+  //     })
+  //       .then(res => res.json())
+  //       .then(data => {
+  //         if (data.sw && data.user) {
+  //           setSw(true);
+  //           setUserno(data.user.userno);
+  //           setLoginUser(data.user);
+  //           //localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
+  //         } else {
+  //           setSw(false);
+  //           setUserno(0);
+  //           setLoginUser(null);
+  //         }
+  //       })
+  //       .catch(err => {
+  //         console.error('세션 확인 실패:', err);
+  //       });
+  //   }, []);
 
   const idChange = (e) => {
     const value = e.target.value;
@@ -91,25 +109,26 @@ function UserLogin() {
       .then((res) => res.text())
       .then((text) => {
         if (text.includes('성공')) {
-          fetch(`/user/session`)
-            .then((res) => res.json())
-            .then((data) => {
-              localStorage.setItem(
-                'loginUser',
-                JSON.stringify({
-                  userno: data.userno,
-                  username: data.username,
-                  role: data.role,
-                })
-              );
-              setLoginUser({
-                userno: data.user.userno,
-                username: data.user.username,
-                role: data.user.role,
-              });
-              setSw(true);
-              setUserno(data.userno);
-            });
+          fetch('/user/session', {
+        method: 'GET',
+        credentials: 'include',
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.sw && data.user) {
+            setSw(true);
+            setUserno(data.user.userno);
+            setLoginUser(data.user);
+            //localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
+          } else {
+            setSw(false);
+            setUserno(0);
+            setLoginUser(null);
+          }
+        })
+        .catch(err => {
+          console.error('세션 확인 실패:', err);
+        });
         } else {
 
           alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');
@@ -128,24 +147,42 @@ function UserLogin() {
     setPasswd('1234');
   };
 
+  const handleClick = () => {
+
+    navigate('/components/Main'); // 페이지 이동
+  }
+
   return (
 
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center',
+      alignItems: 'center', 
+      minHeight: '100vh',
+      backgroundColor: '#f5f5f5',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+
       {sw === true ? (
-        <div style={{ display: 'flex', gap: '50px', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ width: '600px', height: '400px', backgroundColor: 'white', borderRadius: '20px', boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontSize: '18px', color: '#333' }}>
-            <div style={{ marginBottom: '20px' }}>사용자 로그인 성공했습니다.</div>
-            <button
-              onClick={() => navigate('/components/main')}
+        <div style={{
+          width: '600px',
+          height: '450px',
+          backgroundColor: 'white',
+          borderRadius: '20px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+          fontSize: '18px',
+          color: '#333'
+        }}>
+            <div style={{ marginBottom: '20px' }}>
+              사용자 로그인 성공했습니다.
+            </div>
+            <button 
+              onClick={handleClick}
               style={{
                 padding: '12px 24px',
                 backgroundColor: '#007bff',
@@ -154,77 +191,171 @@ function UserLogin() {
                 borderRadius: '8px',
                 fontSize: '16px',
                 cursor: 'pointer',
+                textDecoration: 'none'
+                
               }}
             >
               메인으로 돌아가기
             </button>
+
           </div>
-          {/* 옆 이미지 생략 가능 */}
-        </div>
+          
+        
+        
       ) : (
-        <form onSubmit={send} style={{ margin: '10px auto', width: '30%', textAlign: 'left' }}>
-          <h3 style={{ textAlign: 'center' }}>사용자 로그인</h3>
-          <div className="mb-3 mt-3">
-            <label className="form-label">아이디:</label>
-            <input
-              type="text"
-              className="form-control"
-              id="id"
-              placeholder="아이디"
-              name="id"
-              autoFocus
-              onKeyDown={(e) => enter_chk(e, 'passwd')}
-              onChange={idChange}
-              value={id}
-            />
-          </div>
-          <div className="mb-3">
-            <input type="checkbox" id="saveId" checked={saveId} className="form-check-input" onChange={saveIdChange} />
-            <label className="form-check-label" htmlFor="saveId">
-              아이디 저장
-            </label>
-          </div>
-          <div className="mb-3">
-            <label className="form-label">패스워드:</label>
-            <input
-              type="password"
-              className="form-control"
-              id="passwd"
-              placeholder="패스워드"
-              name="passwd"
-              onKeyDown={(e) => enter_chk(e, 'btnSend')}
-              onChange={passwdChange}
-              value={passwd}
-            />
-          </div>
-          <div className="mb-3">
-            <input
-              type="checkbox"
-              id="savePasswd"
-              checked={savePasswd}
-              className="form-check-input"
-              onChange={savePasswdChange}
-            />
-            <label className="form-check-label" htmlFor="savePasswd">
-              패스워드 저장
-            </label>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <button id="btnSend" type="submit" className="btn btn-primary" style={{ marginRight: '10px' }}>
-              로그인
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={test}>
-              테스트 계정
-            </button>
+        <div style={{
+          width: '600px',
+          height: '450px',
+          backgroundColor: 'white',
+          borderRadius: '20px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          padding: '30px',
+          boxSizing: 'border-box'
+        }}>
+          <h3 style={{ 
+            textAlign: 'center', 
+            marginBottom: '25px', 
+            color: '#333',
+            fontSize: '22px',
+            fontWeight: '600'
+          }}>
+            사용자 로그인
+          </h3>
+          
+          <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ marginBottom: '12px' }}>
+              <input
+                type="text"
+                id="id"
+                placeholder="아이디"
+                name="id"
+                autoFocus={true}
+                onKeyDown={e => enter_chk(e, 'passwd')}
+                onChange={idChange}
+                value={id}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  border: '2px solid #e1e5e9',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  transition: 'border-color 0.3s',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#007bff'}
+                onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
+              />
+            </div>
+            
+            <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+              <input
+                type="checkbox"
+                id="saveId"
+                checked={saveId}
+                onChange={saveIdChange}
+                style={{ marginRight: '8px' }}
+              />
+              <label htmlFor="saveId" style={{ color: '#666', cursor: 'pointer' }}>아이디 저장</label>
+            </div>
+
+            <div style={{ marginBottom: '12px' }}>
+              <input
+                type="password"
+                id="passwd"
+                placeholder="패스워드"
+                name="passwd"
+                onKeyDown={e => enter_chk(e, 'btnSend')}
+                onChange={passwdChange}
+                value={passwd}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  border: '2px solid #e1e5e9',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  transition: 'border-color 0.3s',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#007bff'}
+                onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
+              />
+            </div>
+            
+            <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', fontSize: '14px' }}>
+              <input
+                type="checkbox"
+                id="savePasswd"
+                checked={savePasswd}
+                onChange={savePasswdChange}
+                style={{ marginRight: '8px' }}
+              />
+              <label htmlFor="savePasswd" style={{ color: '#666', cursor: 'pointer' }}>패스워드 저장</label>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+              <button 
+                id="btnSend" 
+                onClick={send}
+                style={{
+                  flex: '1',
+                  padding: '12px',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+              >
+                로그인
+              </button>
+              
+              <button 
+                id="btnTest" 
+                type="button" 
+                onClick={test}
+                style={{
+                  flex: '1',
+                  padding: '12px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+              >
+                테스트 계정
+              </button>
+            </div>
+
             <div style={{ marginTop: '10px' }}>
               <Link to="/user/univCert" style={{ marginRight: '10px' }}>
-                학교 인증하기
+                학교 인증하기   
               </Link>
-              <Link to="/user/findId">아이디 찾기</Link>
+              <Link to="/user/findId">    
+                아이디 찾기   
+              </Link>
+
+              
+              <Link to="/user/findPwd">  
+                비밀번호 찾기  
+              </Link>
             </div>
           </div>
-        </form>
+          </div>
       )}
+      
     </div>
   );
 }

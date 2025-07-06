@@ -14,6 +14,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    
 
     @Autowired
     private dev.mvc.team5.school.SchoolRepository schoolRepository; // 선택: School 엔티티 주입
@@ -59,6 +61,8 @@ public class UserService {
       dto.setLocation(user.getLocation());
       dto.setBio(user.getBio());
       dto.setRole(user.getRole());
+      dto.setSchoolno(user.getSchool().getSchoolno());
+      dto.setSchoolname(user.getSchool().getSchoolname());
       return dto;
   }
 
@@ -92,7 +96,7 @@ public class UserService {
               session.setAttribute("userno", user.getUserno());   // userno 저장
               session.setAttribute("username", user.getUsername());   // username 저장
               session.setAttribute("userId", user.getUserId());
-             // session.setAttribute("schoolname", user.getSchool());
+              session.setAttribute("schoolname", user.getSchool().getSchoolname());
               session.setAttribute("role", user.getRole());
               return true;
           }
@@ -117,7 +121,8 @@ public class UserService {
       dto.setLocation(user.getLocation());
       dto.setBio(user.getBio());
       dto.setRole(user.getRole());
-      //dto.setSchoolId(user.getSchool() != null ? user.getSchool().getId() : null);
+      dto.setSchoolno(user.getSchool() != null ? user.getSchool().getSchoolno() : null);
+      dto.setSchoolname(user.getSchool().getSchoolname());
       return dto;
   }
     // 로그아웃
@@ -164,6 +169,21 @@ public class UserService {
       user.setBio(userDTO.getBio());
       user.setRole(userDTO.getRole());
       userRepository.save(user);
+  }
+    // 비밀번호 변경
+    public boolean updatePassword(String username,String userId, String email, String newPassword) {
+      Optional<User> userOpt = userRepository.findByUsernameAndUserIdAndEmail(username,userId, email);
+      if (userOpt.isPresent()) {
+          User user = userOpt.get();
+
+          // 비밀번호 암호화 (반드시 해야 함)
+          String encodedPassword = security.aesEncode(newPassword);
+          user.setPassword(encodedPassword);
+
+          userRepository.save(user);
+          return true;
+      }
+      return false;
   }
     // 회원 탈퇴
     public void delete(Long userno) {

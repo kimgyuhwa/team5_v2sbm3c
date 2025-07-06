@@ -93,6 +93,17 @@ public class TalentService {
                 .map(this::toListDTO)
                 .collect(Collectors.toList());
     }
+    
+    /**
+     * 학교별 게시물 조회
+     * @return 재능 리스트를 담은 DTO 리스트
+     */
+    public List<TalentListDTO> findBySchoolno(Long schoolno) {
+      return talentRepository.findBySchool_Schoolno(schoolno).stream()
+              .map(this::toListDTO)
+              .collect(Collectors.toList());
+  }
+
 
     /**
      * 특정 재능 개별 조회
@@ -166,9 +177,19 @@ public class TalentService {
                 t.getTitle(),
                 t.getLanguage(),
                 t.getCategory() != null ? t.getCategory().getName() : "없음",
-                t.getType() != null ? t.getType().getName() : "없음"
+                t.getType() != null ? t.getType().getName() : "없음",
+                t.getUser().getUserno()
         );
     }
+    
+    //  특정학교내  특정카테고리 글
+    public List<TalentListDTO> findBySchoolnoAndCategoryno(Long schoolno, Long categoryno) {
+      return talentRepository.findBySchool_SchoolnoAndCategory_Categoryno(schoolno, categoryno)
+                             .stream()
+                             .map(this::toListDTO)
+                             .collect(Collectors.toList());
+  }
+   
 
     
 

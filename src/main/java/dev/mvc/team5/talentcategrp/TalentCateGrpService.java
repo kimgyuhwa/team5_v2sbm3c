@@ -9,10 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.mvc.team5.talentcategory.TalentCategoryRepository;
+import dev.mvc.team5.talentcategory.talentcategorydto.TalentCategorySimpleDTO;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpCreateDTO;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpListDTO;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpResponseDTO;
 import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpUpdateDTO;
+import dev.mvc.team5.talentcategrp.talentcategrpdto.TalentCateGrpWithSubDTO;
 import dev.mvc.team5.talenttype.TalentType;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeCreateDTO;
 import dev.mvc.team5.talenttype.talenttypedto.TalentTypeListDTO;
@@ -118,6 +120,22 @@ public class TalentCateGrpService {
 
       // Entity → DTO 변환
       return entityPage.map(t -> new TalentCateGrpListDTO(t.getCateGrpno(), t.getName()));
+  }
+  
+  /**
+   * 대분류 + 해당하는 중분류들을 함께 반환하는 메서드
+   * @return List<TalentCateGrpWithSubDTO> - 트리형 카테고리 구조
+   */
+  public List<TalentCateGrpWithSubDTO> getAllCateWithSub() {
+    return grpRepository.findAll().stream()
+        .map(grp -> new TalentCateGrpWithSubDTO(
+            grp.getCateGrpno(),
+            grp.getName(), 
+            grp.getCategories().stream()
+                .map(cat -> new TalentCategorySimpleDTO(cat.getCategoryno(), cat.getName()))
+                .collect(Collectors.toList())
+        ))
+        .collect(Collectors.toList());
   }
   
 }

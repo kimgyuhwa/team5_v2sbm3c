@@ -48,6 +48,14 @@ public class Match {
     @JoinColumn(name = "reservationno")
     private Reservations reservation;
     
+    public Match(Request request, User giver, User receiver, Talent talent, Reservations reservation) {
+      this.request = request;
+      this.giver = giver;
+      this.receiver = receiver;
+      this.talent = talent;
+      this.reservation = reservation;
+  }
+    
     
 
 }

@@ -4,8 +4,13 @@ import dev.mvc.team5.request.requestdto.RequestCreateDTO;
 import dev.mvc.team5.request.requestdto.RequestListDTO;
 import dev.mvc.team5.request.requestdto.RequestResponseDTO;
 import dev.mvc.team5.tool.RequestStatus;
+import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.talents.TalentRepository;
+import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +20,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RequestService {
 
-    @Autowired
-    private RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
+    private final UserRepository userRepository;
+    private final TalentRepository talentRepository;
 
     /**
      * Request 엔티티를 RequestResponseDTO로 변환하는 헬퍼 메서드
@@ -30,7 +37,8 @@ public class RequestService {
           request.getRequestno(),
           request.getTalent() != null ? request.getTalent().getTalentno() : null,
           request.getTalent() != null ? request.getTalent().getTitle() : null,
-          request.getUser() != null ? request.getUser().getName() : null,
+          request.getGiver() != null ? request.getGiver().getName() : null,
+          request.getReceiver() != null ? request.getReceiver().getName() : null,
           request.getStatus(),
           request.getMessage(),
           request.getCreatedAt()
@@ -41,12 +49,24 @@ public class RequestService {
     /**
      * 요청 등록
      */
+    @Transactional
     public RequestResponseDTO save(RequestCreateDTO dto) {
-        Request request = dto.toEntity();
+        Talent talent = talentRepository.findById(dto.getTalentno())
+            .orElseThrow(() -> new RuntimeException("해당 게시물이 존재하지 않습니다."));
+        
+        User giver = userRepository.findById(dto.getGiverno())
+            .orElseThrow(() -> new RuntimeException("요청자 정보가 없습니다."));
+        
+        User receiver = userRepository.findById(dto.getReceiverno())
+            .orElseThrow(() -> new RuntimeException("피요청자 정보가 없습니다."));
+
+        // Request 객체 수동 생성
+        Request request = new Request(talent, giver, receiver, dto.getStatus(), dto.getMessage());
+
         Request saved = requestRepository.save(request);
-            
         return toRequestResponseDTO(saved);
     }
+
 
     /**
      * 요청 삭제
@@ -79,7 +99,7 @@ public class RequestService {
                     page = requestRepository.findByTalent_TitleContaining(keyword, pageable);
                     break;
                 case "userName":
-                    page = requestRepository.findByUser_NameContaining(keyword, pageable);
+                    page = requestRepository.findByGiver_NameContaining(keyword, pageable);
                     break;
                 case "status":
                     page = requestRepository.findByStatusContaining(keyword, pageable);
@@ -99,6 +119,7 @@ public class RequestService {
                 r.getRequestno(),
                 r.getTalent().getTalentno(),
                 r.getTalent().getTitle(),
+                r.getTalent().getUser().getUserno(), // receiverno로 보냄
                 r.getStatus(),
                 r.getCreatedAt()
         ));

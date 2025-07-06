@@ -102,31 +102,290 @@ function UserRegister() {
   };
 
   return (
-    <div style={{ width: '50%', margin: '0 auto' }}>
-      <h2>회원가입</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <input name="userId" placeholder="아이디" value={form.userId} onChange={handleChange} required/>
-          <button type="button" onClick={checkIdDuplicate} style={{ marginLeft: '10px' }}> 중복확인 </button>
+    <div style={{ 
+      width: '30%', 
+      
+      margin: '0 auto', 
+      padding: '30px',
+      backgroundColor: 'white',
+      borderRadius: '30px',
+      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
+    }}>
+      <h2 style={{ 
+        textAlign: 'center', 
+        color: '#333', 
+        marginBottom: '30px' 
+      }}>
+        회원가입
+      </h2>
+      
+      <div onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <input 
+              name="userId" 
+              placeholder="아이디 *" 
+              value={form.userId} 
+              onChange={handleChange} 
+              required
+              style={{
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                fontSize: '14px',
+                flex: 1
+              }}
+            />
+            <button 
+              type="button" 
+              onClick={checkIdDuplicate} 
+              style={{ 
+                marginLeft: '10px',
+                padding: '12px 16px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            > 
+              중복확인 
+            </button>
+          </div>
+          {idCheckMsg && (
+            <div style={{ 
+              color: isIdChecked ? 'green' : 'red', 
+              marginTop: '5px',
+              fontSize: '12px'
+            }}> 
+              {idCheckMsg} 
+            </div>
+          )}
         </div>
-        <div style={{ color: isIdChecked ? 'green' : 'red', marginTop: '5px' }}> {idCheckMsg} </div>
-        <input name="password" type="password" placeholder="비밀번호" value={form.password} onChange={handleChange} required /><br />
-        <input name="username" placeholder="이름" value={form.username} onChange={handleChange} required /><br />
-        <input name="name" placeholder="닉네임" value={form.name} onChange={handleChange} /><br />
-        <input name="email" placeholder="이메일" value={form.email} onChange={handleChange} /><br />
-        <input name="phone" placeholder="전화번호" value={form.phone} onChange={handleChange} /><br />
-        {/* 우편번호 API 영역 */}
-        <input name="zipcode" placeholder="우편번호" value={form.zipcode} readOnly />
-        <button type="button" onClick={handlePostcode} style={{ marginLeft: '10px' }}>주소 찾기</button><br />
-        <input name="address" placeholder="주소" value={form.address} readOnly /><br />
-        {/* 우편번호 API 영역 */}
-        <input name="language" placeholder="언어" value={form.language} onChange={handleChange} /><br />
-        <input name="location" placeholder="위치" value={form.location} onChange={handleChange} /><br />
-        <textarea name="bio" placeholder="자기소개" value={form.bio} onChange={handleChange} /><br />
-        {/* <input name="role" placeholder="역할 (ex: USER)" value={form.role} onChange={handleChange} /><br /> */}
-         <input name="schoolId" placeholder="학교 이름" value={form.schoolName} onChange={handleChange} /><br />
-        <button type="submit">회원가입</button>
-      </form>
+
+        <input 
+          name="password" 
+          type="password" 
+          placeholder="비밀번호 *" 
+          value={form.password} 
+          onChange={handleChange} 
+          required 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box'
+          }}
+        />
+
+        <input 
+          name="username" 
+          placeholder="이름 *" 
+          value={form.username} 
+          onChange={handleChange} 
+          required 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box'
+          }}
+        />
+
+        <input 
+          name="name" 
+          placeholder="닉네임" 
+          value={form.name} 
+          onChange={handleChange} 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box'
+          }}
+        />
+
+        <input 
+          name="email" 
+          type="email"
+          placeholder="이메일" 
+          value={form.email} 
+          onChange={handleChange} 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box'
+          }}
+        />
+
+        <input 
+          name="phone" 
+          placeholder="전화번호" 
+          value={form.phone} 
+          onChange={handleChange} 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box'
+          }}
+        />
+
+        <div style={{ marginBottom: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <input 
+              name="zipcode" 
+              placeholder="우편번호" 
+              value={form.zipcode} 
+              readOnly 
+              style={{
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                fontSize: '14px',
+                flex: 1,
+                backgroundColor: '#f5f5f5'
+              }}
+            />
+            <button 
+              type="button" 
+              onClick={handlePostcode} 
+              style={{ 
+                marginLeft: '10px',
+                padding: '12px 16px',
+                backgroundColor: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              주소 찾기
+            </button>
+          </div>
+        </div>
+
+        <input 
+          name="address" 
+          placeholder="주소" 
+          value={form.address} 
+          readOnly 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box',
+            backgroundColor: '#f5f5f5'
+          }}
+        />
+
+        <input 
+          name="language" 
+          placeholder="언어" 
+          value={form.language} 
+          onChange={handleChange} 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box'
+          }}
+        />
+
+        <input 
+          name="location" 
+          placeholder="위치" 
+          value={form.location} 
+          onChange={handleChange} 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box'
+          }}
+        />
+
+        <textarea 
+          name="bio" 
+          placeholder="자기소개" 
+          value={form.bio} 
+          onChange={handleChange} 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '15px',
+            boxSizing: 'border-box',
+            minHeight: '80px',
+            resize: 'vertical'
+          }}
+        />
+
+        <input 
+          name="schoolName" 
+          placeholder="학교 이름" 
+          value={form.schoolName} 
+          onChange={handleChange} 
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '14px',
+            marginBottom: '20px',
+            boxSizing: 'border-box'
+          }}
+        />
+
+        <button 
+          type="submit" 
+          style={{
+            width: '100%',
+            padding: '15px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s'
+          }}
+          onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+          onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+        >
+          회원가입
+        </button>
+      </div>
     </div>
   );
 }

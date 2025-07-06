@@ -106,6 +106,8 @@ public class TalentCategoryController {
       List<TalentCategoryResponseDTO> list = service.findByCateGrpno(cateGrpno);
       return ResponseEntity.ok(list);
   }
+  
+  
 
   
   

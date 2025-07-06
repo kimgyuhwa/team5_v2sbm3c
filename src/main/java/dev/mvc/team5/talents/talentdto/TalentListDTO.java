@@ -13,4 +13,5 @@ public class TalentListDTO {
     private String language;
     private String categoryName;
     private String typeName;
+    private Long userno; // 게시물 작성자
 }

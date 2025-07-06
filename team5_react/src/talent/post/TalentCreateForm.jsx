@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { GlobalContext } from '../../components/GlobalContext';
+import '../style/TalentCreateForm.css';
+
 
 const TalentCreateForm = ({ onCreated }) => {
   const [title, setTitle] = useState('');
@@ -12,8 +15,7 @@ const TalentCreateForm = ({ onCreated }) => {
   const [cateGrpList, setCateGrpList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [typeList, setTypeList] = useState([]);
-
-  const loginUser = JSON.parse(localStorage.getItem('loginUser')); // userno 가져오기
+  const { loginUser } = useContext(GlobalContext);
 
   // 대분류 리스트 불러오기
   useEffect(() => {
@@ -100,7 +102,7 @@ const TalentCreateForm = ({ onCreated }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="talent-create-form">
       <h3>재능 등록</h3>
 
       <input
@@ -122,7 +124,6 @@ const TalentCreateForm = ({ onCreated }) => {
         placeholder="언어"
       />
 
-      {/* 타입 선택 */}
       <select value={typeno} onChange={e => setTypeno(e.target.value)} required>
         <option value="">타입 선택</option>
         {typeList.map(type => (
@@ -130,7 +131,6 @@ const TalentCreateForm = ({ onCreated }) => {
         ))}
       </select>
 
-      {/* 대분류 선택 */}
       <select value={cateGrpno} onChange={e => setCateGrpno(e.target.value)} required>
         <option value="">대분류 선택</option>
         {cateGrpList.map(grp => (
@@ -138,7 +138,6 @@ const TalentCreateForm = ({ onCreated }) => {
         ))}
       </select>
 
-      {/* 소분류 선택 */}
       <select value={categoryno} onChange={e => setCategoryno(e.target.value)} required disabled={!cateGrpno}>
         <option value="">소분류 선택</option>
         {categoryList.map(cat => (
@@ -146,8 +145,14 @@ const TalentCreateForm = ({ onCreated }) => {
         ))}
       </select>
 
-      <button type="submit">등록</button>
+      <div className="form-button-group">
+        <button type="submit">등록</button>
+        <button type="close" onClick={() => onCreated?.()}>닫기</button>
+      </div>
+
+
     </form>
+
   );
 };
 

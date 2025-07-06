@@ -15,7 +15,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     Page<Request> findByTalent_TitleContaining(String keyword, Pageable pageable);
     
     // 요청한 회원 이름으로 검색
-    Page<Request> findByUser_NameContaining(String keyword, Pageable pageable);
+    Page<Request> findByGiver_NameContaining(String keyword, Pageable pageable);
     
     // 요청 상태로 검색
     Page<Request> findByStatusContaining(String keyword, Pageable pageable);

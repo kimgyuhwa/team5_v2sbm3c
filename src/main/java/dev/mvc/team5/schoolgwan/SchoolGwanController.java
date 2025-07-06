@@ -63,7 +63,7 @@ public class SchoolGwanController {
 
     // 특정 학교의 모든 학교관 조회
     @GetMapping("/school/{schoolno}")
-    public ResponseEntity<List<SchoolGwan>> listBySchool(@PathVariable Long schoolno) {
+    public ResponseEntity<List<SchoolGwanDTO>> listBySchool(@PathVariable(name="schoolno") Long schoolno) {
         return ResponseEntity.ok(schoolGwanService.findBySchoolNo(schoolno));
     }
 }
