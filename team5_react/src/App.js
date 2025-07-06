@@ -23,6 +23,7 @@ import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
+import TalentCreateForm from './talent/type/TalentCreateForm';
 
 
 function App() {
