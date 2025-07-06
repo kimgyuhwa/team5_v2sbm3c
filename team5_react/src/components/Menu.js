@@ -1,16 +1,4 @@
 // src/components/Menu.js
-<<<<<<< HEAD
-import React from 'react';
-import { Link } from 'react-router-dom';
-
-function Menu() {
-  return (
-    <nav>
-      <Link to="/">Home</Link> |{" "}
-      <Link to="/user/login">Login</Link> |{" "}
-      <Link to="/user/logout">Logout</Link> |{" "}
-      <Link to="/user/session">Session Info</Link>
-=======
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { GlobalContext } from './GlobalContext';
@@ -40,7 +28,6 @@ function Menu() {
 
       )}
       <Link to="/review/review">리뷰</Link>
->>>>>>> 475490306b1012c2ac49fc2f5f7aa49c5cab35c6
     </nav>
   );
 }

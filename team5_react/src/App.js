@@ -7,8 +7,6 @@ import Home from './components/Home';
 import UserLogin from './user/UserLogin';
 import UserLogout from './user/UserLogout';
 import UserSession from './user/UserSession';
-<<<<<<< HEAD
-=======
 import UserRegister from './user/UserRegister';
 import UserProfile from './user/UserProfile';
 import FindUserId from './user/FindUserId';
@@ -22,8 +20,6 @@ import PlacesList from './place/Place';
 import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
->>>>>>> 475490306b1012c2ac49fc2f5f7aa49c5cab35c6
-
 function App() {
   return (
      <GlobalProvider>
@@ -33,11 +29,6 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
-<<<<<<< HEAD
-          <Route path="/user/login" element={<UserLogin />} />
-          <Route path="/user/logout" element={<UserLogout />} />
-          <Route path="/user/session" element={<UserSession />} />  
-=======
           <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />
@@ -57,7 +48,6 @@ function App() {
           <Route path="/talent/category" element={<TalentCategory />} /> 
           <Route path="/talent/type" element={<TalentType />} /> 
           <Route path="/review/review" element={<ReviewPage />} /> 
->>>>>>> 475490306b1012c2ac49fc2f5f7aa49c5cab35c6
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

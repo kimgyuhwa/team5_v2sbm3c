@@ -9,12 +9,6 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
-<<<<<<< HEAD
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.1",
-    "react-scripts": "5.0.1",
-=======
     "axios": "^1.10.0",
     "lucide-react": "^0.523.0",
     "react": "^19.1.0",
@@ -22,7 +16,6 @@
     "react-router-dom": "^7.6.2",
     "react-scripts": "^5.0.1",
     "sockjs-client": "^1.6.1",
->>>>>>> 475490306b1012c2ac49fc2f5f7aa49c5cab35c6
     "web-vitals": "^2.1.4"
   },
   "scripts": {
