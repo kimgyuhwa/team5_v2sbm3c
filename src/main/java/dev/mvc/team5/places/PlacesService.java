@@ -53,5 +53,13 @@ public interface PlacesService {
 		
 	// 상세보기
     Optional<PlacesDTO> findByPlaceno(Long placeno);
+    
+    // 학교 번호에서 장소찾긱 
+   // List<PlacesDTO> findPlacesBySchoolno(Long schoolno);
+    
+    List<PlacesDTO> findBySchoolno(Long schoolno);
+    
+    // 학교 학교관  장소  찾기
+    List<PlacesDTO> findBySchoolnoAndSchoolgwanno(Long schoolno, Long schoolgwanno);
 		
 }

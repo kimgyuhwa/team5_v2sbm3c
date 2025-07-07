@@ -1,44 +1,101 @@
-import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
-import React, { useState } from 'react';
-import UserLogout from '../../user/UserLogout';
+import React, { useState, useContext,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
 import { GlobalContext } from '../GlobalContext';
+import {
+  Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle
+} from 'lucide-react';
 
 function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isChatDropdownOpen, setIsChatDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const navigate = useNavigate();
 
-  const { setSw, setUserno, setLoginUser } = useContext(GlobalContext);
+  const [chatList, setChatList] = useState([]);
+
+  const [notificationList, setNotificationList] = useState([]);
+  const [unreadCount, setUnreadCount] = useState();
+
+  const navigate = useNavigate();
+  const { setSw, loginUser, setLoginUser } = useContext(GlobalContext);
 
   const handleMyPage = () => {
     navigate('/mypage/MyPage');
-  }
-const handleLogout = () => {
-  fetch('/user/logout', {
-    method: 'GET'
-  })
-    .then(result => result.text())
-    .then(text => {
-      console.log('->', text);
-      setSw(false);
-      setUserno(0);
-      setLoginUser(null);
-      sessionStorage.removeItem('sw');
-      sessionStorage.removeItem('userno');
-      localStorage.removeItem('loginUser');
+  };
+  const userno = loginUser?.userno;
+  useEffect(() => {
+    if (!userno) {
+      setChatList([]);
+      setNotificationList([]);
+      setUnreadCount(0);
+      return;
+    }
 
-      alert("로그아웃 되었습니다.");
-      navigate('/'); // 로그아웃 후 홈으로 이동
+    // 채팅 목록 API 호출
+    fetch(`/chatroom/user/${userno}/chatlist`)
+      .then(res => res.json())
+      .then(data => {
+        setChatList(data);
+      })
+      .catch(err => {
+        console.error('채팅 목록 API 호출 실패:', err);
+        setChatList([]); // 에러 시 빈 배열
+      });
+
+    // 알림 목록 API 호출
+    fetch(`/notifications/user/${userno}`)
+      .then(res => res.json())
+      .then(data => {
+        setNotificationList(data);
+      })
+      .catch(err => {
+        console.error('알림 목록 API 호출 실패:', err);
+        setNotificationList([]); // 에러 시 빈 배열
+      });
+      // 안읽은 알림 개수
+      fetch(`/notifications/user/${userno}/unreadCount`)
+      .then(res => res.json())
+      .then(count => {
+        setUnreadCount(count);
+      })
+      .catch(() => setUnreadCount(0));
+
+  }, [userno]);
+
+  const handleLogout = () => {
+    fetch('/user/logout', { method: 'GET' })
+      .then(result => result.text())
+      .then(text => {
+        console.log('->', text);
+        setSw(false);
+        setLoginUser(null);
+        sessionStorage.removeItem('sw');
+        sessionStorage.removeItem('loginUser');
+        alert("로그아웃 되었습니다.");
+        navigate('/');
+      })
+      .catch(err => {
+        console.error(err);
+        alert("로그아웃 중에 문제가 발생했습니다.");
+      });
+  };
+
+  const handleMarkAllRead = () => {
+  if (!userno) return;
+
+  fetch(`/notifications/user/${userno}/readAll`, {
+    method: 'PUT',
+  })
+    .then(res => {
+      if (!res.ok) throw new Error('실패');
+      // 알림 상태 갱신
+      setNotificationList(notificationList.map(n => ({ ...n, read: true })));
+      setUnreadCount(0);
     })
     .catch(err => {
-      console.error(err);
-      alert("로그아웃 중에 문제가 발생했습니다..");
+      console.error('모두 읽음 처리 실패:', err);
+      alert('모두 읽음 처리에 실패했습니다.');
     });
-
 };
 
   const toggleDropdown = () => {
@@ -57,24 +114,7 @@ const handleLogout = () => {
   const handleNotificationClick = () => {
     setIsNotificationDropdownOpen(!isNotificationDropdownOpen);
     setIsChatDropdownOpen(false); // 다른 드롭다운 닫기
-  };
-
-  // 샘플 채팅 데이터
-  const chatList = [
-    { id: 1, name: '김철수', lastMessage: '안녕하세요! 문의사항이 있어서 연락드려요.', time: '2분 전', unread: 2 },
-    { id: 2, name: '이영희', lastMessage: '프로젝트 진행상황은 어떻게 되나요?', time: '1시간 전', unread: 1 },
-    { id: 3, name: '박민수', lastMessage: '내일 회의 시간 변경 가능한가요?', time: '3시간 전', unread: 0 },
-  ];
-
-  // 샘플 알림 데이터
-  const notificationList = [
-    { id: 1, title: '새로운 메시지', content: '김철수님이 메시지를 보냈습니다.', time: '5분 전', type: 'message' },
-    { id: 2, title: '프로젝트 업데이트', content: '프로젝트 A의 상태가 변경되었습니다.', time: '30분 전', type: 'update' },
-    { id: 3, title: '회의 알림', content: '오후 3시 팀 회의가 예정되어 있습니다.', time: '1시간 전', type: 'meeting' },
-    { id: 4, title: '시스템 공지', content: '시스템 점검이 예정되어 있습니다.', time: '2시간 전', type: 'system' },
-  ];
-
-  
+  };  
 
   return (
     <div style={{
@@ -298,7 +338,7 @@ const handleLogout = () => {
                   minWidth: '18px',
                   textAlign: 'center'
                 }}>
-                  4
+                  {unreadCount}
                 </span>
               </button>
 
@@ -327,20 +367,23 @@ const handleLogout = () => {
                     <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#333' }}>
                       알림
                     </h3>
-                    <button style={{
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      color: '#ffc107',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      textDecoration: 'underline'
-                    }}>
+                    <button
+                      style={{
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        color: '#ffc107',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        textDecoration: 'underline'
+                      }}
+                      onClick={handleMarkAllRead}
+                    >
                       모두 읽음
                     </button>
                   </div>
                   <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
                     {notificationList.map(notification => (
-                      <div key={notification.id} style={{
+                      <div key={notification.notificationno} style={{
                         padding: '12px 20px',
                         borderBottom: '1px solid #f1f3f4',
                         cursor: 'pointer',
@@ -362,11 +405,11 @@ const handleLogout = () => {
                               flexShrink: 0
                             }}></div>
                             <span style={{ fontWeight: '600', color: '#333', fontSize: '14px' }}>
-                              {notification.title}
+                              {notification.type}
                             </span>
                           </div>
                           <span style={{ fontSize: '12px', color: '#666', flexShrink: 0 }}>
-                            {notification.time}
+                            {notification.createdAt}
                           </span>
                         </div>
                         <p style={{ 
@@ -376,7 +419,7 @@ const handleLogout = () => {
                           lineHeight: '1.4',
                           paddingLeft: '16px'
                         }}>
-                          {notification.content}
+                          {notification.message}
                         </p>
                       </div>
                     ))}

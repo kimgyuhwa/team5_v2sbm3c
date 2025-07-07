@@ -78,7 +78,7 @@ useEffect(() => {
             marginBottom: '20px',
             textAlign: 'center'
           }}>
-            {loginUser.schoolname}
+            {loginUser?.schoolname}
           </h2>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

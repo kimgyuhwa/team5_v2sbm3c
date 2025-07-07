@@ -52,7 +52,7 @@ public class PlacesController {
     
     // 키워드 검색 (예: placename에 특정 글자가 포함된 강의실 조회)
     @GetMapping("/search")
-    public ResponseEntity<List<Places>> search(@RequestParam String keyword) {
+    public ResponseEntity<List<Places>> search(@RequestParam(name="keyword") String keyword) {
         return ResponseEntity.ok(placesService.searchByPlacename(keyword));
     }
 
@@ -60,6 +60,24 @@ public class PlacesController {
     @GetMapping("/schoolgwan/{schoolgwanno}")
     public ResponseEntity<List<PlacesDTO>> listBySchoolGwan(@PathVariable(name="schoolgwanno") Long schoolgwanno) {
         return ResponseEntity.ok(placesService.findBySchoolGwanNo(schoolgwanno));
+    }
+    
+    // 1) 특정 학교의 모든 장소 조회
+    @GetMapping("/list-by-school/{schoolno}")
+    public ResponseEntity<List<PlacesDTO>> getPlacesBySchool(@PathVariable(name="schoolno") Long schoolno) {
+        List<PlacesDTO> list = placesService.findBySchoolno(schoolno);
+        return ResponseEntity.ok(list);
+    }
+
+    
+    // 2) 특정 학교의 특정 관(SchoolGwan)에 속한 장소만 조회
+    @GetMapping("/list-by-school-and-gwan")
+    public ResponseEntity<List<PlacesDTO>> getPlacesBySchoolAndGwan(
+            @RequestParam(name = "schoolno") Long schoolno,
+            @RequestParam(name = "schoolgwanno") Long schoolgwanno) {
+        
+        List<PlacesDTO> list = placesService.findBySchoolnoAndSchoolgwanno(schoolno, schoolgwanno);
+        return ResponseEntity.ok(list);
     }
     
 }
