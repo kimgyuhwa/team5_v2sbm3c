@@ -1,4 +1,4 @@
-package dev.mvc.chatbot;
+package dev.mvc.team5.chatbot;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import dev.mvc.chatbot.chatbotdto.ChatBotCreateDTO;
-import dev.mvc.chatbot.chatbotdto.ChatBotResponseDTO;
-import dev.mvc.chatbot.chatbotdto.ChatBotUpdateDTO;
+import dev.mvc.team5.chatbot.chatbotdto.ChatBotCreateDTO;
+import dev.mvc.team5.chatbot.chatbotdto.ChatBotResponseDTO;
+import dev.mvc.team5.chatbot.chatbotdto.ChatBotUpdateDTO;
 
 /**
  * 주요내용(ChatBot) 관련 서비스 인터페이스

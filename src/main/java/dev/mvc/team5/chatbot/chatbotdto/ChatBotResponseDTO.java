@@ -1,4 +1,4 @@
-package dev.mvc.chatbot.chatbotdto;
+package dev.mvc.team5.chatbot.chatbotdto;
 
 import java.time.LocalDateTime;
 
@@ -10,15 +10,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ChatBotListDTO {
+@NoArgsConstructor @AllArgsConstructor
+public class ChatBotResponseDTO {
+  
   private Long chatbotno;
   private Long userno;
-  private Long userName;
+  private String userName;
   private String content;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")
   private LocalDateTime createdAt;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")
-  private LocalDateTime updatedAt;
+  private LocalDateTime updateAt;
+  
 }
