@@ -1,5 +1,8 @@
 package dev.mvc.team5.chatroommember;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -27,9 +30,17 @@ public class ChatRoomMemberService {
     }
 
     public Collection<ChatRoomResponseDTO> findChatRoomsByUser(Long userno) {
-      // TODO Auto-generated method stub
-      return null;
-    }
+      List<ChatRoomMember> members = chatRoomMemberRepository.findByUserUserno(userno);
+      if (members == null || members.isEmpty()) {
+          return Collections.emptyList();
+      }
+      return members.stream()
+          .map(member -> {
+              ChatRoom room = member.getChatRoom();
+              return new ChatRoomResponseDTO(room.getChatRoomno(), room.getRoomName(), room.getCreatedAt());
+          })
+          .collect(Collectors.toList());
+  }
 
     // 멤버 조회 등 필요하면 추가
 }

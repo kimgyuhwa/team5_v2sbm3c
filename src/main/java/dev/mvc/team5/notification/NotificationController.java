@@ -2,6 +2,8 @@ package dev.mvc.team5.notification;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
@@ -24,10 +26,12 @@ public class NotificationController {
     public NotificationDTO create(@RequestBody NotificationDTO dto) {
         return toDTO(service.save(dto));
     }
-    // 사용자는 본인의 알림만 볼수잇음
+    // 사용자는 본인의 안읽은 알림만 볼수잇음 
     @GetMapping("/user/{userno}")
-    public List<NotificationDTO> getByUser(@PathVariable(name="userno") Long userno) {
-        return service.findByUser(userno).stream().map(this::toDTO).collect(Collectors.toList());
+    public List<NotificationDTO> getByUser(
+        @PathVariable(name="userno") Long userno,
+        @PageableDefault(size = 3, sort ={"createdAt", "notificationno"}) Pageable pageable) {
+        return service.findUnreadByUserPaged(userno, pageable).stream().map(this::toDTO).collect(Collectors.toList());
     }
     // 사용자가 알림을 클릭하면 read = true로 업데이트
     @PutMapping("/read/{id}")

@@ -4,9 +4,12 @@ package dev.mvc.team5.notification;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,4 +74,12 @@ public class NotificationService {
         }
         repo.deleteById(id);
     }
+
+    public Page<Notification> findByUserPaged(Long userno, Pageable pageable) {
+      return repo.findByUserUserno(userno, pageable);
+  }
+    
+    public Page<Notification> findUnreadByUserPaged(Long userno, Pageable pageable) {
+      return repo.findByUser_UsernoAndReadFalseOrderByCreatedAtDesc(userno, pageable);
+  }
 }

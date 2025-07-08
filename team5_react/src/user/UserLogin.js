@@ -333,13 +333,14 @@ function UserLogin() {
               >
                 테스트 계정
               </button>
+              
             </div>
 
             <div style={{ marginTop: '10px' }}>
               <Link to="/user/univCert" style={{ marginRight: '10px' }}>
                 학교 인증하기   
               </Link>
-              <Link to="/user/findId">    
+              <Link to="/user/findId" style={{ marginRight: '10px' }}>    
                 아이디 찾기   
               </Link>
 

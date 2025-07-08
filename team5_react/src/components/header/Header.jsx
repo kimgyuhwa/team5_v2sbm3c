@@ -13,8 +13,10 @@ function Header() {
 
   const [chatList, setChatList] = useState([]);
 
-  const [notificationList, setNotificationList] = useState([]);
-  const [unreadCount, setUnreadCount] = useState();
+  const [page, setPage] = useState(0);    //페이지
+  const [notificationList, setNotificationList] = useState([]);  // 알림 목록
+  const [unreadCount, setUnreadCount] = useState(); // 안읽은 알림 개수
+  const [hasMore, setHasMore] = useState(true);   // 더불러올 알람없으면 false > 더보기 없어짐
 
   const navigate = useNavigate();
   const { setSw, loginUser, setLoginUser } = useContext(GlobalContext);
@@ -23,11 +25,40 @@ function Header() {
     navigate('/mypage/MyPage');
   };
   const userno = loginUser?.userno;
+
+  const loadMore = () => {
+      fetch(`/notifications/user/${userno}?page=${page}&size=3`)
+        .then(res => res.json())
+        .then(data => {
+          // 중복 알림 방지
+          setNotificationList(prev => {
+            const newItems = data.filter(
+              newItem => !prev.some(item => item.notificationno === newItem.notificationno)
+            );
+            return [...prev, ...newItems];
+          });
+          setPage(prev => prev + 1);
+
+          // 데이터가 size보다 적으면 더 이상 불러올 알림이 없음
+          if (data.length < 3) {
+            setHasMore(false);
+          }
+        });
+    };
+
+    useEffect(() => {
+  if (isNotificationDropdownOpen && page === 0) {
+        loadMore();
+      }
+    }, [isNotificationDropdownOpen]);
+
   useEffect(() => {
     if (!userno) {
       setChatList([]);
       setNotificationList([]);
       setUnreadCount(0);
+      setHasMore(true);
+      setPage(0);
       return;
     }
 
@@ -42,16 +73,17 @@ function Header() {
         setChatList([]); // 에러 시 빈 배열
       });
 
-    // 알림 목록 API 호출
-    fetch(`/notifications/user/${userno}`)
-      .then(res => res.json())
-      .then(data => {
-        setNotificationList(data);
-      })
-      .catch(err => {
-        console.error('알림 목록 API 호출 실패:', err);
-        setNotificationList([]); // 에러 시 빈 배열
-      });
+    // //알림 목록 API 호출
+    // fetch(`/notifications/user/${userno}?page=${page}&size=3`)
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     setNotificationList(data);
+    //   })
+    //   .catch(err => {
+    //     console.error('알림 목록 API 호출 실패:', err);
+    //     setNotificationList([]); // 에러 시 빈 배열
+    //   });
+    
       // 안읽은 알림 개수
       fetch(`/notifications/user/${userno}/unreadCount`)
       .then(res => res.json())
@@ -60,6 +92,8 @@ function Header() {
       })
       .catch(() => setUnreadCount(0));
 
+      setHasMore(true);
+      setPage(0);
   }, [userno]);
 
   const handleLogout = () => {
@@ -87,10 +121,16 @@ function Header() {
     method: 'PUT',
   })
     .then(res => {
-      if (!res.ok) throw new Error('실패');
-      // 알림 상태 갱신
-      setNotificationList(notificationList.map(n => ({ ...n, read: true })));
+       if (!res.ok) throw new Error('실패');
+      // 읽음 처리 완료되면 최신 알림 목록 재요청
+      return fetch(`/notifications/user/${userno}?page=0&size=3`)
+    })
+    .then(res => res.json())
+    .then(data => {
+      setNotificationList(data);
       setUnreadCount(0);
+      setHasMore(data.length >= 3);
+      setPage(1); // page 0 데이터 로드 완료이므로 1로 설정
     })
     .catch(err => {
       console.error('모두 읽음 처리 실패:', err);
@@ -382,66 +422,82 @@ function Header() {
                     </button>
                   </div>
                   <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
-                    {notificationList.map(notification => (
-                      <div key={notification.notificationno} style={{
-                        padding: '12px 20px',
-                        borderBottom: '1px solid #f1f3f4',
+            {notificationList.length === 0 ? (
+              <div style={{
+                padding: '20px',
+                color: '#999',
+                textAlign: 'center',
+                fontSize: '14px',
+                userSelect: 'none'
+              }}>
+                알림이 없습니다.
+              </div>
+            ) : (
+              notificationList.map(notification => (
+                <div key={notification.notificationno} style={{
+                  padding: '12px 20px',
+                  borderBottom: '1px solid #f1f3f4',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: notification.type === 'message' ? '#17a2b8' : 
+                                      notification.type === 'update' ? '#28a745' :
+                                      notification.type === 'meeting' ? '#ffc107' :
+                                      notification.type === 'system' ? '#dc3545' : '#6c757d',
+                        borderRadius: '50%',
+                        flexShrink: 0
+                      }}></div>
+                      <span style={{ fontWeight: '600', color: '#333', fontSize: '14px' }}>
+                        {notification.type}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '12px', color: '#666', flexShrink: 0 }}>
+                      {notification.createdAt}
+                    </span>
+                  </div>
+                  <p style={{ 
+                    margin: 0, 
+                    fontSize: '13px', 
+                    color: '#666',
+                    lineHeight: '1.4',
+                    paddingLeft: '16px'
+                  }}>
+                    {notification.message}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+                                  {notificationList.length > 0 && hasMore && (
+                  <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
+                    <button
+                      onClick={loadMore}
+                      style={{
+                        width: '100%',
+                        padding: '8px',
+                        backgroundColor: '#ffc107',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '14px',
                         cursor: 'pointer',
                         transition: 'background-color 0.2s'
                       }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{
-                              width: '8px',
-                              height: '8px',
-                              backgroundColor: notification.type === 'message' ? '#17a2b8' : 
-                                             notification.type === 'update' ? '#28a745' :
-                                             notification.type === 'meeting' ? '#ffc107' :
-                                             notification.type === 'system' ? '#dc3545' : '#6c757d',
-                              borderRadius: '50%',
-                              flexShrink: 0
-                            }}></div>
-                            <span style={{ fontWeight: '600', color: '#333', fontSize: '14px' }}>
-                              {notification.type}
-                            </span>
-                          </div>
-                          <span style={{ fontSize: '12px', color: '#666', flexShrink: 0 }}>
-                            {notification.createdAt}
-                          </span>
-                        </div>
-                        <p style={{ 
-                          margin: 0, 
-                          fontSize: '13px', 
-                          color: '#666',
-                          lineHeight: '1.4',
-                          paddingLeft: '16px'
-                        }}>
-                          {notification.message}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
-                    <button style={{
-                      width: '100%',
-                      padding: '8px',
-                      backgroundColor: '#ffc107',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#e0a800'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#ffc107'}
+                      onMouseOver={(e) => e.target.style.backgroundColor = '#e0a800'}
+                      onMouseOut={(e) => e.target.style.backgroundColor = '#ffc107'}
                     >
-                      모든 알림 보기
+                      더보기
                     </button>
                   </div>
+                )}
                 </div>
               )}
             </div>

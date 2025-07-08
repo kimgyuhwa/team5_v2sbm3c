@@ -109,6 +109,7 @@ public class TalentController {
         List<TalentListDTO> list = service.findBySchoolno(schoolno);
         return ResponseEntity.ok(list);
     }
+    
  // 특정 학교의 특정 카테고리 글만 보여주기
     @GetMapping("/list-by-school-and-category")
     public ResponseEntity<List<TalentListDTO>> getTalentsBySchoolAndCategory(
