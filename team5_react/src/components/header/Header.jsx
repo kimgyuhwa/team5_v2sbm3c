@@ -12,7 +12,7 @@ function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  const { setSw, setUserno, setLoginUser } = useContext(GlobalContext);
+  const { LoginUser, setSw, setUserno, setLoginUser } = useContext(GlobalContext);
 
   const handleMyPage = () => {
     navigate('/mypage/MyPage');
@@ -533,6 +533,8 @@ const handleLogout = () => {
                   </div>
                 </div>
               )}
+
+              
             </div>
           </div>
         </div>

@@ -93,13 +93,13 @@ public class TalentCateGrpController {
    * 기본 정렬: cateGrpno 내림차순
    * 
    * @param keyword 검색 키워드 (기본: "")
-   * @param pageable 페이징 및 정렬 정보 (기본: size=10, cateGrpno desc)
+   * @param pageable 페이징 및 정렬 정보 (기본: size=5, cateGrpno desc)
    * @return 페이징된 대분류 목록 DTO 페이지
    */
   @GetMapping("/list")
   public ResponseEntity<Page<TalentCateGrpListDTO>> listTypes(
       @RequestParam(name = "keyword", defaultValue = "") String keyword,
-      @PageableDefault(size = 10, sort = "cateGrpno", direction = Sort.Direction.DESC) Pageable pageable) {
+      @PageableDefault(size = 5, sort = "cateGrpno", direction = Sort.Direction.DESC) Pageable pageable) {
     
     Page<TalentCateGrpListDTO> list = service.list(keyword, pageable);
     return ResponseEntity.ok(list);

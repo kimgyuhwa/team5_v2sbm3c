@@ -1,4 +1,3 @@
-// TalentCategoryItem.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import TalentCategoryUpdateForm from './TalentCategoryUpdateForm';
@@ -19,7 +18,7 @@ const TalentCategoryItem = ({ category, onDeleted, onUpdated }) => {
   };
 
   return (
-    <div>
+    <div className="talentcate-item">
       {isEditing ? (
         <TalentCategoryUpdateForm
           category={category}
@@ -31,9 +30,11 @@ const TalentCategoryItem = ({ category, onDeleted, onUpdated }) => {
         />
       ) : (
         <>
-          <span>{category.name} (대분류: {category.cateGrpName}) </span>
-          <button onClick={() => setIsEditing(true)}>수정</button>
-          <button onClick={handleDelete}>삭제</button>
+          <span className="item-name">{category.name} (대분류: {category.cateGrpName})</span>
+          <div className="item-actions">
+            <button className="btn edit-btn" onClick={() => setIsEditing(true)}>수정</button>
+            <button className="btn delete-btn" onClick={handleDelete}>삭제</button>
+          </div>
         </>
       )}
     </div>
