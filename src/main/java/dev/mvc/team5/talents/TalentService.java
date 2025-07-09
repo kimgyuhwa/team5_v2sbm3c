@@ -216,13 +216,17 @@ public class TalentService {
      * @param talentno 삭제할 재능 고유번호
      * @throws IllegalArgumentException 삭제할 재능이 없을 경우
      */
-    public void delete(Long talentno) {
-        if (talentRepository.existsById(talentno)) {
-            talentRepository.deleteById(talentno);
-        } else {
-            throw new IllegalArgumentException("삭제할 재능이 존재하지 않음: talentno=" + talentno);
-        }
-    }
+    public void delete(Long talentno, Long loggedInUserNo) {
+      Talent talent = talentRepository.findById(talentno)
+              .orElseThrow(() -> new IllegalArgumentException("삭제할 재능이 존재하지 않음: talentno=" + talentno));
+
+      if (!talent.getUser().getUserno().equals(loggedInUserNo)) {
+          throw new SecurityException("삭제 권한이 없습니다.");
+      }
+
+      talentRepository.deleteById(talentno);
+  }
+
 
     /**
      * 엔티티 → 리스트 조회용 DTO 변환

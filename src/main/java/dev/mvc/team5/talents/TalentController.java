@@ -94,14 +94,25 @@ public class TalentController {
      * @return 삭제 성공 메시지 또는 404 Not Found
      */
     @DeleteMapping("/delete/{talentno}")
-    public ResponseEntity<String> deleteTalent(@PathVariable(name="talentno") Long talentno) {
+    public ResponseEntity<String> deleteTalent(
+            @PathVariable(name = "talentno") Long talentno,
+            HttpSession session) {
+
+        Long loggedInUserNo = (Long) session.getAttribute("userno");
+        if (loggedInUserNo == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용해주세요.");
+        }
+
         try {
-            service.delete(talentno);
+            service.delete(talentno, loggedInUserNo);
             return ResponseEntity.ok("삭제 완료");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
+
 
     // 특정 학교 글만 보여주기
     @GetMapping("/list-by-school/{schoolno}")

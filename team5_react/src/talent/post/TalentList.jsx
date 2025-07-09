@@ -264,7 +264,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
             >
               {t.fileInfos && t.fileInfos.length > 0 && (
                 <img
-                  src={`http://localhost:9093/uploads/talent/${t.fileInfos[0].storedFileName}`}
+                  src={`/uploads/talent/${t.fileInfos[0].storedFileName}`}
                   alt={t.fileInfos[0].originalFileName}
                   className="talent-thumbnail"
                   onClick={(e) => e.stopPropagation()}

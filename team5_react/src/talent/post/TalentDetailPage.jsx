@@ -42,7 +42,7 @@ function TalentDetailPage() {
           {talent.fileInfos.map((file) => (
             <img
             key={file.fileno}
-            src={`http://localhost:9093/uploads/talent/${file.storedFileName}`}
+            src={`/uploads/talent/${file.storedFileName}`}
             alt={file.originalFileName}
             className="talent-image"
             />
