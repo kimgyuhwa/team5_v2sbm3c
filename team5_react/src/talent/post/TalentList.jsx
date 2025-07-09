@@ -15,7 +15,6 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
     setPage(0);
   }, [selectedCategoryNo]);
 
-
   const [editId, setEditId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [typeList, setTypeList] = useState([]);
@@ -32,35 +31,28 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
     if (newPage < 0 || newPage >= totalPages) return;
     setPage(newPage);
   };
-  
 
-  // 주요 변경: selectedCategoryNo 쿼리에 포함
+  // 목록 조회
   useEffect(() => {
-  if (!schoolno) return;
+    if (!schoolno) return;
 
-  console.log('selectedCategoryNo:', selectedCategoryNo);
-  console.log('searchQuery:', searchQuery);
-  console.log('page:', page);
+    const params = new URLSearchParams();
+    if (searchQuery?.trim()) params.append('keyword', searchQuery.trim());
+    if (selectedCategoryNo) params.append('categoryno', selectedCategoryNo);
+    params.append('page', page);
+    params.append('size', size);
+    params.append('schoolno', schoolno);
 
-  const params = new URLSearchParams();
-  if (searchQuery?.trim()) params.append('keyword', searchQuery.trim());
-  if (selectedCategoryNo) params.append('categoryno', selectedCategoryNo);
-  params.append('page', page);
-  params.append('size', size);
-  params.append('schoolno', schoolno);
+    axios
+      .get(`/talent/search?${params.toString()}`)
+      .then((res) => {
+        setTalents(res.data.content || []);
+        setTotalPages(res.data.totalPages || 1);
+      })
+      .catch((err) => alert('목록 불러오기 실패: ' + err.message));
+  }, [refresh, schoolno, searchQuery, selectedCategoryNo, page, size]);
 
-  console.log('axios 요청 URL:', `/talent/search?${params.toString()}`);
-
-  axios
-    .get(`/talent/search?${params.toString()}`)
-    .then((res) => {
-      setTalents(res.data.content || []);
-      setTotalPages(res.data.totalPages || 1);
-    })
-    .catch((err) => alert('목록 불러오기 실패: ' + err.message));
-}, [refresh, schoolno, searchQuery, selectedCategoryNo, page, size]);
-
-
+  // 타입, 대분류 목록 로드
   useEffect(() => {
     axios.get('/talent_type/list')
       .then(res => setTypeList(res.data.content))
@@ -71,6 +63,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
       .catch(err => console.error('대분류 목록 불러오기 실패', err));
   }, []);
 
+  // 소분류 목록은 editForm.cateGrpno 변경 시 갱신
   useEffect(() => {
     if (editForm.cateGrpno) {
       axios.get(`/talent_category/list-by-categrp/${editForm.cateGrpno}`)
@@ -108,40 +101,44 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
     setSelectedFiles(Array.from(e.target.files));
   };
 
+  // 수정 제출
   const submitEdit = async () => {
-    try {
-      let uploadedFileData = null;
+  try {
+    let uploadedFileData = [];
 
-      if (selectedFiles.length > 0) {
-        uploadedFileData = await uploadFile(selectedFiles, 'talent', editId, loginUser.profile);
-      }
-
-      const dto = {
-        talentno: editId,
-        title: editForm.title,
-        description: editForm.description,
-        typeno: Number(editForm.typeno),
-        categoryno: Number(editForm.categoryno),
-        fileId: uploadedFileData?.fileId,
-      };
-
-      const res = await fetch('/talent/update', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dto),
-      });
-
-      if (!res.ok) throw new Error('수정 실패');
-
-      alert('수정 성공!');
-      setEditId(null);
-      setEditForm({});
-      setSelectedFiles([]);
-      if (onUpdated) onUpdated();
-    } catch (e) {
-      alert('에러: ' + e.message);
+    if (selectedFiles.length > 0) {
+      uploadedFileData = await uploadFile(selectedFiles, 'talent', editId, loginUser.profile);
     }
-  };
+
+    // 기존 파일도 포함하려면 editForm이나 다른 상태에 기존 파일 리스트를 유지해야 함
+
+    const dto = {
+      talentno: editId,
+      title: editForm.title,
+      description: editForm.description,
+      typeno: Number(editForm.typeno),
+      categoryno: Number(editForm.categoryno),
+      fileInfos: uploadedFileData,  // 전체 배열 전달
+    };
+
+    const res = await fetch('/talent/update', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    });
+
+    if (!res.ok) throw new Error('수정 실패');
+
+    alert('수정 성공!');
+    setEditId(null);
+    setEditForm({});
+    setSelectedFiles([]);
+    if (onUpdated) onUpdated();
+  } catch (e) {
+    alert('에러: ' + e.message);
+  }
+};
+
 
   const deleteTalent = async (id) => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
@@ -187,7 +184,6 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
   return (
     <div className="talent-posts-box">
       <h2 className="talent-posts-title">재능 목록</h2>
-
       {talents.length === 0 ? (
         <div className="no-results">목록이 없습니다.</div>
       ) : (

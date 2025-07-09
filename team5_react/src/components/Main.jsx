@@ -29,7 +29,7 @@ export default function MainPage() {
   const searchChange = (e) => {
     setSearchQuery(e.target.value);
   };
-  
+
   console.log("🚀 selectedCategoryNo in MainPage:", selectedCategoryNo);
 
 
@@ -42,13 +42,12 @@ export default function MainPage() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        backgroundColor: '#f8f9fa ',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: 'white',
+      fontFamily: 'Arial, sans-serif'
+      
+    }}>
       <Header />
 
       {/* 사이드바 영역 */}

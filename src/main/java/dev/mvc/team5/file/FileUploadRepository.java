@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface FileUploadRepository extends JpaRepository<FileUpload, Long> {
     List<FileUpload> findByTalent_Talentno(Long talentno);
+    
+    void deleteByTalent_Talentno(Long talentno);
 }

@@ -38,7 +38,6 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/mypage/MyPage" element={<MyPage />} />
           <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />
@@ -62,6 +61,7 @@ function App() {
           <Route path="/review/review" element={<ReviewPage />} />
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
           <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
+          <Route path="/mypage/MyPage" element={<MyPage />} />
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

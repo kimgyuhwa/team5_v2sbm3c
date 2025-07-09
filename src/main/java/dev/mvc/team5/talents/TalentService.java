@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import dev.mvc.team5.file.FileUpload;
 import dev.mvc.team5.file.FileUploadDTO;
+import dev.mvc.team5.file.FileUploadRepository;
 import dev.mvc.team5.school.School;
 import dev.mvc.team5.school.SchoolRepository;
 import dev.mvc.team5.talentcategory.TalentCategory;
@@ -22,6 +23,7 @@ import dev.mvc.team5.talenttype.TalentType;
 import dev.mvc.team5.talenttype.TalentTypeRepository;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +46,9 @@ public class TalentService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private FileUploadRepository fileUploadRepository;
 
     /**
      * 엔티티 → 상세 조회용 DTO 변환
@@ -151,33 +156,38 @@ public class TalentService {
      * @throws IllegalArgumentException 재능이 없을 경우
      * @throws SecurityException 권한이 없을 경우
      */
+    @Transactional
     public TalentResponseDTO update(TalentUpdateDTO dto, Long loggedInUserNo) {
         // 수정 대상 엔티티 조회
         Talent talent = talentRepository.findById(dto.getTalentno())
                 .orElseThrow(() -> new IllegalArgumentException("재능이 존재하지 않음"));
 
-        // 작성자 권한 체크
+        // 권한 체크
         if (!talent.getUser().getUserno().equals(loggedInUserNo)) {
             throw new SecurityException("수정 권한이 없습니다.");
         }
 
-        // 수정 정보 엔티티에 반영
+        // 타입, 카테고리 객체 설정
         TalentType type = new TalentType();
+        type.setTypeno(dto.getTypeno());
+
         TalentCategory category = new TalentCategory();
+        category.setCategoryno(dto.getCategoryno());
 
-        type.setTypeno(dto.getTypeno());           // 타입 번호 설정
-        category.setCategoryno(dto.getCategoryno()); // 카테고리 번호 설정
-
+        // 기본 정보 업데이트
         talent.setTitle(dto.getTitle());
         talent.setDescription(dto.getDescription());
         talent.setType(type);
         talent.setCategory(category);
 
-        // --- 파일 업로드 리스트 업데이트 처리 추가 ---
-        if (dto.getFileInfos() != null) {
-            // 기존 파일 리스트 비우기 (필요시 DB에서 삭제 작업도 고려)
-            talent.getFiles().clear();
+        // 기존 파일 DB에서 삭제
+        fileUploadRepository.deleteByTalent_Talentno(dto.getTalentno());
 
+        // 기존 files 컬렉션 비우기
+        talent.getFiles().clear();
+
+        // 새 파일 리스트가 있다면 기존 컬렉션에 추가
+        if (dto.getFileInfos() != null && !dto.getFileInfos().isEmpty()) {
             List<FileUpload> files = dto.getFileInfos().stream()
                     .map(fileDto -> {
                         FileUpload file = new FileUpload();
@@ -186,25 +196,20 @@ public class TalentService {
                         file.setFilePath(fileDto.getFilePath());
                         file.setFileSize(fileDto.getFileSize());
                         file.setTargetType(fileDto.getTargetType());
-                        talent.setTalentno(fileDto.getTalentno());
                         file.setTalent(talent);
                         file.setProfile(fileDto.getProfile());
-
-                        file.setTalent(talent);
                         return file;
                     })
                     .collect(Collectors.toList());
 
             talent.getFiles().addAll(files);
         }
-        // ---------------------------------------------
 
-        // 수정된 엔티티 저장
+        // 엔티티 저장 및 DTO 반환
         Talent updated = talentRepository.save(talent);
-
-        // 수정된 엔티티를 DTO로 변환하여 반환
         return toResponseDTO(updated);
     }
+
 
     /**
      * 재능 삭제 처리

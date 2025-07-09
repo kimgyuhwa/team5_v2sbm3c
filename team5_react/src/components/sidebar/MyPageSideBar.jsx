@@ -80,7 +80,8 @@ function MainSideBar() {
         width: '300px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px'
+        gap: '20px',
+        
       }}>
         {/* 위는  왼쪽 사이드바 - 버튼 2개 */}
         <div style={{
