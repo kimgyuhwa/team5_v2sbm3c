@@ -112,11 +112,40 @@ public class PlacesServiceImpl implements PlacesService {
           });
   }
 
-		@Override
-		public List<PlacesDTO> findBySchoolnoAndSchoolGwanNo(Long schoolno, Long schoolgwanno) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+    
+//    @Override
+//    public List<PlacesDTO> findPlacesBySchoolno(Long schoolno) {
+//        return placesRepository.findBySchoolgwan_School_Schoolno(schoolno)
+//                               .stream()
+//                               .map(this::toDTO)
+//                               .collect(Collectors.toList());
+//    }
+    @Override
+    public List<PlacesDTO> findBySchoolno(Long schoolno) {
+        return placesRepository.findBySchoolGwan_School_Schoolno(schoolno)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<PlacesDTO> findBySchoolnoAndSchoolgwanno(Long schoolno, Long schoolgwanno) {
+        return placesRepository
+                .findBySchoolGwan_School_SchoolnoAndSchoolGwan_Schoolgwanno(schoolno, schoolgwanno)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    private PlacesDTO toDTO(Places entity) {
+        PlacesDTO dto = new PlacesDTO();
+        dto.setPlaceno(entity.getPlaceno());
+        dto.setPlacename(entity.getPlacename());
+        dto.setHosu(entity.getHosu());
+        dto.setStart_time(entity.getStart_time());
+        dto.setEnd_time(entity.getEnd_time());
+        dto.setSchoolgwanno(entity.getSchoolGwan().getSchoolgwanno());
+        dto.setSchoolgwanname(entity.getSchoolGwan().getSchoolgwanname());
+        return dto;
+    }
     
     
 }

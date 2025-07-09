@@ -20,7 +20,8 @@ function Menu() {
       <Link to="/user/session">Session Info</Link> |{" "}
       <Link to="/chat">Chat</Link> |{" "}
       <Link to="/talent/post">게시물</Link> |{" "}
-      <Link to="/review/review">리뷰</Link>
+      <Link to="/review/review">리뷰</Link> |{" "}
+      <Link to="/mypage/chatbot-list">챗봇리스트</Link>
 
       {loginUser && loginUser.role === "admin" && (
         <>

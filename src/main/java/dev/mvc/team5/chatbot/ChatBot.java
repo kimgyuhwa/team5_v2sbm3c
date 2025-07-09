@@ -1,4 +1,4 @@
-package dev.mvc.chatbot;
+package dev.mvc.team5.chatbot;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,9 +44,9 @@ public class ChatBot {
 
   @ManyToOne
   @JoinColumn(name = "userno")
-  private User userno;
+  private User user;
   
-  @Column(columnDefinition = "TEXT")
+  @Column
   private String content;
   
   @CreationTimestamp
@@ -58,7 +58,7 @@ public class ChatBot {
   private LocalDateTime updatedAt;
   
   public ChatBot(User user, String content) {
-    this.userno = userno;
+    this.user = user;
     this.content = content;
 }
 }

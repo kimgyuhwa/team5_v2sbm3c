@@ -78,7 +78,7 @@ const TalentCreateForm = ({ onCreated }) => {
       title,
       description,
       language,
-      schoolno: 1, // 필요에 따라 변경
+      schoolno: loginUser.schoolname, // 필요에 따라 변경
       userno: loginUser.userno,
       typeno: Number(typeno),
       categoryno: Number(categoryno),

@@ -29,4 +29,12 @@ public interface PlacesRepository extends JpaRepository<Places, Long> {
     
     // 상세보기
     Optional<PlacesDTO> findByPlaceno(Long placeno);
+    
+    //List<Places> findBySchoolgwanno(Long schoolgwanno);
+    
+ // 특정 학교번호에 해당하는 모든 장소 가져오기 (관까지 탐색)
+    List<Places> findBySchoolGwan_School_Schoolno(Long schoolno);
+    
+    // 특정 학교번호에 해당하는 특정 관 번호의 장소들 조회  ( 카테고리같은거
+    List<Places> findBySchoolGwan_School_SchoolnoAndSchoolGwan_Schoolgwanno(Long schoolno, Long schoolgwanno);
 }

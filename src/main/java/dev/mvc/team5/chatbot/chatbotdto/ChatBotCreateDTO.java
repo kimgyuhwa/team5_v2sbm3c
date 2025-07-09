@@ -1,6 +1,6 @@
-package dev.mvc.chatbot.chatbotdto;
+package dev.mvc.team5.chatbot.chatbotdto;
 
-import dev.mvc.chatbot.ChatBot;
+import dev.mvc.team5.chatbot.ChatBot;
 import dev.mvc.team5.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

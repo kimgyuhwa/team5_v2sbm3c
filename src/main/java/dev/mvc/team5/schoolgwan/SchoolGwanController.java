@@ -61,9 +61,9 @@ public class SchoolGwanController {
         return ResponseEntity.noContent().build();
     }
 
-    // 특정 학교의 모든 학교관 조회
-    @GetMapping("/school/{schoolno}")
-    public ResponseEntity<List<SchoolGwanDTO>> listBySchool(@PathVariable(name="schoolno") Long schoolno) {
-        return ResponseEntity.ok(schoolGwanService.findBySchoolNo(schoolno));
-    }
+//    // 특정 학교의 모든 학교관 조회  // 애매함
+//    @GetMapping("/school/{schoolno}")
+//    public ResponseEntity<List<SchoolGwanDTO>> listBySchool(@PathVariable(name="schoolno") Long schoolno) {
+//        return ResponseEntity.ok(schoolGwanService.findBySchoolNo(schoolno));
+//    }
 }

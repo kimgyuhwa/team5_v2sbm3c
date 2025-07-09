@@ -77,7 +77,7 @@ const ChatRoom = ({ chatRoomno = 21 }) => {
         <div style={{ padding: 20, fontWeight: "bold" }}>🔌 채팅 서버에 연결 중입니다...</div>
       ) : (
         <>
-          <div style={{ height: 300, overflowY: "auto", border: "1px solid black", marginBottom: 10 }}>
+          <div style={{ height: 300, overflow: "auto", border: "1px solid black",  marginBottom: 10 }}>
             {messages.map((msg, idx) => (
               <div key={idx}>
                 <b>{msg.userName}</b>: {msg.content}

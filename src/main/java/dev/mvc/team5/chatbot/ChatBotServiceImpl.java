@@ -1,4 +1,4 @@
-package dev.mvc.chatbot;
+package dev.mvc.team5.chatbot;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -7,9 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import dev.mvc.chatbot.chatbotdto.ChatBotCreateDTO;
-import dev.mvc.chatbot.chatbotdto.ChatBotResponseDTO;
-import dev.mvc.chatbot.chatbotdto.ChatBotUpdateDTO;
+import dev.mvc.team5.chatbot.chatbotdto.ChatBotCreateDTO;
+import dev.mvc.team5.chatbot.chatbotdto.ChatBotResponseDTO;
+import dev.mvc.team5.chatbot.chatbotdto.ChatBotUpdateDTO;
 import dev.mvc.team5.request.Request;
 import dev.mvc.team5.request.RequestRepository;
 import dev.mvc.team5.request.requestdto.RequestCreateDTO;
@@ -37,8 +37,8 @@ public class ChatBotServiceImpl implements ChatBotService {
   private ChatBotResponseDTO toChatBotResponseDTO(ChatBot chatbot) {
     return new ChatBotResponseDTO(
         chatbot.getChatbotno(),
-        chatbot.getUserno() != null ? chatbot.getUserno().getUserno() : null,
-        chatbot.getUserno() != null ? chatbot.getUserno().getName() : null,
+        chatbot.getUser() != null ? chatbot.getUser().getUserno() : null,
+        chatbot.getUser() != null ? chatbot.getUser().getName() : null,
         chatbot.getContent(),
         chatbot.getCreatedAt(),
         chatbot.getUpdatedAt()
@@ -91,7 +91,7 @@ public class ChatBotServiceImpl implements ChatBotService {
     User user = userRepository.findById(dto.getUserno())
         .orElseThrow(() -> new RuntimeException("사용자 정보가 없습니다."));
 
-    chatbot.setUserno(user);  // 유저 변경 가능할 경우만
+    chatbot.setUser(user);  // 유저 변경 가능할 경우만
     chatbot.setContent(dto.getContent());
     chatbot.setUpdatedAt(LocalDateTime.now());
 

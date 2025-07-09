@@ -1,4 +1,4 @@
-package dev.mvc.chatbot.chatbotdto;
+package dev.mvc.team5.chatbot.chatbotdto;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +15,6 @@ import lombok.Setter;
 public class ChatBotUpdateDTO {
   private Long chatbotno;
   private Long userno;
-  private String userName;
   private String content;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")
   private LocalDateTime updatedAt;
