@@ -53,5 +53,7 @@ public interface PlacesService {
 		
 	// 상세보기
     Optional<PlacesDTO> findByPlaceno(Long placeno);
+
+		List<PlacesDTO> findBySchoolnoAndSchoolGwanNo(Long schoolno, Long schoolgwanno);
 		
 }

@@ -35,6 +35,7 @@ useEffect(() => {
             icon: '📁', // 임시 아이콘
             subcategories: cateRes.data.map(c => ({
               id: c.categoryno,
+              
               name: c.name
             }))
           };
@@ -52,21 +53,22 @@ useEffect(() => {
 
 
   return (
-    
-
-      
       
       <div style={{
         width: '300px',
         display: 'flex',
         flexDirection: 'column',
+        backgroundColor:'white',
+        boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.1)',
         gap: '20px'
+        
       }}>
+        
         {/* 위는  왼쪽 사이드바 - 버튼 2개 */}
         <div style={{
           backgroundColor: 'white',
           borderRadius: '20px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          
           padding: '30px',
           boxSizing: 'border-box'
         }}>
@@ -127,7 +129,7 @@ useEffect(() => {
               onClick={() => navigate('/place/PlacesPage')}
             >
               <Menu size={20} /> 
-              <span>장소보기</span> 
+              <span>강의실 보기</span> 
             </button>
           </div>
           
@@ -138,10 +140,7 @@ useEffect(() => {
         {/* 카테고리 섹션 */}
         <div style={{
           backgroundColor: 'white',
-          borderRadius: '20px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
           padding: '30px',
-          boxSizing: 'border-box',
           position: 'relative'
         }}>
           <h3 style={{

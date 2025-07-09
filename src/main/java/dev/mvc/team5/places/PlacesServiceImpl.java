@@ -111,6 +111,12 @@ public class PlacesServiceImpl implements PlacesService {
               return dto;
           });
   }
+
+		@Override
+		public List<PlacesDTO> findBySchoolnoAndSchoolGwanNo(Long schoolno, Long schoolgwanno) {
+			// TODO Auto-generated method stub
+			return null;
+		}
     
     
 }

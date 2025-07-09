@@ -22,8 +22,11 @@ import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
-import MyPage from './mypage/MyPage';
 import TalentCreateForm from './talent/type/TalentCreateForm';
+import MyPage from './mypage/MyPage';
+// import MyPageSetting from './MyPageSetting';
+// import MyPageSurvey from './MyPageSurvey';
+
 
 
 function App() {
@@ -35,7 +38,6 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/mypage/MyPage" element={<MyPage />} />
           <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />
@@ -58,6 +60,9 @@ function App() {
           <Route path="/talent/category" element={<TalentCategory />} /> 
           <Route path="/talent/type" element={<TalentType />} /> 
           <Route path="/review/review" element={<ReviewPage />} />
+          <Route path="/mypage/MyPage" element={<MyPage />} />
+          {/* <Route path="/mypage/MyPageSetting" element={<MyPageSetting />} />
+          <Route path="/mypage/MyPageSurvey" element={<MyPageSurvey />} /> */}
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

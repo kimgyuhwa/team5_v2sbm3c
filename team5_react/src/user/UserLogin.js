@@ -99,7 +99,7 @@ function UserLogin() {
       return;
     }
 
-    fetch(`/user/login`, {
+    fetch('/user/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -129,6 +129,8 @@ function UserLogin() {
           console.error('세션 확인 실패:', err);
         });
         } else {
+          console.log(id)
+          console.log(passwd)
           alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');
           setSw(false);
           setUserno(null);
@@ -142,6 +144,11 @@ function UserLogin() {
 
   const test = () => {
     setId('kimgyuhwa123');
+    setPasswd('1234');
+  };
+
+    const admintest = () => {
+    setId('testId');
     setPasswd('1234');
   };
 
@@ -331,7 +338,28 @@ function UserLogin() {
                 onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
               >
-                테스트 계정
+                회원 계정
+              </button>
+                            <button 
+                id="btnTest" 
+                type="button" 
+                onClick={admintest}
+                style={{
+                  flex: '1',
+                  padding: '12px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+              >
+                관리자Test계정
               </button>
             </div>
 

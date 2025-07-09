@@ -82,8 +82,9 @@ export default function MainPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#f8f9fa ',
+      backgroundColor: 'white',
       fontFamily: 'Arial, sans-serif'
+      
     }}>
       <Header />
         

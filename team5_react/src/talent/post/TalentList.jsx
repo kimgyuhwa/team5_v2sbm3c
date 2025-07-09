@@ -140,7 +140,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
 
   return (
     <div className="talent-posts-box">
-      <h2 className="talent-posts-title">재능 목록</h2>
+      <h2 className="talent-posts-title">재능 기부</h2>
       {talents.length === 0 ? (
         <div className="no-results">목록이 없습니다.</div>
       ) : (

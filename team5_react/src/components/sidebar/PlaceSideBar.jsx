@@ -1,69 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Plus, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import { GlobalContext } from '../GlobalContext';
 
 function PlaceSideBar({setSelectedCategory}) {
   const [hoveredCategory, setHoveredCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+  const { loginUser } = useContext(GlobalContext);
   
-  const handleCategoryClick = (categoryId, subcategoryId = null) => {
-    setSelectedCategory({ categoryId, subcategoryId });
+  useEffect(() => {
+    if (loginUser && loginUser.schoolno) {
+      fetch(`/places/schoolgwan/${loginUser.schoolno}`)
+        .then(res => res.json())
+        .then(data => {
+          const formattedCategories = data.map(item => ({
+            id: item.schoolgwanno,
+            name: item.schoolgwanname,
+            icon: item.icon || '🏢',
+            subcategories: item.children && item.children.map(child => ({
+              id: child.place_no,
+              name: child.placename
+            }))
+          }));
+          setCategories(formattedCategories);
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+    }
+  }, [loginUser]);
+  
+  const handleCategoryClick = (category, subcategory = null) => {
+    if (subcategory) {
+      // 소분류 (강의실) 클릭 시
+      navigate(`/schoolgwans/school/${category.id}/classroom/${subcategory.id}`);
+    } else {
+      // 중분류 (학교관) 클릭 시
+      navigate(`/schoolgwans/school/${category.id}`);
+    }
+    setSelectedCategory({ categoryId: category.id, subcategoryId: subcategory ? subcategory.id : null });
     setHoveredCategory(null);
   };
   
-  // 카테고리 데이터 
-const categories = [
-    {
-      id: 'restaurant',
-      name: '음식점',
-      icon: '🍽️',
-      subcategories: [
-        { id: 'korean', name: '한식' },
-        { id: 'western', name: '양식' },
-        { id: 'chinese', name: '중식' },
-        { id: 'japanese', name: '일식' },
-        { id: 'cafe', name: '카페/디저트' }
-      ]
-    },
-    {
-      id: 'study',
-      name: '스터디',
-      icon: '📚',
-      subcategories: [
-        { id: 'library', name: '도서관' },
-        { id: 'studycafe', name: '스터디카페' },
-        { id: 'reading_room', name: '독서실' },
-        { id: 'group_study', name: '그룹스터디룸' }
-      ]
-    },
-    {
-      id: 'entertainment',
-      name: '오락',
-      icon: '🎮',
-      subcategories: [
-        { id: 'karaoke', name: '노래방' },
-        { id: 'pc_room', name: 'PC방' },
-        { id: 'bowling', name: '볼링장' },
-        { id: 'movie', name: '영화관' }
-      ]
-    },
-    {
-      id: 'shopping',
-      name: '쇼핑',
-      icon: '🛍️',
-      subcategories: [
-        { id: 'mall', name: '쇼핑몰' },
-        { id: 'bookstore', name: '서점' },
-        { id: 'convenience', name: '편의점' },
-        { id: 'market', name: '마트' }
-      ]
-    }
-  ];
-
-
-
-
   return (
 
       <div style={{
@@ -87,7 +64,7 @@ const categories = [
             marginBottom: '20px',
             textAlign: 'center'
           }}>
-            솔데 대학교
+            {loginUser.schoolname}
           </h2>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -170,7 +147,7 @@ const categories = [
                 onMouseLeave={() => setHoveredCategory(null)}
               >
                 <button
-                  onClick={() => handleCategoryClick(category.id)}
+                  onClick={() => handleCategoryClick(category)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -192,7 +169,7 @@ const categories = [
                 </button>
 
                 {/* 서브카테고리 드롭다운 */}
-                {hoveredCategory === category.id && (
+                {hoveredCategory === category.id && category.subcategories && (
                   <div style={{
                     position: 'absolute',
                     left: 0,
@@ -210,7 +187,7 @@ const categories = [
                       {category.subcategories.map((subcategory) => (
                         <button
                           key={subcategory.id}
-                          onClick={() => handleCategoryClick(category.id, subcategory.id)}
+                          onClick={() => handleCategoryClick(category, subcategory)}
                           style={{
                             display: 'block',
                             width: '100%',
