@@ -11,4 +11,5 @@ public class PlacesDTO {
     private LocalDateTime start_time;
     private LocalDateTime end_time;
     private Long schoolgwanno;  // SchoolGwan의 PK
+    private String schoolgwanname;
 }

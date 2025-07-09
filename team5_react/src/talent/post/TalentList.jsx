@@ -1,35 +1,65 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { GlobalContext } from '../../components/GlobalContext';
+import { useNavigate } from 'react-router-dom';
+import uploadFile from '../../fileupload/FileUpload'; 
 import '../style/TalentList.css';
 
-const TalentList = ({ refresh, onUpdated, onDeleted }) => {
+const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCategoryNo }) => {
   const [talents, setTalents] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(0);
+  const [size] = useState(10);
+
+  useEffect(() => {
+    setPage(0);
+  }, [selectedCategoryNo]);
+
+
   const [editId, setEditId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [typeList, setTypeList] = useState([]);
   const [cateGrpList, setCateGrpList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const { loginUser , selectedCategoryNo } = useContext(GlobalContext);
+
+  const { loginUser } = useContext(GlobalContext);
   const schoolno = loginUser?.schoolno;
-  //const categoryno = categoryList?.categoryno;
+  const navigate = useNavigate();
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const goToPage = (newPage) => {
+    if (newPage < 0 || newPage >= totalPages) return;
+    setPage(newPage);
+  };
   
 
+  // 주요 변경: selectedCategoryNo 쿼리에 포함
   useEffect(() => {
   if (!schoolno) return;
 
-  const url = selectedCategoryNo
-    ? `/talent/list-by-school-and-category?schoolno=${schoolno}&categoryno=${selectedCategoryNo}`  // <-- 이거 새로 추가
-    : `/talent/list-by-school/${schoolno}`;  // 기존 로직
+  console.log('selectedCategoryNo:', selectedCategoryNo);
+  console.log('searchQuery:', searchQuery);
+  console.log('page:', page);
 
-  fetch(url)
+  const params = new URLSearchParams();
+  if (searchQuery?.trim()) params.append('keyword', searchQuery.trim());
+  if (selectedCategoryNo) params.append('categoryno', selectedCategoryNo);
+  params.append('page', page);
+  params.append('size', size);
+  params.append('schoolno', schoolno);
+
+  console.log('axios 요청 URL:', `/talent/search?${params.toString()}`);
+
+  axios
+    .get(`/talent/search?${params.toString()}`)
     .then((res) => {
-      if (!res.ok) throw new Error('서버 응답 오류: ' + res.status);
-      return res.json();
+      setTalents(res.data.content || []);
+      setTotalPages(res.data.totalPages || 1);
     })
-    .then((data) => setTalents(data))
-    .catch((e) => alert('목록 불러오기 실패: ' + e.message));
-  }, [refresh, schoolno, selectedCategoryNo]); // categoryId 변화 감지
+    .catch((err) => alert('목록 불러오기 실패: ' + err.message));
+}, [refresh, schoolno, searchQuery, selectedCategoryNo, page, size]);
+
 
   useEffect(() => {
     axios.get('/talent_type/list')
@@ -56,32 +86,43 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
     setEditForm({
       title: talent.title,
       description: talent.description,
-      language: talent.language,
-      typeno: talent.type,       // 주의: 기존엔 t.type, 맞으면 사용
+      typeno: talent.typeno || talent.type,
       cateGrpno: talent.cateGrpno,
-      categoryno: talent.category,
+      categoryno: talent.categoryno || talent.category,
     });
+    setSelectedFiles([]);
   };
 
   const cancelEdit = () => {
     setEditId(null);
     setEditForm({});
+    setSelectedFiles([]);
   };
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setEditForm(prev => ({ ...prev, [name]: value }));
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    setSelectedFiles(Array.from(e.target.files));
   };
 
   const submitEdit = async () => {
     try {
+      let uploadedFileData = null;
+
+      if (selectedFiles.length > 0) {
+        uploadedFileData = await uploadFile(selectedFiles, 'talent', editId, loginUser.profile);
+      }
+
       const dto = {
         talentno: editId,
         title: editForm.title,
         description: editForm.description,
-        language: editForm.language,
         typeno: Number(editForm.typeno),
         categoryno: Number(editForm.categoryno),
+        fileId: uploadedFileData?.fileId,
       };
 
       const res = await fetch('/talent/update', {
@@ -95,6 +136,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
       alert('수정 성공!');
       setEditId(null);
       setEditForm({});
+      setSelectedFiles([]);
       if (onUpdated) onUpdated();
     } catch (e) {
       alert('에러: ' + e.message);
@@ -116,7 +158,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
 
   const sendRequest = async (talent) => {
     if (!loginUser) {
-      alert("로그인이 필요합니다.");
+      alert('로그인이 필요합니다.');
       return;
     }
 
@@ -125,7 +167,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
       giverno: loginUser.userno,
       receiverno: talent.userno,
       status: 'pending',
-      message: '재능 요청합니다.'
+      message: '재능 요청합니다.',
     };
 
     try {
@@ -133,18 +175,23 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
       alert('요청 성공!');
       console.log(res.data);
     } catch (e) {
-      console.log("보내는 요청:", dto);
+      console.log('보내는 요청:', dto);
       alert('요청 실패: ' + e.message);
     }
+  };
+
+  const handleGoDetail = (talentno) => {
+    navigate(`/talent/detail/${talentno}`);
   };
 
   return (
     <div className="talent-posts-box">
       <h2 className="talent-posts-title">재능 목록</h2>
+
       {talents.length === 0 ? (
         <div className="no-results">목록이 없습니다.</div>
       ) : (
-        talents.map(t =>
+        talents.map((t) =>
           editId === t.talentno ? (
             <article key={t.talentno} className="talent-post-item">
               <header className="talent-post-header">
@@ -164,12 +211,6 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
                   onChange={handleEditChange}
                   placeholder="설명"
                 />
-                <input
-                  name="language"
-                  value={editForm.language || ''}
-                  onChange={handleEditChange}
-                  placeholder="언어"
-                />
                 <select
                   name="typeno"
                   value={editForm.typeno || ''}
@@ -177,8 +218,10 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
                   required
                 >
                   <option value="">타입 선택</option>
-                  {typeList.map(type => (
-                    <option key={type.typeno} value={type.typeno}>{type.name}</option>
+                  {typeList.map((type) => (
+                    <option key={type.typeno} value={type.typeno}>
+                      {type.name}
+                    </option>
                   ))}
                 </select>
                 <select
@@ -188,8 +231,10 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
                   required
                 >
                   <option value="">대분류 선택</option>
-                  {cateGrpList.map(grp => (
-                    <option key={grp.cateGrpno} value={grp.cateGrpno}>{grp.name}</option>
+                  {cateGrpList.map((grp) => (
+                    <option key={grp.cateGrpno} value={grp.cateGrpno}>
+                      {grp.name}
+                    </option>
                   ))}
                 </select>
                 <select
@@ -199,34 +244,89 @@ const TalentList = ({ refresh, onUpdated, onDeleted }) => {
                   required
                 >
                   <option value="">소분류 선택</option>
-                  {categoryList.map(cat => (
-                    <option key={cat.categoryno} value={cat.categoryno}>{cat.name}</option>
+                  {categoryList.map((cat) => (
+                    <option key={cat.categoryno} value={cat.categoryno}>
+                      {cat.name}
+                    </option>
                   ))}
                 </select>
+                <input type="file" multiple onChange={handleFileChange} />
               </div>
               <footer className="talent-post-footer" style={{ gap: '10px' }}>
-                <button className="edit" onClick={submitEdit}>저장</button>
+                <button className="edit" onClick={submitEdit}>
+                  저장
+                </button>
                 <button onClick={cancelEdit}>취소</button>
               </footer>
             </article>
           ) : (
-            <article key={t.talentno} className="talent-post-item">
-              <header className="talent-post-header">
-                <h3 className="talent-post-title">{t.title}</h3>
-              </header>
-              <p className="talent-post-content">{t.description}</p>
-              <footer className="talent-post-footer">
-                <span className="talent-post-author">언어: {t.language}</span>
-                <div className="talent-post-actions" style={{ gap: '6px' }}>
-                  <button className="edit" onClick={() => startEdit(t)}>수정</button>
-                  <button className="delete" onClick={() => deleteTalent(t.talentno)}>삭제</button>
-                  <button className="request" onClick={() => sendRequest(t)}>요청</button>
+            <article
+              key={t.talentno}
+              className="talent-post-item"
+              onClick={() => handleGoDetail(t.talentno)}
+              style={{ cursor: 'pointer' }}
+            >
+              {t.fileInfos && t.fileInfos.length > 0 && (
+                <img
+                  src={`http://localhost:9093/uploads/talent/${t.fileInfos[0].storedFileName}`}
+                  alt={t.fileInfos[0].originalFileName}
+                  className="talent-thumbnail"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              )}
+
+              <div className="talent-post-content-wrapper">
+                <div className="talent-post-texts">
+                  <h3 className="talent-post-title">{t.title}</h3>
+                  <p className="talent-post-content">{t.description || '[설명 없음]'}</p>
                 </div>
-              </footer>
+
+                <div className="talent-post-actions-wrapper">
+                  <button
+                    className="btn edit-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEdit(t);
+                    }}
+                  >
+                    수정
+                  </button>
+                  <button
+                    className="btn delete-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteTalent(t.talentno);
+                    }}
+                  >
+                    삭제
+                  </button>
+                  <button
+                    className="btn request-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      sendRequest(t);
+                    }}
+                  >
+                    요청
+                  </button>
+                </div>
+              </div>
             </article>
           )
         )
       )}
+
+      <div style={{ marginTop: 20, textAlign: 'center' }}>
+        <button onClick={() => goToPage(page - 1)} disabled={page <= 0}>
+          이전
+        </button>
+        <span style={{ margin: '0 10px' }}>
+          {page + 1} / {totalPages}
+        </span>
+        <button onClick={() => goToPage(page + 1)} disabled={page + 1 >= totalPages}>
+          다음
+        </button>
+      </div>
     </div>
   );
 };

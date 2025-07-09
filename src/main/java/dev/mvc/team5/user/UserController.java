@@ -160,7 +160,7 @@ public class UserController {
         return result;
     }
 
-    /** 세션 확인 + 회원 정보 전체 제공 */
+    /** 세션 확인 */
     @GetMapping("/session")
     public Map<String, Object> getSessionUser(HttpSession session) {
         Map<String, Object> result = new HashMap<>();

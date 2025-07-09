@@ -1,4 +1,7 @@
 package dev.mvc.team5.chatroom;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,12 +37,20 @@ public class ChatRoomController {
 
     // 채팅방 입장 (멤버 생성)
     @PostMapping("/{roomId}/enter/{userId}")
-    public ResponseEntity<String> enterRoom(@PathVariable Long roomId, @PathVariable Long userId) {
+    public ResponseEntity<String> enterRoom(@PathVariable(name="roomId") Long roomId, @PathVariable(name="userId") Long userId) {
         ChatRoom chatRoom = chatRoomService.findById(roomId);
         User user = userService.findById(userId);
 
         ChatRoomMember member = chatRoomMemberService.enterChatRoom(chatRoom, user);
         return ResponseEntity.ok("입장 완료: memberNo = " + member.getChatRoomMemberno());
+    }
+    // 채팅 목록
+    @GetMapping("/user/{userno}/chatlist")
+    public List<ChatRoomResponseDTO> getChatListByUser(@PathVariable(name="userno") Long userno) {
+        // ChatRoomMemberService에서 userno로 참여중인 채팅방 목록 반환하는 로직 필요
+        return chatRoomMemberService.findChatRoomsByUser(userno).stream()
+                .map(room -> new ChatRoomResponseDTO(room.getChatRoomno(), room.getRoomName(), room.getCreatedAt()))
+                .collect(Collectors.toList());
     }
     
 }
