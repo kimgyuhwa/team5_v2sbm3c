@@ -99,7 +99,7 @@ function UserLogin() {
       return;
     }
 
-    fetch(`/user/login`, {
+    fetch('/user/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -129,6 +129,8 @@ function UserLogin() {
           console.error('세션 확인 실패:', err);
         });
         } else {
+          console.log(id)
+          console.log(passwd)
           alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');
           setSw(false);
           setUserno(null);
@@ -145,12 +147,19 @@ function UserLogin() {
     setPasswd('1234');
   };
 
+<<<<<<< HEAD
   const adminTest = () => {
+=======
+  const admintest = () => {
+>>>>>>> 5998394bba037a6ce0c40723d5d62b42aec6112e
     setId('testId');
     setPasswd('1234');
   };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5998394bba037a6ce0c40723d5d62b42aec6112e
   const handleClick = () => {
 
     navigate('/components/Main'); // 페이지 이동
@@ -337,12 +346,21 @@ function UserLogin() {
                 onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
               >
+<<<<<<< HEAD
                 사용자 계정
               </button>
               <button 
                 id="btnTest" 
                 type="button" 
                 onClick={adminTest}
+=======
+                회원 계정
+              </button>
+                            <button 
+                id="btnTest" 
+                type="button" 
+                onClick={admintest}
+>>>>>>> 5998394bba037a6ce0c40723d5d62b42aec6112e
                 style={{
                   flex: '1',
                   padding: '12px',
@@ -358,7 +376,11 @@ function UserLogin() {
                 onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
               >
+<<<<<<< HEAD
                 어드민 계정
+=======
+                관리자Test계정
+>>>>>>> 5998394bba037a6ce0c40723d5d62b42aec6112e
               </button>
             </div>
 

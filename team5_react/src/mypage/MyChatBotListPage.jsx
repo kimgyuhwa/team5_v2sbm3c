@@ -10,11 +10,16 @@ function MyChatBotListPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [editingId, setEditingId] = useState(null);
   const [editContent, setEditContent] = useState('');
+  const [searchText, setSearchText] = useState('');
 
   const loadList = () => {
     if (!loginUser) return;
-    axios
-      .get(`/chatbot/list/${loginUser.userno}?page=${page}&size=10`)
+
+    const url = searchText.trim()
+      ? `/chatbot/list/search?content=${encodeURIComponent(searchText)}&page=${page}&size=10`
+      : `/chatbot/list/${loginUser.userno}?page=${page}&size=10`;
+
+    axios.get(url)
       .then((res) => {
         setChatbotList(res.data.content);
         setTotalPages(res.data.totalPages);
@@ -26,7 +31,7 @@ function MyChatBotListPage() {
 
   useEffect(() => {
     loadList();
-  }, [loginUser, page]);
+  }, [loginUser, page, searchText]);
 
   const handleDelete = (chatbotno) => {
     if (!window.confirm('이 항목을 삭제할까요?')) return;
@@ -35,7 +40,7 @@ function MyChatBotListPage() {
       .delete(`/chatbot/delete/${chatbotno}`)
       .then(() => {
         alert('삭제 완료');
-        loadList(); // 다시 목록 불러오기
+        loadList();
       })
       .catch((err) => {
         console.error('삭제 실패', err);
@@ -71,6 +76,27 @@ function MyChatBotListPage() {
     <div className="chatbot-posts-box">
       <h2 className="chatbot-posts-title">내 챗봇 주요내용</h2>
 
+      {/* 🔍 검색 입력창 */}
+      <div style={{ display: 'flex', marginBottom: '20px', gap: '10px' }}>
+        <input
+          type="text"
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            setPage(0); // 검색어 입력 시 페이지 초기화
+          }}
+          placeholder="내용으로 검색"
+          style={{
+            flex: 1,
+            padding: '10px',
+            borderRadius: '6px',
+            border: '1px solid #ccc',
+            fontSize: '14px',
+          }}
+        />
+      </div>
+
+      {/* 📄 챗봇 리스트 */}
       {chatbotList.length > 0 ? (
         chatbotList.map((item) => (
           <div key={item.chatbotno} className="chatbot-post-item">
@@ -160,6 +186,7 @@ function MyChatBotListPage() {
         <p style={{ color: '#888', textAlign: 'center' }}>저장된 챗봇 내용이 없습니다.</p>
       )}
 
+      {/* 📄 페이지네이션 */}
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
         {Array.from({ length: totalPages }, (_, i) => (
           <button

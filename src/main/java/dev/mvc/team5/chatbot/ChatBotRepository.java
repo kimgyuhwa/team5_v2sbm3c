@@ -15,9 +15,9 @@ public interface ChatBotRepository  extends JpaRepository<ChatBot, Long> {
   // 특정 유저 번호에 해당하는 주요내용 목록 조회 (페이징 + 최신순 정렬)
   Page<ChatBot> findByUser_UsernoOrderByChatbotnoDesc(Long userno, Pageable pageable);
 
-  // 특정 유저 번호와 이름 키워드로 필터링한 주요내용 목록 조회 (페이징 + 최신순 정렬)
-  Page<ChatBot> findByUser_UsernoAndUser_NameContainingOrderByChatbotnoDesc(
-      Long userno, String name, Pageable pageable);
+  // 내용으로 검색, 주요내용 목록 조회 (페이징 + 최신순 정렬)
+  Page<ChatBot> findByContentContainingOrderByChatbotnoDesc(String content, Pageable pageable);
+
 
   
 }

@@ -76,6 +76,7 @@ public class Places {
     private List<Reservations> Reservation = new ArrayList<>();
     
     
+    
     public Places(/*User userno,*/ SchoolGwan schoolGwan, String placename, String hosu, LocalDateTime start_time, LocalDateTime end_time) {
 //        this.userno = userno;
         this.schoolGwan = schoolGwan;

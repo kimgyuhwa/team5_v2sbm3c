@@ -15,12 +15,15 @@ function Menu() {
   {sw ? (
     <>
       <Link to="/components/main">메인창</Link> |{" "}
+<<<<<<< HEAD
       <Link to="/user/profile">회원정보</Link> |{" "}
       {loginUser && (
         <>
          <Link to="/user/logout">로그아웃</Link> |{" "}
         </>
       )}
+=======
+>>>>>>> 5998394bba037a6ce0c40723d5d62b42aec6112e
       <Link to="/reservation/Reservation">예약ex</Link> |{" "}
       <Link to="/reservation/Place">강의실조회</Link> |{" "}
       <Link to="/user/session">Session Info</Link> |{" "}

@@ -94,7 +94,7 @@ public class TalentCategoryController {
   @GetMapping("/list")
   public ResponseEntity<Page<TalentCategoryListDTO>> listTypes(
       @RequestParam(name="keyword", defaultValue = "") String keyword,
-      @PageableDefault(size = 10, sort = "categoryno", direction = Sort.Direction.DESC)
+      @PageableDefault(size = 5, sort = "categoryno", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
       Page<TalentCategoryListDTO> list = service.list(keyword, pageable);

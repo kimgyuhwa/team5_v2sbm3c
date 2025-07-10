@@ -120,8 +120,8 @@ public class ChatBotServiceImpl implements ChatBotService {
    * @return 응답 DTO의 페이지 객체
    */
   @Override
-  public Page<ChatBotResponseDTO> listByUsernoAndName(Long userno, String name, Pageable pageable) {
-    Page<ChatBot> page = chatbotRepository.findByUser_UsernoAndUser_NameContainingOrderByChatbotnoDesc(userno, name, pageable);
+  public Page<ChatBotResponseDTO> listByContent(String content, Pageable pageable) {
+    Page<ChatBot> page = chatbotRepository.findByContentContainingOrderByChatbotnoDesc(content, pageable);
     return page.map(this::toChatBotResponseDTO);
   }
 

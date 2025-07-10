@@ -1,15 +1,16 @@
+import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, Star } from 'lucide-react';
 import React, { useState, useContext,useEffect } from 'react';
+import UserLogout from '../../user/UserLogout';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../GlobalContext';
-import {
-  Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle
-} from 'lucide-react';
+
 
 function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isChatDropdownOpen, setIsChatDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
 
   const [chatList, setChatList] = useState([]);
 
@@ -19,7 +20,7 @@ function Header() {
   const [hasMore, setHasMore] = useState(true);   // 더불러올 알람없으면 false > 더보기 없어짐
 
   const navigate = useNavigate();
-  const { setSw, loginUser, setLoginUser } = useContext(GlobalContext);
+  const { LoginUser, setSw, loginUser, setLoginUser } = useContext(GlobalContext);
 
   const handleMyPage = () => {
     navigate('/mypage/MyPage');
@@ -173,7 +174,7 @@ function Header() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          height: '64px'
+          height: '50px'
         }}>
           {/* 로고 */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -184,7 +185,7 @@ function Header() {
                 color: '#333',
                 margin: 0
               }}>
-                로고 누르면 메인
+                메인
               </h1>
             </a>
           </div>
@@ -199,8 +200,8 @@ function Header() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '48px',
-                  height: '48px',
+                  width: '44px',
+                  height: '44px',
                   backgroundColor: isChatDropdownOpen ? '#138496' : '#17a2b8',
                   color: 'white',
                   border: 'none',
@@ -344,8 +345,8 @@ function Header() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '48px',
-                  height: '48px',
+                  width: '44px',
+                  height: '44px',
                   backgroundColor: isNotificationDropdownOpen ? '#e0a800' : '#ffc107',
                   color: 'white',
                   border: 'none',
@@ -512,7 +513,7 @@ function Header() {
                   gap: '8px',
                   backgroundColor: '#007bff',
                   color: 'white',
-                  padding: '12px 20px',
+                  padding: '8px 10px',
                   border: 'none',
                   borderRadius: '10px',
                   fontSize: '16px',
@@ -537,7 +538,7 @@ function Header() {
                 <div style={{
                   position: 'absolute',
                   right: 0,
-                  marginTop: '8px',
+                  marginTop: '4px',
                   width: '200px',
                   backgroundColor: 'white',
                   borderRadius: '10px',
@@ -602,9 +603,32 @@ function Header() {
                     onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
-                      <Bell size={16} style={{ marginRight: '12px' }} />
-                      알림
+                      <Star size={16} style={{ marginRight: '12px' }} />
+                      예약 확인
+
                     </button>
+                    <button style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                    >
+                      <Star size={16} style={{ marginRight: '12px' }} />
+                      설문조사
+                    </button>
+
+
+
+
                     <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
                     <button 
                     
@@ -632,6 +656,8 @@ function Header() {
                   </div>
                 </div>
               )}
+
+              
             </div>
           </div>
         </div>

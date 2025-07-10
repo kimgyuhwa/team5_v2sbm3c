@@ -111,6 +111,7 @@ public class PlacesServiceImpl implements PlacesService {
               return dto;
           });
   }
+
     
 //    @Override
 //    public List<PlacesDTO> findPlacesBySchoolno(Long schoolno) {

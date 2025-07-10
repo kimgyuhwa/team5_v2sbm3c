@@ -9,11 +9,19 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
+//
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        // "/uploads/**" 요청은 실제 파일 경로로 매핑
+//        registry.addResourceHandler("/uploads/**")
+//                .addResourceLocations("file:///" + uploadDir + "/");
+//    }
+//}
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // "/uploads/**" 요청은 실제 파일 경로로 매핑
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:///" + uploadDir + "/");
+        registry.addResourceHandler("/uploads/**") // URL 경로
+                .addResourceLocations("file:///C:/kd/deploy/team5/storage/"); 
     }
 }
+

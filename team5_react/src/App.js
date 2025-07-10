@@ -15,6 +15,7 @@ import ChatRoom from './chat/ChatRoom';
 import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCreateForm from './talent/post/TalentCreateForm';
 import TalentCategory from './talent/category/TalentCategory';
+import TalentDetailPage from './talent/post/TalentDetailPage';
 import TalentType from './talent/type/TalentType';
 import Talent from './talent/post/Talent';
 import ReservationsManager from './reservation/Reservation';
@@ -27,6 +28,7 @@ import MyPage from './mypage/MyPage';
 import MyChatBotListPage from './mypage/MyChatBotListPage';
 import AdminUserList from './admin/AdminUserList';
 
+
 function App() {
   return (
      <GlobalProvider>
@@ -36,10 +38,13 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
+<<<<<<< HEAD
           {/** 관리자 페이지 */}
           <Route path="/admin/user" element={<AdminUserList />} />  
           {/** 회원 */}
           <Route path="/mypage/MyPage" element={<MyPage />} />  
+=======
+>>>>>>> 5998394bba037a6ce0c40723d5d62b42aec6112e
           <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />
@@ -65,6 +70,8 @@ function App() {
           <Route path="/chat" element={<ChatRoom />} /> 
            {/** 챗봇 */}
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
+          <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
+          <Route path="/mypage/MyPage" element={<MyPage />} />
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

@@ -1,3 +1,4 @@
+// TalentCateGrpItem.jsx
 import React, { useState } from 'react';
 import TalentCateGrpUpdateForm from './TalentCateGrpUpdateForm';
 import axios from 'axios';
@@ -6,7 +7,7 @@ const TalentCateGrpItem = ({ item, onUpdated, onDeleted }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleDelete = async () => {
-  try {
+    try {
     const res = await axios.get(`/talent_cate_grp/check-deletable/${item.cateGrpno}`);
     const count = res.data;
 
@@ -27,10 +28,11 @@ const TalentCateGrpItem = ({ item, onUpdated, onDeleted }) => {
     console.error('삭제 중 오류', err);
     alert('삭제 실패: ' + (err.response?.data?.message || '서버 오류'));
   }
-};
+    onDeleted();
+  };
 
   return (
-    <li>
+    <div className="talentcate-item">
       {isEditing ? (
         <TalentCateGrpUpdateForm
           grp={item}
@@ -42,12 +44,14 @@ const TalentCateGrpItem = ({ item, onUpdated, onDeleted }) => {
         />
       ) : (
         <>
-          {item.name}
-          <button onClick={() => setIsEditing(true)}>수정</button>
-          <button onClick={handleDelete}>삭제</button>
+          <div className="item-name">{item.name}</div>
+          <div className="item-actions">
+            <button className="btn edit-btn" onClick={() => setIsEditing(true)}>수정</button>
+            <button className="btn delete-btn" onClick={handleDelete}>삭제</button>
+          </div>
         </>
       )}
-    </li>
+    </div>
   );
 };
 

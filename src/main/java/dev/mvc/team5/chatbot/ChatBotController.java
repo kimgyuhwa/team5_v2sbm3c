@@ -69,10 +69,9 @@ public class ChatBotController {
      */
     @GetMapping("/list/search")
     public Page<ChatBotResponseDTO> listByUsernoAndName(
-            @RequestParam Long userno,
-            @RequestParam String name,
+            @RequestParam(name="content") String content,
             Pageable pageable) {
-        return chatbotService.listByUsernoAndName(userno, name, pageable);
+        return chatbotService.listByContent(content, pageable);
     }
     
     /**
