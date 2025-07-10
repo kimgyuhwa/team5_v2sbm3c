@@ -2,6 +2,10 @@ package dev.mvc.team5.places;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,5 +83,52 @@ public class PlacesController {
         List<PlacesDTO> list = placesService.findBySchoolnoAndSchoolgwanno(schoolno, schoolgwanno);
         return ResponseEntity.ok(list);
     }
+    
+// // 페이징 처리된 전체 장소 조회 (/placesAll?page=0&size=10)
+//    @GetMapping("/placesAll")
+//    public ResponseEntity<?> getAllPlacesPaged(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size
+//    ) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<PlacesDTO> pagedResult = placesService.findAll(pageable);
+//        return ResponseEntity.ok(pagedResult);
+//    }
+    
+         /**
+          * 특정 학교의 모든 장소 목록을 페이징하여 조회
+          * API 경로: /places/list-by-school/{schoolno}?page=0&size=10
+          */
+    @GetMapping("/places/list-by-school/{schoolno}")
+    public Page<Places> getPlacesBySchool(
+            @PathVariable("schoolno") Long schoolno,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @PageableDefault(size = 5) Pageable pageable) {
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            return placesService.searchPlacesBySchool(schoolno, keyword, pageable);
+        } else {
+            return placesService.findPlacesBySchool(schoolno, pageable);
+        }
+    }
+
+     
+         /**
+          * 특정 학교의 특정 관에 속한 장소 목록을 페이징하여 조회
+          * API 경로: /places/list-by-school-and-gwan?schoolno=1&schoolgwanno=2&page=0&size=10
+          */
+        @GetMapping("/places/list-by-school-and-gwan")
+        public Page<Places> getPlacesBySchoolAndGwan(
+                @RequestParam("schoolno") Long schoolno,
+                @RequestParam("schoolgwanno") Long schoolgwanno,
+                @RequestParam(value = "keyword", required = false) String keyword,
+                @PageableDefault(size = 5) Pageable pageable) {
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                return placesService.searchPlacesBySchoolAndGwan(schoolno, schoolgwanno, keyword, pageable);
+            } else {
+                return placesService.findPlacesBySchoolAndGwan(schoolno, schoolgwanno, pageable);
+            }
+        }
     
 }
