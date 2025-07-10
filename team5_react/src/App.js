@@ -26,6 +26,7 @@ import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
 import MyChatBotListPage from './mypage/MyChatBotListPage';
+import Header from './components/header/Header'
 
 
 
@@ -35,6 +36,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Menu />
+        <Header />
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />

@@ -21,6 +21,7 @@ public class TalentResponseDTO {
     private Long schoolno;
     private String title;
     private String description;
+    private int viewCount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")
