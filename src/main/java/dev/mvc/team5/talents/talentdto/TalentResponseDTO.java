@@ -21,13 +21,14 @@ public class TalentResponseDTO {
     private Long schoolno;
     private String title;
     private String description;
-    private String language;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")
     private LocalDateTime updatedAt;
     private Long typeno;
     private Long categoryno;
+    
+    
 
 //    public TalentResponseDTO(Long talentno, Long userno, Long schoolno, String title, String description,
 //                             String language, LocalDateTime createdAt, LocalDateTime updatedAt,

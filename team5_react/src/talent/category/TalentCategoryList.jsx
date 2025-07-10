@@ -18,7 +18,6 @@ const TalentCategoryList = ({ refresh }) => {
       setListData(res.data);
     } catch (error) {
       console.error('목록 조회 실패', error);
-      alert('목록 조회 실패');
     }
     setLoading(false);
   };
@@ -30,31 +29,34 @@ const TalentCategoryList = ({ refresh }) => {
   const totalPages = listData ? listData.totalPages : 0;
 
   return (
-    <div>
-      <h3>소분류 카테고리 목록</h3>
+    <div className="talentcate-list-container">
       <input
+        className="talent-search-input"
         placeholder="검색어 입력"
         value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
+        onChange={e => setKeyword(e.target.value)}
       />
       {loading && <p>로딩 중...</p>}
-
       {listData && (
         <>
-          <ul>
-  {listData.content.map((item) => (
-    <TalentCategoryItem
-      key={item.categoryno}
-      category={item}
-      onDeleted={fetchList}
-      onUpdated={fetchList}
-    />
-  ))}
-</ul>
-          <div>
-            페이지:{' '}
+          <div className="talentcate-list">
+            {listData.content.map(item => (
+              <TalentCategoryItem
+                key={item.categoryno}
+                category={item}
+                onDeleted={fetchList}
+                onUpdated={fetchList}
+              />
+            ))}
+          </div>
+          <div className="pagination">
             {[...Array(totalPages)].map((_, idx) => (
-              <button key={idx} disabled={page === idx} onClick={() => setPage(idx)}>
+              <button
+                key={idx}
+                className="page-btn"
+                disabled={page === idx}
+                onClick={() => setPage(idx)}
+              >
                 {idx + 1}
               </button>
             ))}

@@ -11,6 +11,7 @@ function Header() {
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+
   const [chatList, setChatList] = useState([]);
 
   const [page, setPage] = useState(0);    //페이지
@@ -19,7 +20,7 @@ function Header() {
   const [hasMore, setHasMore] = useState(true);   // 더불러올 알람없으면 false > 더보기 없어짐
 
   const navigate = useNavigate();
-  const { setSw, loginUser, setLoginUser } = useContext(GlobalContext);
+  const { LoginUser, setSw, loginUser, setLoginUser } = useContext(GlobalContext);
 
   const handleMyPage = () => {
     navigate('/mypage/MyPage');
@@ -655,6 +656,8 @@ function Header() {
                   </div>
                 </div>
               )}
+
+              
             </div>
           </div>
         </div>

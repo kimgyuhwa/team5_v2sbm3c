@@ -1,30 +1,38 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function TalentCreateForm() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/talent_type/save", { name });
-      setName("");
-      window.location.reload(); // 단순 리로드로 갱신
+      await axios.post('/talent_type/save', { name });
+      setName('');
+      setMessage('등록 성공');
+      window.location.reload();
     } catch (err) {
-      alert("등록 실패: " + err.message);
+      setMessage('등록 실패: ' + err.message);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 flex gap-2">
-      <input
-        className="border p-2 rounded w-full"
-        placeholder="재능 타입 이름 입력"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-      <button className="bg-blue-500 text-white px-4 py-2 rounded">등록</button>
-    </form>
+    <div className="talentcate-form-box">
+      <h2 className="talentcate-form-title">재능 타입 등록</h2>
+      <form onSubmit={handleSubmit} className="talentcate-form">
+        <input
+          className="talentcate-input"
+          placeholder="재능 타입 이름 입력"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <button className="btn create-btn">등록</button>
+      </form>
+      {message && (
+        <p className={`form-message ${message.includes('성공') ? 'success' : 'error'}`}>{message}</p>
+      )}
+    </div>
   );
-}
+} 

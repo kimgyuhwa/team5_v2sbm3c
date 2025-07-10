@@ -15,6 +15,7 @@ import ChatRoom from './chat/ChatRoom';
 import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCreateForm from './talent/post/TalentCreateForm';
 import TalentCategory from './talent/category/TalentCategory';
+import TalentDetailPage from './talent/post/TalentDetailPage';
 import TalentType from './talent/type/TalentType';
 import Talent from './talent/post/Talent';
 import ReservationsManager from './reservation/Reservation';
@@ -25,6 +26,7 @@ import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
 import MyChatBotListPage from './mypage/MyChatBotListPage';
+
 
 
 function App() {
@@ -58,6 +60,7 @@ function App() {
           <Route path="/talent/type" element={<TalentType />} /> 
           <Route path="/review/review" element={<ReviewPage />} />
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
+          <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
           <Route path="/mypage/MyPage" element={<MyPage />} />
         </Routes>
         <hr />

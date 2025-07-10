@@ -147,7 +147,7 @@ function UserLogin() {
     setPasswd('1234');
   };
 
-    const admintest = () => {
+  const admintest = () => {
     setId('testId');
     setPasswd('1234');
   };

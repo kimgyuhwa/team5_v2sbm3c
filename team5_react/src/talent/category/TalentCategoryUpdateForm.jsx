@@ -1,20 +1,18 @@
-// src/talent/category/TalentCategoryUpdateForm.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
 const TalentCategoryUpdateForm = ({ category, onUpdated, onCancel }) => {
   const [name, setName] = useState(category.name);
   const [message, setMessage] = useState('');
-  console.log('category:', category);
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = async e => {
     e.preventDefault();
 
     try {
       const dto = {
         categoryno: category.categoryno,
-        name: name,
-        cateGrpno: category.cateGrp.cateGrpno  // 대분류 그대로 유지
+        name,
+        cateGrpno: category.cateGrp.cateGrpno
       };
 
       await axios.put('/talent_category/update', dto);
@@ -27,16 +25,23 @@ const TalentCategoryUpdateForm = ({ category, onUpdated, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleUpdate}>
+    <form onSubmit={handleUpdate} className="talentcate-form">
       <input
         type="text"
         value={name}
-        onChange={(e) => setName(e.target.value)}
+        onChange={e => setName(e.target.value)}
+        className="talentcate-input"
         required
       />
-      <button type="submit">저장</button>
-      <button type="button" onClick={onCancel}>취소</button>
-      {message && <p>{message}</p>}
+      <div className="form-btn-group">
+        <button type="submit" className="btn edit-btn">저장</button>
+        <button type="button" onClick={onCancel} className="btn delete-btn">취소</button>
+      </div>
+      {message && (
+        <p className={message.includes('완료') ? 'form-message success' : 'form-message error'}>
+          {message}
+        </p>
+      )}
     </form>
   );
 };

@@ -3,39 +3,36 @@ import axios from 'axios';
 import { GlobalContext } from '../../components/GlobalContext';
 import '../style/TalentCreateForm.css';
 
-
 const TalentCreateForm = ({ onCreated }) => {
+  // 기존 상태
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [language, setLanguage] = useState('');
   const [typeno, setTypeno] = useState('');
-  const [cateGrpno, setCateGrpno] = useState(''); // 대분류 선택값
-  const [categoryno, setCategoryno] = useState(''); // 소분류 선택값
-
+  const [cateGrpno, setCateGrpno] = useState('');
+  const [categoryno, setCategoryno] = useState('');
   const [cateGrpList, setCateGrpList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [typeList, setTypeList] = useState([]);
   const { loginUser } = useContext(GlobalContext);
 
-  // 대분류 리스트 불러오기
+  // 추가: 파일 상태 관리
+ const [selectedFiles, setSelectedFiles] = useState([]);
+
+
   useEffect(() => {
     axios.get('/talent_cate_grp/list')
       .then(res => setCateGrpList(res.data.content))
       .catch(err => console.error('대분류 목록 불러오기 실패', err));
   }, []);
 
-  // 대분류 변경 시 소분류 리스트 불러오기
   useEffect(() => {
     if (cateGrpno) {
       axios.get(`/talent_category/list-by-categrp/${cateGrpno}`)
-      .then(res => {
-        console.log('API 응답 전체:', res.data);
-        setCategoryList(res.data);
-      })
-      .catch(err => {
-        console.error('소분류 목록 불러오기 실패', err);
-        setCategoryList([]);
-      });
+        .then(res => setCategoryList(res.data))
+        .catch(err => {
+          console.error('소분류 목록 불러오기 실패', err);
+          setCategoryList([]);
+        });
       setCategoryno('');
     } else {
       setCategoryList([]);
@@ -43,63 +40,88 @@ const TalentCreateForm = ({ onCreated }) => {
     }
   }, [cateGrpno]);
 
-  // 타입 리스트 불러오기
   useEffect(() => {
     axios.get('/talent_type/list')
       .then(res => setTypeList(res.data.content))
       .catch(err => console.error('타입 목록 불러오기 실패', err));
   }, []);
 
+  // 파일 선택 핸들러
+  const handleFileChange = (e) => {
+    setSelectedFiles(Array.from(e.target.files)); // 다중 파일을 배열로 저장
+  };
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!loginUser?.userno) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-    if (!title.trim()) {
-      alert('제목을 입력하세요.');
-      return;
-    }
-    if (!typeno) {
-      alert('타입을 선택하세요.');
-      return;
-    }
-    if (!cateGrpno) {
-      alert('대분류를 선택하세요.');
-      return;
-    }
-    if (!categoryno) {
-      alert('소분류를 선택하세요.');
-      return;
-    }
+  if (!loginUser?.userno) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
+  if (!title.trim()) {
+    alert('제목을 입력하세요.');
+    return;
+  }
+  if (!typeno) {
+    alert('타입을 선택하세요.');
+    return;
+  }
+  if (!cateGrpno) {
+    alert('대분류를 선택하세요.');
+    return;
+  }
+  if (!categoryno) {
+    alert('소분류를 선택하세요.');
+    return;
+  }
 
+  try {
+    // 1. 재능 저장 (파일 제외)
     const dto = {
       title,
       description,
-      language,
-      schoolno: loginUser.schoolname, // 필요에 따라 변경
+      schoolno: loginUser.schoolno,
       userno: loginUser.userno,
       typeno: Number(typeno),
       categoryno: Number(categoryno),
     };
 
-    try {
-      const res = await axios.post('/talent/save', dto);
-      alert('등록 성공!');
-      // 초기화
-      setTitle('');
-      setDescription('');
-      setLanguage('');
-      setTypeno('');
-      setCateGrpno('');
-      setCategoryno('');
-      setCategoryList([]);
-      if (onCreated) onCreated();
-    } catch (err) {
-      alert('등록 실패: ' + (err.response?.data?.message || err.message));
+    const saveRes = await axios.post('/talent/save', dto);
+    const savedTalent = saveRes.data; // 등록된 재능 정보 (talentno 포함)
+
+    // 2. 파일 업로드 (파일이 있으면)
+    if (selectedFiles.length > 0) {
+      const formData = new FormData();
+      selectedFiles.forEach((file) => {
+        formData.append('files', file);
+      });
+      formData.append('targetType', 'talent');
+      formData.append('talentno', savedTalent.talentno); // 여기 반드시 등록된 talentno 넣기
+      formData.append('profile', 'attachment');
+
+      await axios.post('/api/file/upload-multiple', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
     }
-  };
+
+    alert('등록 성공!');
+
+    // 초기화
+    setTitle('');
+    setDescription('');
+    setTypeno('');
+    setCateGrpno('');
+    setCategoryno('');
+    setCategoryList([]);
+    setSelectedFiles([]);
+
+    if (onCreated) onCreated();
+
+  } catch (err) {
+    alert('등록 실패: ' + (err.response?.data?.message || err.message));
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className="talent-create-form">
@@ -116,12 +138,6 @@ const TalentCreateForm = ({ onCreated }) => {
         value={description}
         onChange={e => setDescription(e.target.value)}
         placeholder="설명"
-      />
-
-      <input
-        value={language}
-        onChange={e => setLanguage(e.target.value)}
-        placeholder="언어"
       />
 
       <select value={typeno} onChange={e => setTypeno(e.target.value)} required>
@@ -145,14 +161,21 @@ const TalentCreateForm = ({ onCreated }) => {
         ))}
       </select>
 
+      {/* 파일 업로드 input 추가 */}
+      <input
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        accept="image/*"
+      />
+
+
       <div className="form-button-group">
         <button type="submit">등록</button>
         <button type="close" onClick={() => onCreated?.()}>닫기</button>
       </div>
 
-
     </form>
-
   );
 };
 

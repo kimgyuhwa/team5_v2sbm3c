@@ -58,10 +58,9 @@ public interface ChatBotService {
   /**
    * 특정 유저 번호와 이름 키워드로 필터링한 주요내용 목록 조회 (페이징 + 최신순 정렬)
    *
-   * @param userno 유저 번호
-   * @param name 유저 이름 키워드
+   * @param content 내용
    * @param pageable 페이징 정보
    * @return 페이징된 응답 DTO 목록
    */
-  Page<ChatBotResponseDTO> listByUsernoAndName(Long userno, String name, Pageable pageable);
+  Page<ChatBotResponseDTO> listByContent(String content, Pageable pageable);
 }
