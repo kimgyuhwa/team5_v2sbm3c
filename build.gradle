@@ -33,6 +33,7 @@ dependencies {
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'               // Thymeleaf 레이아웃 지원
     implementation 'org.springframework.boot:spring-boot-starter-validation'       // Bean Validation (javax.validation)
     implementation 'org.springframework.boot:spring-boot-starter-websocket'        // WebSocket + STOMP 지원
+	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 
     // --- Database & JDBC Drivers ---
     implementation 'com.oracle.database.jdbc:ojdbc8:21.17.0.0'                      // Oracle JDBC 드라이버

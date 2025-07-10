@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.mvc.team5.schoolgwan.SchoolGwan;
@@ -147,5 +149,25 @@ public class PlacesServiceImpl implements PlacesService {
         return dto;
     }
     
+
+		@Override
+		public Page<Places> findPlacesBySchool(Long schoolno, Pageable pageable) {
+			return placesRepository.findBySchoolno(schoolno, pageable);
+		}
+
+		@Override
+		public Page<Places> findPlacesBySchoolAndGwan(Long schoolno, Long schoolgwanno, Pageable pageable) {
+			// TODO Auto-generated method stub
+			return   placesRepository.findBySchoolnoAndSchoolgwanno(schoolno, schoolgwanno, pageable);
+		}
     
+    
+		public Page<Places> searchPlacesBySchool(Long schoolno, String keyword, Pageable pageable) {
+	    return placesRepository.searchBySchoolAndKeyword(schoolno, keyword, pageable);
+	}
+
+	public Page<Places> searchPlacesBySchoolAndGwan(Long schoolno, Long schoolgwanno, String keyword, Pageable pageable) {
+	    return placesRepository.searchBySchoolAndGwanAndKeyword(schoolno, schoolgwanno, keyword, pageable);
+	}
+	
 }
