@@ -145,6 +145,12 @@ function UserLogin() {
     setPasswd('1234');
   };
 
+  const adminTest = () => {
+    setId('testId');
+    setPasswd('1234');
+  };
+
+
   const handleClick = () => {
 
     navigate('/components/Main'); // 페이지 이동
@@ -331,9 +337,29 @@ function UserLogin() {
                 onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
               >
-                테스트 계정
+                사용자 계정
               </button>
-              
+              <button 
+                id="btnTest" 
+                type="button" 
+                onClick={adminTest}
+                style={{
+                  flex: '1',
+                  padding: '12px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+              >
+                어드민 계정
+              </button>
             </div>
 
             <div style={{ marginTop: '10px' }}>
