@@ -1,20 +1,29 @@
 package dev.mvc.team5.user;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import dev.mvc.team5.fileupload.FileUpload;
+import dev.mvc.team5.fileupload.FileUploadService;
 import dev.mvc.team5.tool.Security;
+import dev.mvc.team5.user.UserDTO.UserUpdateDTO;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-    
+    @Autowired
+    private FileUploadService fileUploadService;
     
 
     @Autowired
@@ -63,6 +72,7 @@ public class UserService {
       dto.setRole(user.getRole());
       dto.setSchoolno(user.getSchool().getSchoolno());
       dto.setSchoolname(user.getSchool().getSchoolname());
+      dto.setProfileImage(user.getProfileImage());
       return dto;
   }
 
@@ -123,6 +133,7 @@ public class UserService {
       dto.setRole(user.getRole());
       dto.setSchoolno(user.getSchool() != null ? user.getSchool().getSchoolno() : null);
       dto.setSchoolname(user.getSchool().getSchoolname());
+      dto.setProfileImage(user.getProfileImage());
       return dto;
   }
     // 로그아웃
@@ -168,6 +179,7 @@ public class UserService {
       user.setLocation(userDTO.getLocation());
       user.setBio(userDTO.getBio());
       user.setRole(userDTO.getRole());
+      user.setProfileImage(userDTO.getProfileImage());
       userRepository.save(user);
   }
     // 비밀번호 변경
@@ -200,5 +212,71 @@ public class UserService {
       
       
     }
+    // 유저정보 검색 페이징
+    public Page<User> findByKeyword(String keyword, Pageable pageable) {
+      if (keyword != null && !keyword.isEmpty()) {
+          return userRepository.findByUserIdContainingIgnoreCaseOrUsernameContainingIgnoreCase(keyword, keyword, pageable);
+      }
+      return userRepository.findAll(pageable);
+  }
     
+    public void adminUpdateUser(Long userno, UserDTO userDTO) {
+      User user = userRepository.findById(userno).orElseThrow(() -> new RuntimeException("사용자 없음"));
+      user.setUsername(userDTO.getUsername());  // 이름
+      user.setName(userDTO.getName());          // 닉네임
+      user.setEmail(userDTO.getEmail());   //이메일
+      user.setPhone(userDTO.getPhone()); //휴대폰번호
+      user.setZipcode(userDTO.getZipcode()); // 우편번호
+      user.setAddress(userDTO.getAddress()); // 주소
+      user.setLanguage(userDTO.getLanguage());  //언어 
+      user.setBio(userDTO.getBio());   // 설명
+      user.setRole(userDTO.getRole());  // 역할 admin , user 
+
+     
+      userRepository.save(user);
+  }
+    // 관리자 유저 삭제
+    public void deleteUserByUserno(Long userno) {
+      // 예: 존재 여부 체크 후 삭제
+      User user = userRepository.findById(userno)
+                  .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+      userRepository.delete(user);
+  }
+    // 유저를 탈퇴 처리 
+    @Transactional
+    public void softDeleteUser(Long userno) {
+        User user = userRepository.findById(userno)
+                     .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        
+        user.setIsDeleted(true);
+        user.setDeletedAt(LocalDateTime.now());
+
+        userRepository.save(user);  // 실제 삭제되지 않음
     }
+    
+    // 유저 프로필에 사진 올리기
+    @Transactional
+    public void updateUserWithProfile(Long userno, UserUpdateDTO dto, MultipartFile profileImage) throws IOException {
+        User user = userRepository.findById(userno)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        user.setUsername(dto.getUsername());
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+        user.setZipcode(dto.getZipcode());
+        user.setAddress(dto.getAddress());
+        user.setLanguage(dto.getLanguage());
+        user.setLocation(dto.getLocation());
+        user.setBio(dto.getBio());
+        
+
+        if (profileImage != null && !profileImage.isEmpty()) {
+            FileUpload uploaded = fileUploadService.uploadFile(profileImage, "PROFILE", "USER", userno);
+            user.setProfileImage(uploaded.getStoredFileName()); //  여기가 핵심
+        }
+
+        userRepository.save(user);
+    }
+    
+}

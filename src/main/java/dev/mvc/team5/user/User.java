@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -19,6 +20,7 @@ import dev.mvc.team5.message.Message;
 import dev.mvc.team5.notification.Notification;
 import dev.mvc.team5.report.Report;
 import dev.mvc.team5.request.Request;
+import dev.mvc.team5.reservations.Reservations;
 import dev.mvc.team5.review.Review;
 import dev.mvc.team5.school.School;
 import dev.mvc.team5.talents.Talent;
@@ -35,6 +37,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -42,7 +45,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
+@Where(clause = "is_deleted = false") // 탈퇴한 유저는 쿼리에서 자동 제외
 @Data // Getter, Setter, toString, equals, hashCode 등 자동 생성
 public class User {
 
@@ -104,11 +109,23 @@ public class User {
     /** 사용자 역할 (최대 20자) */
     @Column(length = 20)
     private String role;
-
+    
+    /** 프로필 사진 저장된 파일명 or 경로*/
+    @Column(name="profileImage",length = 255)
+    private String profileImage;  
+    
     /** 회원가입 시간, 엔티티가 생성될 때 자동 저장 */
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    /** 탈퇴 여부 (기본 false) */
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
+    /** 탈퇴 일시 */
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
     
     // --------------------
     // 양방향 연관관계 리스트
@@ -180,6 +197,11 @@ public class User {
     /** 게시물(Talent) - User가 작성자(user)인 일대다 관계  */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
+    
+    /** 예약 목록 - User가 예약자(user)인 일대다 관계 */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Reservations> reservations = new ArrayList<>();
     
     // --------------------
     // 생성자
