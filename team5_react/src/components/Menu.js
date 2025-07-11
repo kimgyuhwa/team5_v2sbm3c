@@ -22,12 +22,12 @@ function Menu() {
         </>
       )}
       <Link to="/reservation/Reservation">예약ex</Link> |{" "}
-      <Link to="/reservation/Place">강의실조회</Link> |{" "}
       <Link to="/user/session">Session Info</Link> |{" "}
       <Link to="/chat">Chat</Link> |{" "}
       <Link to="/talent/post">게시물</Link> |{" "}
       <Link to="/review/review">리뷰</Link> |{" "}
-      <Link to="/mypage/chatbot-list">챗봇리스트</Link>
+      <Link to="/mypage/chatbot-list">챗봇리스트 |</Link>
+      <Link to="/firebase/FileUploader"> 파이어베이스</Link>{" "}
 
       {loginUser && loginUser.role === "admin" && (
         <>

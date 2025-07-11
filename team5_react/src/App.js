@@ -19,7 +19,6 @@ import TalentDetailPage from './talent/post/TalentDetailPage';
 import TalentType from './talent/type/TalentType';
 import Talent from './talent/post/Talent';
 import ReservationsManager from './reservation/Reservation';
-import PlacesList from './place/Place';
 import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
@@ -28,8 +27,9 @@ import MyPage from './mypage/MyPage';
 import MyChatBotListPage from './mypage/MyChatBotListPage';
 import AdminUserList from './admin/AdminUserList';
 import Header from './components/header/Header'
+import FileUploader from './firebase/FileUploader';
 
-
+import firebaseConfig from './firebase/firebaseConfig';
 
 
 function App() {
@@ -65,7 +65,7 @@ function App() {
           <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
           {/** 장소 */}
           <Route path="/place/PlacesPage" element={<PlacesPage />} />
-          <Route path='/reservation/Place' element={<PlacesList />} />
+          {/* <Route path='/reservation/Place' element={<PlacesList />} />  << 이거머임? 없음파일이*/}  
           <Route path='/reservation/Reservation' element={<ReservationsManager />} />  
            {/** 채팅 */}
           <Route path="/chat" element={<ChatRoom />} /> 
@@ -74,9 +74,8 @@ function App() {
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
           <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
           <Route path="/mypage/MyPage" element={<MyPage />} />
-
-          {/* <Route path="/firebase/FileUploader" element={<FileUploader />} />
-          <Route path="/firebase/firebaseConfig" element={<firebaseConfig />} /> */}
+          <Route path="/firebase/FileUploader" element={<FileUploader />} />
+          <Route path="/firebase/firebaseConfig" element={<firebaseConfig />} /> 
 
         </Routes>
         <hr />

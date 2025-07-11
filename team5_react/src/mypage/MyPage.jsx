@@ -30,7 +30,6 @@ export default function MainPage() {
       backgroundColor: '#f8f9fa',
       fontFamily: 'Arial, sans-serif'
     }}>
-      <Header />
       {/* 메인 컨테이너 */}
       <div style={{
         display: 'flex',
