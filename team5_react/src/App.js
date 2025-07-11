@@ -26,6 +26,7 @@ import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
 import MyChatBotListPage from './mypage/MyChatBotListPage';
+// import FileUploader from './firebase/FileUploader';
 
 
 
@@ -62,6 +63,10 @@ function App() {
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
           <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
           <Route path="/mypage/MyPage" element={<MyPage />} />
+
+          {/* <Route path="/firebase/FileUploader" element={<FileUploader />} />
+          <Route path="/firebase/firebaseConfig" element={<firebaseConfig />} /> */}
+
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>
