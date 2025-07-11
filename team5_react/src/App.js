@@ -27,6 +27,9 @@ import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
 import MyChatBotListPage from './mypage/MyChatBotListPage';
 import AdminUserList from './admin/AdminUserList';
+import Header from './components/header/Header'
+
+
 
 
 function App() {
@@ -35,6 +38,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Menu />
+        <Header />
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -65,10 +69,15 @@ function App() {
           <Route path='/reservation/Reservation' element={<ReservationsManager />} />  
            {/** 채팅 */}
           <Route path="/chat" element={<ChatRoom />} /> 
+          <Route path="/chatroom/:chatRoomno" element={<ChatRoom />} /> 
            {/** 챗봇 */}
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
           <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
           <Route path="/mypage/MyPage" element={<MyPage />} />
+
+          {/* <Route path="/firebase/FileUploader" element={<FileUploader />} />
+          <Route path="/firebase/firebaseConfig" element={<firebaseConfig />} /> */}
+
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import dev.mvc.team5.reservations.Reservations;
 import dev.mvc.team5.schoolgwan.SchoolGwan;
 import jakarta.persistence.CascadeType;
@@ -41,6 +43,7 @@ public class Places {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schoolgwanno", nullable = false)
+    @JsonIgnore
     private SchoolGwan schoolGwan;
 
     

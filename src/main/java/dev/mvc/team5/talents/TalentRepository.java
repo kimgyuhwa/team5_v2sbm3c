@@ -23,11 +23,12 @@ public interface TalentRepository extends JpaRepository<Talent, Long> {
 ////학교번호(schoolno), 카테고리번호(categoryno)로 검색하는 메서드 선언
 //  List<Talent> findBySchoolnoAndCategoryno(Long schoolno, Long categoryno);
   
-  @Query("SELECT new dev.mvc.team5.talents.talentdto.TalentDetailDTO(t.talentno, t.user.userno, t.type.name, t.category.name, t.title, t.description, t.user.username, t.createdAt, t.updatedAt) " +
+
+  @Query("SELECT new dev.mvc.team5.talents.talentdto.TalentDetailDTO(t.talentno, t.user.userno, t.type.name, t.category.cateGrp.name, t.category.name, t.title, t.description, t.viewCount, t.user.username, t.createdAt, t.updatedAt) " +
               "FROM Talent t WHERE t.talentno = :talentno")
   TalentDetailDTO findDetailByTalentno(@Param("talentno") Long talentno);
   
-  @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.files WHERE t.talentno = :talentno")
+  @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.files LEFT JOIN FETCH t.user WHERE t.talentno = :talentno")
   Optional<Talent> findByIdWithFiles(@Param("talentno") Long talentno);
   
   //title 또는 description 에 keyword가 포함된 데이터를 페이징, 정렬해서 조회

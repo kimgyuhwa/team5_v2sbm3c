@@ -90,6 +90,11 @@ public class Talent {
 	 * 재능 설명 (게시글 내용)
 	 */
 	private String description;
+	
+	/**
+	 * 조회수
+	 */
+	private int viewCount;
 
 	/**
 	 * 게시물 등록 일시 엔티티 생성 시 자동으로 현재 시간 저장

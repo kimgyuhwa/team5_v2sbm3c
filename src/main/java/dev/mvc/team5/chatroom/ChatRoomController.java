@@ -47,10 +47,25 @@ public class ChatRoomController {
     // 채팅 목록
     @GetMapping("/user/{userno}/chatlist")
     public List<ChatRoomResponseDTO> getChatListByUser(@PathVariable(name="userno") Long userno) {
-        // ChatRoomMemberService에서 userno로 참여중인 채팅방 목록 반환하는 로직 필요
-        return chatRoomMemberService.findChatRoomsByUser(userno).stream()
-                .map(room -> new ChatRoomResponseDTO(room.getChatRoomno(), room.getRoomName(), room.getCreatedAt()))
-                .collect(Collectors.toList());
+        return chatRoomService.findChatRoomsByUser(userno).stream()
+            .map(room -> new ChatRoomResponseDTO(room.getChatRoomno(), room.getRoomName(), room.getCreatedAt()))
+            .collect(Collectors.toList());
     }
+
+    
+    @PostMapping("/findOrCreate")
+    public ResponseEntity<ChatRoomResponseDTO> findOrCreateChatRoom(
+        @RequestParam(name="senderId") Long senderId,
+        @RequestParam(name="receiverId") Long receiverId
+    ) {
+        ChatRoom chatRoom = chatRoomService.findOrCreatePrivateChat(senderId, receiverId);
+        ChatRoomResponseDTO dto = new ChatRoomResponseDTO(
+            chatRoom.getChatRoomno(),
+            chatRoom.getRoomName(),
+            chatRoom.getCreatedAt()
+        );
+        return ResponseEntity.ok(dto);
+    }
+
     
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Plus, Menu, MapPin, Star, Clock, Phone, Navigation } from 'lucide-react';
+import { Search, MapPin, Navigation } from 'lucide-react';
 import Header from '../components/header/Header';
 import PlaceSideBar from '../components/sidebar/PlaceSideBar';
 import axios from 'axios';
@@ -7,11 +7,23 @@ import { GlobalContext } from '../components/GlobalContext';
 
 const PlacePage = () => {
   const { loginUser } = useContext(GlobalContext); // 로그인 유저 정보 (schoolno 등)
-  const [hoveredCategory, setHoveredCategory] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null); // {categoryId, subcategoryId}
+  const [selectedCategory, setSelectedCategory] = useState(); // {categoryId}
   const [places, setPlaces] = useState([]);  // 장소 목록 (API에서 받아옴)
   const [categories, setCategories] = useState([]); // 학교 관 + 장소 카테고리
-  
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
+  const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
+  const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
+
+  const searchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter') {
+      setCurrentPage(1); // 검색 시 1페이지로 리셋
+      // fetchPlaces 함수가 searchQuery를 의존성으로 가지므로, 상태 변경만으로 재호출됨
+    }
+  };
 
   // 학교 관 + 장소 카테고리 불러오기 (PlaceSideBar가 사용하는 카테고리)
   useEffect(() => {
@@ -20,78 +32,169 @@ const PlacePage = () => {
         const schoolno = loginUser?.schoolno;
         if (!schoolno) return;
 
-        // 1. 학교 관 목록 조회
-        const gwanRes = await axios.get(`/places/list-by-school/${schoolno}`);
-        const gwanList = gwanRes.data;
+        // 학교 '관' 목록을 직접 가져오는 API 호출
+        const res = await axios.get(`/places/list-by-school/${schoolno}`);
+        const gwanList = res.data; // 응답이 '관' 목록 배열이라고 가정
 
-        // 2. 각 학교 관별 장소 목록 조회
-        const categoryResult = await Promise.all(
-          gwanList.map(async (gwan) => {
-            const placeRes = await axios.get(`/places/list-by-school-and-gwan`, {
-              params: { schoolno, schoolgwanno: gwan.schoolgwanno }
-            });
+        // '관' 목록을 카테고리 형식으로 변환
+        const categoryResult = gwanList.map(gwan => ({
+            id: gwan.schoolgwanno,
+            name: gwan.schoolgwanname,
+            icon: '🏫',
+        }));
 
-            return {
-              id: gwan.schoolgwanno,
-              name: gwan.schoolgwanname,
-              icon: '🏫',
-              subcategories: placeRes.data.map(place => ({
-                id: place.placeno,
-                name: place.placename
-              }))
-            };
-          })
-        );
+        // 중복 제거 (혹시 모를 중복 데이터 대비)
+        const uniqueCategories = Array.from(new Map(categoryResult.map(item => [item.id, item])).values());
 
-        setCategories(categoryResult);
+        setCategories(uniqueCategories);
       } catch (error) {
-        console.error('카테고리 불러오기 실패', error);
+        //console.error('카테고리 불러오기 실패', error);
+        setCategories([]); // 에러 발생 시 카테고리 목록 비우기
       }
     };
 
-    fetchCategories();
+    if (loginUser?.schoolno) {
+        fetchCategories();
+    }
   }, [loginUser]);
 
-  // selectedCategory 가 바뀔 때마다 장소 목록 다시 불러오기
+  // 카테고리가 변경되면 1페이지로 리셋
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
+
+
+  // selectedCategory or currentPage가 바뀔 때마다 장소 목록 다시 불러오기
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        if (!selectedCategory) {
-          setPlaces([]);
-          return;
-        }
+        
         const schoolno = loginUser?.schoolno;
+        const schoolgwanno= selectedCategory?.categoryId;
         if (!schoolno) return;
 
-        // categoryId: 관 번호, subcategoryId: 장소 번호
-        if (selectedCategory.subcategoryId) {
-          // 하위 장소 단일 선택 시 (장소 상세 혹은 특정 장소만)
-          // API에 따라 필요하면 호출 가능
-          // 여기서는 예시로 한 장소만 필터링하는 경우:
-          // 실제 API가 없으면 client filtering 가능
-          setPlaces(prev =>
-            prev.filter(p => p.placeno === selectedCategory.subcategoryId)
-          );
+        let res;
+
+        const commonParams = {
+          page: currentPage - 1,
+          size: 10, // 기본 사이즈
+          keyword: searchQuery // 검색어 추가
+        };
+
+        if (selectedCategory?.categoryId) {
+          // '관'(카테고리) 선택 시, 해당 관의 장소 목록을 조회하는 API 호출
+          const params = {
+            ...commonParams,
+            schoolno: schoolno,
+            schoolgwanno: selectedCategory.categoryId, // 선택된 카테고리 ID를 schoolgwanno로 사용
+            size: 5 // 카테고리 선택 시 사이즈
+          };
+          res = await axios.get(`/places/places/list-by-school-and-gwan`, { params });
+            //console.log('관선택->',res.data);
+            //console.log('API 호출 파라미터 (관 선택):', params);
         } else {
-          // 관(카테고리) 선택 시 해당 관의 모든 장소 불러오기
-          const res = await axios.get(`/places/list-by-school-and-gwan`, {
-            params: {
-              schoolno,
-              schoolgwanno: selectedCategory.categoryId
-            }
-          });
-          setPlaces(res.data);
+          // 카테고리 선택이 없을 경우, 특정 학교의 모든 장소 조회 API 사용
+          const params = {
+            ...commonParams,
+            schoolno: schoolno,
+          };
+          res = await axios.get(`/places/places/list-by-school/${schoolno}`, { params });
+            //console.log('전부->',res.data);
+            //console.log('API 호출 파라미터 (전체):', params);
         }
+        
+        //console.log('API 응답 데이터:', res.data);
+
+        // API 응답이 페이징 구조(content, totalPages)를 포함한다고 가정하고 상태 업데이트
+        if (res.data && res.data.content) {
+          setPlaces(res.data.content);
+          setTotalPages(res.data.totalPages || 0);
+        } else {
+          // 페이징 구조가 아닌 단순 배열일 경우 처리
+          setPlaces(res.data || []);
+          setTotalPages(1); // 페이지는 1개만 있다고 가정
+        }
+
       } catch (error) {
-        console.error('장소 불러오기 실패', error);
+        //console.error('장소 데이터를 불러오는 데 실패했습니다.', error);
+        setPlaces([]); // 에러 발생 시 장소 목록 비우기
+        setTotalPages(0); // 에러 발생 시 페이지 수 0으로 설정
       }
     };
 
-    fetchPlaces();
-  }, [selectedCategory, loginUser]);
+    if (loginUser?.schoolno) {
+        fetchPlaces();
+    }
+    //console.log(categories);
+    //console.log(selectedCategory);
+  }, [selectedCategory, loginUser, currentPage, searchQuery]);
+
+  
+  const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    if (totalPages <= 1) return null;
+  
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '30px', gap: '8px' }}>
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          style={{
+            padding: '8px 16px',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            backgroundColor: currentPage === 1 ? '#f0f0f0' : 'white',
+            color: currentPage === 1 ? '#aaa' : '#333',
+            cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+            fontSize: '14px',
+            fontWeight: '500',
+            transition: 'background-color 0.2s, color 0.2s'
+          }}
+        >
+          이전
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            style={{
+              width: '36px',
+              height: '36px',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              backgroundColor: currentPage === page ? '#3498db' : 'white',
+              color: currentPage === page ? 'white' : '#333',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              transition: 'background-color 0.2s, color 0.2s'
+            }}
+          >
+            {page}
+          </button>
+        ))}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          style={{
+            padding: '8px 16px',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            backgroundColor: currentPage === totalPages ? '#f0f0f0' : 'white',
+            color: currentPage === totalPages ? '#aaa' : '#333',
+            cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+            fontSize: '14px',
+            fontWeight: '500',
+            transition: 'background-color 0.2s, color 0.2s'
+          }}
+        >
+          다음
+        </button>
+      </div>
+    );
+  };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'white', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       <Header />
 
       <div style={{
@@ -104,8 +207,8 @@ const PlacePage = () => {
       }}>
 
         <PlaceSideBar 
-          categories={categories} 
           setSelectedCategory={setSelectedCategory} 
+          selectedCategory={selectedCategory}
         />
 
         {/* 중앙 컨텐츠 영역 */}
@@ -114,17 +217,49 @@ const PlacePage = () => {
           <div style={{ backgroundColor: 'white', borderRadius: '20px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '30px' }}>
             <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#333', margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
               <MapPin size={32} />
-              강의실 위치
-            </h1>
-            {selectedCategory && (
-              <p style={{ fontSize: '16px', color: '#666', margin: '10px 0 0 0' }}>
-                {categories.find(c => c.id === selectedCategory.categoryId)?.name}
-                {selectedCategory.subcategoryId &&
-                  ` > ${categories.find(c => c.id === selectedCategory.categoryId)
-                    ?.subcategories.find(s => s.id === selectedCategory.subcategoryId)?.name}`
-                }
-              </p>
+
+              {selectedCategory && (
+              <span>
+                {(categories.find(c => c.id === selectedCategory.categoryId)?.name)}
+              </span>
             )}
+            강의실 위치
+            </h1>
+
+
+          <div style={{ position: 'relative' }}>
+            <div style={{textAlign: 'left', marginBottom: '20px'}} >
+              </div>
+              <div style={{ position: 'relative' }}>
+                <Search style={{
+                  position: 'absolute',
+                  left: '16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#999',
+                  zIndex: 1
+                }} size={20} />
+                <input
+                  type="text"
+                  placeholder="게시물을 검색하세요..."  
+                  style={{
+                    width: '100%',
+                    padding: '15px 20px 15px 50px',
+                    border: '2px solid #e1e5e9',
+                    borderRadius: '10px',
+                    fontSize: '16px',
+                    outline: 'none',
+                    transition: 'border-color 0.3s',
+                    boxSizing: 'border-box'
+                  }}
+                  value={searchQuery}
+                  onChange={searchChange}
+                  onKeyDown={handleSearch}
+                  onFocus={(e) => e.target.style.borderColor = '#007bff'}
+                  onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
+                />
+              </div>
+            </div>
           </div>
 
           {/* 장소 목록 */}
@@ -133,7 +268,7 @@ const PlacePage = () => {
             gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
             gap: '20px'
           }}>
-            {places.length > 0 ? (
+            {Array.isArray(places) && places.length > 0 ? (
               places.map(place => (
                 <div
                   key={place.placeno}
@@ -148,11 +283,17 @@ const PlacePage = () => {
                 >
                   <div style={{
                     height: '200px',
-                    backgroundImage: `url(${place.image || 'https://via.placeholder.com/300x200'})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     position: 'relative'
-                  }}>
+                    
+                    
+                  }}
+                  >
+                    
+                    
+
+                    
                     <div style={{
                       position: 'absolute',
                       top: '12px',
@@ -175,15 +316,12 @@ const PlacePage = () => {
                     <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#333', margin: '0 0 8px 0' }}>{place.placename}</h3>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                      {/* 평점, 주소 등 필요시 추가 */}
                       <span style={{ fontSize: '14px', color: '#666' }}>{place.address || ''}</span>
                     </div>
 
                     <p style={{ fontSize: '14px', color: '#777', margin: '0 0 12px 0', lineHeight: '1.4' }}>
                       {place.description || ''}
                     </p>
-
-                    {/* 추가 정보들(운영 시간, 전화번호 등)도 필요하면 표시 */}
                   </div>
                 </div>
               ))
@@ -197,11 +335,19 @@ const PlacePage = () => {
               }}>
                 <MapPin size={48} color="#ccc" style={{ marginBottom: '16px' }} />
                 <h3 style={{ fontSize: '18px', color: '#666', margin: 0 }}>
-                  선택한 카테고리에 해당하는 장소가 없습니다
+                  장소를 불러오는 중이거나, 해당하는 장소가 없습니다.
                 </h3>
               </div>
             )}
           </div>
+          
+          {/* 페이지네이션 */}
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+
         </div>
       </div>
     </div>

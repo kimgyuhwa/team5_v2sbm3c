@@ -62,6 +62,7 @@ public class TalentService {
                 t.getSchool() != null ? t.getSchool().getSchoolno() : null,
                 t.getTitle(),
                 t.getDescription(),
+                t.getViewCount(),
                 t.getCreatedAt(),
                 t.getUpdatedAt(),
                 t.getType() != null ? t.getType().getTypeno() : null,
@@ -252,6 +253,8 @@ public class TalentService {
                 t.getTalentno(),
                 t.getTitle(),
                 t.getDescription(),
+                t.getViewCount(),
+                t.getCategory() != null ? t.getCategory().getCateGrp().getName() : "없음",
                 t.getCategory() != null ? t.getCategory().getName() : "없음",
                 t.getType() != null ? t.getType().getName() : "없음",
                 t.getUser().getUserno(),
@@ -277,17 +280,22 @@ public class TalentService {
      * @param talentno 재능 번호
      * @return 재능 상세 DTO
      */
+    @Transactional
     public TalentDetailDTO getTalentDetail(Long talentno) {
         return talentRepository.findDetailByTalentno(talentno);
         // Optional 처리하거나 없으면 예외 처리 필요
     }
     
+    @Transactional
     public TalentDetailDTO getTalentDetailWithFiles(Long talentno) {
       Optional<Talent> optionalTalent = talentRepository.findByIdWithFiles(talentno);
       if (optionalTalent.isEmpty()) {
           throw new IllegalArgumentException("재능이 존재하지 않음");
       }
       Talent t = optionalTalent.get();
+      
+      //  조회수 + 1
+      t.setViewCount(t.getViewCount() + 1);
 
       List<FileUploadDTO> fileDTOs = t.getFiles().stream()
               .map(file -> new FileUploadDTO(
@@ -305,9 +313,11 @@ public class TalentService {
           t.getTalentno(),
           t.getUser() != null ? t.getUser().getUserno() : null,
           t.getType() != null ? t.getType().getName() : null,
+          t.getCategory() != null && t.getCategory().getCateGrp() != null ? t.getCategory().getCateGrp().getName() : null,
           t.getCategory() != null ? t.getCategory().getName() : null,
           t.getTitle(),
-          t.getDescription(),          
+          t.getDescription(),
+          t.getViewCount(),
           t.getUser() != null ? t.getUser().getUsername() : null,
           t.getCreatedAt(),
           t.getUpdatedAt()

@@ -248,7 +248,7 @@ public class UserController {
         Long userno = (Long) session.getAttribute("userno");
         try {
             userService.updateUserWithProfile(userno, userDTO, profileImage);
-            User updatedUser = userService.findByIdOrThrow(userno);
+            UserDTO updatedUser = userService.getUserByNo(userno);
 
             return ResponseEntity.ok(Map.of(
                 "sw", true,

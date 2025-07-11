@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Search } from 'lucide-react';
 
-import Header from './header/Header';
+// import Header from './header/Header';
 import MainSideBar from './sidebar/MainSideBar';
 import { GlobalContext } from './GlobalContext';
 import '../style/MainPage.css';
@@ -30,9 +30,6 @@ export default function MainPage() {
     setSearchQuery(e.target.value);
   };
 
-  console.log("🚀 selectedCategoryNo in MainPage:", selectedCategoryNo);
-
-
   const handleSearchKeyDown = (e) => {
     if (e.key === 'Enter') {
       // Enter 눌렀을 때, 현재는 별도 동작 없고 검색어 상태만 변경되므로
@@ -48,7 +45,6 @@ export default function MainPage() {
       fontFamily: 'Arial, sans-serif'
       
     }}>
-      <Header />
 
       {/* 사이드바 영역 */}
       <div

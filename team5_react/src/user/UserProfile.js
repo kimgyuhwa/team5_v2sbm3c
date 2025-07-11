@@ -120,7 +120,11 @@ function UserProfile() {
     });
 
     const result = await res.json();
-    if (result.sw) {
+     if (result.sw) {
+      const updatedUser = result.user;        // ← 서버가 보내준 최신 DTO
+      /** 1️⃣ Context 갱신 */
+      setLoginUser(updatedUser);
+
       alert('회원정보 수정 완료!');
     } else {
       alert('수정 실패: ' + result.msg);
@@ -130,7 +134,6 @@ function UserProfile() {
     alert('오류 발생');
   }
 };
-
 
   const handleDelete = () => {
   if (!window.confirm('정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
@@ -147,14 +150,14 @@ function UserProfile() {
       alert(errMsg);
     });
 };
-console.log("프로필 이미지 파일명:", loginUser.profileImage);
+console.log("프로필 이미지 파일명:", loginUser?.profileImage);
   return (
   <div style={{ width: '400px', margin: '0 auto', padding: '20px' }}>
     <h2 style={{ textAlign: 'center' }}>회원 정보 수정</h2>
 
     <div style={{ textAlign: 'center', marginBottom: '20px' }}>
       <img
-        src={form.profileImage ? baseUrl + loginUser.profileImage : '/uploads/user/default-profile.png'}
+        src={form.profileImage ? baseUrl + loginUser?.profileImage : '/uploads/user/default-profile.png'}
         alt="프로필"
         style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '50%' }}
       />
