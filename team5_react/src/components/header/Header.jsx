@@ -1,9 +1,10 @@
 import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, Star } from 'lucide-react';
 import React, { useState, useContext,useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import UserLogout from '../../user/UserLogout';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../GlobalContext';
-
+import ChatRoom from '../../chat/ChatRoom';
 
 function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -18,6 +19,8 @@ function Header() {
   const [notificationList, setNotificationList] = useState([]);  // 알림 목록
   const [unreadCount, setUnreadCount] = useState(); // 안읽은 알림 개수
   const [hasMore, setHasMore] = useState(true);   // 더불러올 알람없으면 false > 더보기 없어짐
+
+  const [openChatId, setOpenChatId] = useState(null); //  현재 열려 있는 채팅방
 
   const navigate = useNavigate();
   const { LoginUser, setSw, loginUser, setLoginUser } = useContext(GlobalContext);
@@ -37,8 +40,7 @@ function Header() {
           n => !prev.some(p => p.notificationno === n.notificationno)
         );
         const merged = [...prev, ...newItems];
-
-        /* === 핵심: hasMore 계산 === */
+        
         const noMore =
           newItems.length < size         // 마지막 페이지가 size 미만
           || merged.length >= unreadCount; // 혹은 화면에 쌓인 총합이 미확인 개수 이상
@@ -60,6 +62,7 @@ function Header() {
         loadMore();
       }
     }, [isNotificationDropdownOpen]);
+    
 
   useEffect(() => {
     if (!userno) {
@@ -72,16 +75,28 @@ function Header() {
     }
 
     // 채팅 목록 API 호출
-    fetch(`/chatroom/user/${userno}/chatlist`)
-      .then(res => res.json())
-      .then(data => {
-        setChatList(data);
-      })
-      .catch(err => {
-        console.error('채팅 목록 API 호출 실패:', err);
-        setChatList([]); // 에러 시 빈 배열
-      });
+   fetch(`/chatroom/user/${userno}/chatlist`, { credentials: 'include' })
+    .then(res => res.json())
+    .then(async rooms => {
+      // rooms: [{ chatRoomno, roomName, createdAt }, ...]
+      const withLast = await Promise.all(
+        rooms.map(async r => {
+          const res = await fetch(`/message/${r.chatRoomno}/last-message`);
+          const last = await res.json();     // {content, createdAt}
 
+          return {
+            id: r.chatRoomno,
+            name: r.roomName,
+            senderName:last.senderName,
+            lastMessage: last.content,
+            time: new Date(last.createdAt || r.createdAt)
+                     .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})
+          };
+        })
+      );
+      setChatList(withLast);
+    })
+    .catch(console.error);
     // //알림 목록 API 호출
     // fetch(`/notifications/user/${userno}?page=${page}&size=3`)
     //   .then(res => res.json())
@@ -104,6 +119,14 @@ function Header() {
       setHasMore(true);
       setPage(0);
   }, [userno]);
+
+    // 채팅 아이템 클릭 시
+  const handleOpenChat = (roomId) => {
+    setIsChatDropdownOpen(false);  // 드롭다운 닫고
+    setOpenChatId(roomId);         // 모달 열기
+  };
+
+  const handleCloseChat = () => setOpenChatId(null);
 
   const handleLogout = () => {
     fetch('/user/logout', { method: 'GET' })
@@ -229,21 +252,6 @@ function Header() {
                 }}
               >
                 <MessageCircle size={20} />
-                {/* 채팅 알림 뱃지 */}
-                <span style={{
-                  position: 'absolute',
-                  top: '-2px',
-                  right: '-2px',
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  fontSize: '10px',
-                  padding: '2px 6px',
-                  borderRadius: '10px',
-                  minWidth: '18px',
-                  textAlign: 'center'
-                }}>
-                  3
-                </span>
               </button>
 
               {/* 채팅 드롭다운 메뉴 */}
@@ -271,59 +279,39 @@ function Header() {
                     <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#333' }}>
                       채팅 목록
                     </h3>
-                    <span style={{ fontSize: '12px', color: '#666' }}>
-                      {chatList.filter(chat => chat.unread > 0).length}개의 새 메시지
-                    </span>
                   </div>
                   <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {chatList.map(chat => (
-                      <div key={chat.id} style={{
+                      <div key={chat.id}
+                        onClick={() => handleOpenChat(chat.id)}
+                        style={{
                         padding: '12px 20px',
                         borderBottom: '1px solid #f1f3f4',
                         cursor: 'pointer',
                         transition: 'background-color 0.2s',
-                        backgroundColor: chat.unread > 0 ? '#f8f9ff' : 'transparent'
                       }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = chat.unread > 0 ? '#f8f9ff' : 'transparent'}
+                      onMouseOver={e => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                      onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                          <span style={{ fontWeight: '600', color: '#333', fontSize: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontWeight: 600, color: '#333', fontSize: '14px' }}>
                             {chat.name}
                           </span>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '12px', color: '#666' }}>
-                              {chat.time}
-                            </span>
-                            {chat.unread > 0 && (
-                              <span style={{
-                                backgroundColor: '#17a2b8',
-                                color: 'white',
-                                fontSize: '10px',
-                                padding: '2px 6px',
-                                borderRadius: '10px',
-                                minWidth: '16px',
-                                textAlign: 'center'
-                              }}>
-                                {chat.unread}
-                              </span>
-                            )}
-                          </div>
+                          <span style={{ fontSize: '12px', color: '#666' }}>
+                            {chat.time}
+                          </span>
                         </div>
-                        <p style={{ 
-                          margin: 0, 
-                          fontSize: '13px', 
-                          color: '#666',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap'
+                        <p style={{
+                          margin:0,fontSize:'13px',color:'#666',
+                          overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'
                         }}>
-                          {chat.lastMessage}
+                          {chat.senderName}:{chat.lastMessage}
                         </p>
                       </div>
                     ))}
+                                    
                   </div>
-                  <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
+                  {/* <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
                     <button style={{
                       width: '100%',
                       padding: '8px',
@@ -340,7 +328,7 @@ function Header() {
                     >
                       모든 채팅 보기
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>
@@ -534,7 +522,7 @@ function Header() {
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
               >
                 <User size={20} />
-                마이페이지
+                {loginUser.name}님
                 <ChevronDown size={16} style={{
                   transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                   transition: 'transform 0.3s'
@@ -670,7 +658,54 @@ function Header() {
           </div>
         </div>
       </div>
+
+      {openChatId && ReactDOM.createPortal(
+  <div style={{
+    position: 'fixed',
+    bottom: '20px',
+    right:  '20px',
+    width:  '400px',
+    height: '600px',
+    backgroundColor: 'white',
+    border: '1px solid #ccc',
+    borderRadius: '10px',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+    zIndex: 9999,
+    display: 'flex',
+    flexDirection: 'column',
+  }}>
+    {/* 상단 바 + 닫기 */}
+    <div style={{
+      padding: '10px',
+      backgroundColor: '#007bff',
+      color: 'white',
+      borderTopLeftRadius:  '10px',
+      borderTopRightRadius: '10px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    }}>
+      <span>채팅방 #{openChatId}</span>
+      <button onClick={handleCloseChat}
+        style={{
+          background: 'transparent',
+          color: 'white',
+          border: 'none',
+          fontSize: '16px',
+          cursor: 'pointer',
+        }}>✕</button>
     </div>
+
+    {/* 실제 채팅창 */}
+    <div style={{ flex: 1, overflow: 'hidden' }}>
+      <ChatRoom chatRoomno={openChatId.toString()} />
+    </div>
+  </div>,
+  document.body   // Portal 대상
+)}
+    </div>
+
+    
   );
 }
 

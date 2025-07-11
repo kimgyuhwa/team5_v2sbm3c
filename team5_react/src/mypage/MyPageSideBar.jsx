@@ -1,7 +1,11 @@
-import React from 'react';
+// src/pages/MyPageSideBar.jsx
+import React, { useContext } from 'react';
 import { User, Edit3 } from 'lucide-react';
+import { GlobalContext } from '../components/GlobalContext';
 
 const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
+  const { loginUser } = useContext(GlobalContext);
+   const baseUrl = '/uploads/user/';
   return (
     <aside style={{
       width: '260px',
@@ -24,7 +28,15 @@ const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
           justifyContent: 'center',
           position: 'relative'
         }}>
-          <User style={{ width: '40px', height: '40px', color: '#9ca3af' }} />
+          {loginUser?.profileImage
+            ? <img
+                src={loginUser.profileImage.startsWith('blob:')
+                  ? loginUser.profileImage
+                  : baseUrl + loginUser.profileImage}
+                alt="avatar"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            : <User style={{ width: '40px', height: '40px', color: '#9ca3af' }} />}
           <div style={{
             position: 'absolute',
             bottom: '0',
@@ -40,23 +52,28 @@ const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
             <Edit3 style={{ width: '12px', height: '12px', color: 'white' }} />
           </div>
         </div>
-        <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px' }}>김규화</div>
-        <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '30px' }}>kimgyuhwa52@naver.com</div>
+        {/* loginUser가 없으면 빈 문자열 처리 */}
+        <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px' }}>
+          {loginUser?.username || ''}
+        </div>
+        <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '30px' }}>
+          {loginUser?.email || ''}
+        </div>
       </div>
 
       {/* 구분선 */}
-      <div style={{ 
-        height: '1px', 
-        backgroundColor: '#e5e7eb', 
-        margin: '20px 0' 
+      <div style={{
+        height: '1px',
+        backgroundColor: '#e5e7eb',
+        margin: '20px 0'
       }}></div>
 
       {/* 메뉴 섹션 */}
       <div style={{ marginBottom: '20px' }}>
-        <div 
-          style={{ 
-            fontSize: '18px', 
-            fontWeight: 'bold',   
+        <div
+          style={{
+            fontSize: '18px',
+            fontWeight: 'bold',
             cursor: 'pointer',
             display: 'inline-block',
             borderBottom: currentPage === 'profile' ? '2px solid black' : 'none',
@@ -67,9 +84,9 @@ const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
           내 프로필
         </div>
       </div>
-      
-        <div style={{ marginBottom: '20px' }}>
-        <div 
+
+      <div style={{ marginBottom: '20px' }}>
+        <div
           style={{
             cursor: 'pointer',
             fontWeight: 'bold',
@@ -77,7 +94,7 @@ const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
             borderBottom: currentPage === 'history' ? '2px solid black' : 'none',
             display: 'inline-block',
             paddingBottom: '8px'
-            
+
           }}
           onClick={() => setCurrentPage('history')}
         >
@@ -86,7 +103,7 @@ const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
       </div>
 
       <div style={{ marginBottom: '20px' }}>
-        <div 
+        <div
           style={{
             fontSize: '18px',
             fontWeight: 'bold',
@@ -100,7 +117,7 @@ const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
           설정
         </div>
       </div>
-      
+
     </aside>
   );
 };
