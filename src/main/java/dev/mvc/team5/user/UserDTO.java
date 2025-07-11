@@ -73,6 +73,50 @@ public class UserDTO {
         private String bio;
     }
     
+    @Data
+    public static class UserDetailDTO {
+        private Long userno;
+        private String userId;
+        private String username;
+        private String email;
+        private String name;
+        private String role;
+        private String schoolname;
+        private LocalDateTime createdAt;
+        private LocalDateTime lastLoginAt;
+        private boolean isDeleted;
+
+        private int reportCount;
+        private int reviewCount;
+        private List<String> loginLog;
+        private List<String> activity;
+    }
+    
+    @Data
+    public static class UserReviewInfoDTO {
+        private Long userno;
+        private String userId;
+        private String name;
+        private String username;
+        private String email;
+        private int reviewWrittenCount;
+        private int reviewReceivedCount;
+    }
+    
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserAdminDTO  {
+        private Long userno;
+        private String userId;
+        private String name;
+        private String email;
+        private String username;
+        private String role;
+        private LocalDateTime createdAt;
+        private int givenReviewCount; 
+    }
+    
     public UserDTO(User user) {
       this.userno = user.getUserno();
       this.userId = user.getUserId();
@@ -90,4 +134,6 @@ public class UserDTO {
     }
       // 필요한 필드 추가
   }
+    
+    
 }

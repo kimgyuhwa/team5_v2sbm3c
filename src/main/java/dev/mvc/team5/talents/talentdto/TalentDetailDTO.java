@@ -15,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor @AllArgsConstructor
 public class TalentDetailDTO {
     private Long talentno;
+    private Long userno; // 게시물 작성자 번호
     private String typeName;
     private String categoryName;
     private String title;
@@ -26,10 +27,11 @@ public class TalentDetailDTO {
     private LocalDateTime updatedAt;    
     private List<FileUploadDTO> fileInfos;
     
-    public TalentDetailDTO(Long talentno, String typeName, String categoryName, String title,
-        String description, String userName,
+    public TalentDetailDTO(Long talentno, Long userno, String typeName, String categoryName, String title,
+        String description,  String userName,
         LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.talentno = talentno;
+        this.userno = userno;
         this.typeName = typeName;
         this.categoryName = categoryName;
         this.title = title;

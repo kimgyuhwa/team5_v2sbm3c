@@ -7,20 +7,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/fileupload")
-public class FileUploadController {
+public class FileUpload1Controller {
 
     @Autowired
-    private FileUploadService fileUploadService;
+    private FileUpload1Service fileUploadService;
 
     @PostMapping("/upload")
-    public ResponseEntity<FileUpload> upload(
+    public ResponseEntity<FileUpload1> upload(
             @RequestParam(name="file") MultipartFile file,
             @RequestParam(name="purpose") String purpose,
             @RequestParam(name="targetType") String targetType,
             @RequestParam(name="targetId") Long targetId) {
 
         try {
-            FileUpload uploaded = fileUploadService.uploadFile(file, purpose, targetType, targetId);
+            FileUpload1 uploaded = fileUploadService.uploadFile(file, purpose, targetType, targetId);
             return ResponseEntity.ok(uploaded);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

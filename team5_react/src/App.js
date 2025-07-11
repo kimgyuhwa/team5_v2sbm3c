@@ -38,13 +38,10 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<Home />} />
-<<<<<<< HEAD
           {/** 관리자 페이지 */}
           <Route path="/admin/user" element={<AdminUserList />} />  
           {/** 회원 */}
           <Route path="/mypage/MyPage" element={<MyPage />} />  
-=======
->>>>>>> 5998394bba037a6ce0c40723d5d62b42aec6112e
           <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />

@@ -23,7 +23,7 @@ public interface TalentRepository extends JpaRepository<Talent, Long> {
 ////학교번호(schoolno), 카테고리번호(categoryno)로 검색하는 메서드 선언
 //  List<Talent> findBySchoolnoAndCategoryno(Long schoolno, Long categoryno);
   
-  @Query("SELECT new dev.mvc.team5.talents.talentdto.TalentDetailDTO(t.talentno, t.type.name, t.category.name, t.title, t.description, t.user.username, t.createdAt, t.updatedAt) " +
+  @Query("SELECT new dev.mvc.team5.talents.talentdto.TalentDetailDTO(t.talentno, t.user.userno, t.type.name, t.category.name, t.title, t.description, t.user.username, t.createdAt, t.updatedAt) " +
               "FROM Talent t WHERE t.talentno = :talentno")
   TalentDetailDTO findDetailByTalentno(@Param("talentno") Long talentno);
   

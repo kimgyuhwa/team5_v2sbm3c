@@ -9,7 +9,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileUpload {
+public class FileUpload1 {
 
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="file_seq")

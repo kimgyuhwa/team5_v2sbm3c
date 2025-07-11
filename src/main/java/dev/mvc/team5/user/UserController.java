@@ -14,16 +14,22 @@ import org.springframework.web.multipart.MultipartFile;
 import com.univcert.api.UnivCert;
 
 import dev.mvc.team5.activitylog.ActivityLogService;
+import dev.mvc.team5.review.Review;
+import dev.mvc.team5.review.ReviewDTO;
+import dev.mvc.team5.review.ReviewService;
 import dev.mvc.team5.school.SchoolDTO;
 import dev.mvc.team5.school.SchoolService;
 import dev.mvc.team5.school.SchoolServiceImpl;
 import dev.mvc.team5.tool.MailService;
 import dev.mvc.team5.user.UserDTO.MailRequestDto;
+import dev.mvc.team5.user.UserDTO.UserDetailDTO;
+import dev.mvc.team5.user.UserDTO.UserReviewInfoDTO;
 import dev.mvc.team5.user.UserDTO.UserUpdateDTO;
 import dev.mvc.team5.user.UserDTO.VerifyCodeDto;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,6 +39,8 @@ public class UserController {
     @Autowired
     private UserService userService;
     
+    @Autowired
+    private  ReviewService reviewService;
     @Autowired
     private SchoolServiceImpl schoolService;
     
@@ -482,7 +490,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }       
     }
-   
+   // 사용자 상세
+    @GetMapping("/admin/detail/{userno}")
+    public ResponseEntity<UserDetailDTO> getUserDetail(@PathVariable(name="userno") Long userno) {
+        UserDetailDTO detail = userService.getUserDetail(userno);
+        return ResponseEntity.ok(detail);
+    }
+    
+    //사용자 리뷰
+    @GetMapping("/admin/{userno}/reviews")
+    public Page<ReviewDTO> getUserGivenReviews(@PathVariable(name="userno")  Long userno, Pageable pageable) {
+        return reviewService.getReviewsByGiverUserno(userno, pageable);
+    }
     
     
 }

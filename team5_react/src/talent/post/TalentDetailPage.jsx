@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../style/TalentDetail.css';
-
+import ReviewPage from '../../review/ReviewPage';
 function TalentDetailPage() {
   const { talentno } = useParams();
   const [talent, setTalent] = useState(null);
@@ -20,7 +20,7 @@ function TalentDetailPage() {
       setTalent(data);
     })
   }, [talentno]);
-
+  console.log(talent);
   if (error) return <div className="error-message">오류: {error}</div>;
   if (!talent) return <div className="loading-message">불러오는 중...</div>;
 
@@ -49,7 +49,9 @@ function TalentDetailPage() {
           ))}
         </div>
       )}
+      <ReviewPage receiverno={talent?.userno}/>
     </div>
+    
   );
 }
 

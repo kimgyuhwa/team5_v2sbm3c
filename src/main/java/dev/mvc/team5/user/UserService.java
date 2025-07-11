@@ -1,6 +1,7 @@
 package dev.mvc.team5.user;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,9 +11,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import dev.mvc.team5.fileupload.FileUpload;
-import dev.mvc.team5.fileupload.FileUploadService;
+import dev.mvc.team5.fileupload.FileUpload1;
+import dev.mvc.team5.fileupload.FileUpload1Service;
+import dev.mvc.team5.report.ReportRepository;
+import dev.mvc.team5.review.ReviewRepository;
 import dev.mvc.team5.tool.Security;
+import dev.mvc.team5.user.UserDTO.UserAdminDTO;
+import dev.mvc.team5.user.UserDTO.UserDetailDTO;
+import dev.mvc.team5.user.UserDTO.UserReviewInfoDTO;
 import dev.mvc.team5.user.UserDTO.UserUpdateDTO;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -23,7 +29,11 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private FileUploadService fileUploadService;
+    private ReportRepository reportRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private FileUpload1Service fileUploadService;
     
 
     @Autowired
@@ -272,11 +282,38 @@ public class UserService {
         
 
         if (profileImage != null && !profileImage.isEmpty()) {
-            FileUpload uploaded = fileUploadService.uploadFile(profileImage, "PROFILE", "USER", userno);
+            FileUpload1 uploaded = fileUploadService.uploadFile(profileImage, "PROFILE", "USER", userno);
             user.setProfileImage(uploaded.getStoredFileName()); //  여기가 핵심
         }
 
         userRepository.save(user);
     }
+    
+  
+
+    
+    public UserDetailDTO getUserDetail(Long userno) {
+      User user = userRepository.findById(userno)
+          .orElseThrow(() -> new RuntimeException("해당 사용자가 존재하지 않습니다."));
+
+      UserDetailDTO dto = new UserDetailDTO();
+      dto.setUserno(user.getUserno());
+      dto.setUserId(user.getUserId());
+      dto.setUsername(user.getUsername());
+      dto.setEmail(user.getEmail());
+      dto.setName(user.getName());
+      dto.setRole(user.getRole());
+      dto.setSchoolname(user.getSchool().getSchoolname());
+      dto.setCreatedAt(user.getCreatedAt());
+      dto.setDeleted(user.getIsDeleted());
+
+      // 🔽 아래는 더미/예시 - 나중에 실제 테이블에서 가져오도록 수정 가능
+      dto.setReportCount(reportRepository.countByTargetId(userno)); // 예시
+      dto.setReviewCount(reviewRepository.countByGiver_Userno(userno));       // 예시
+      dto.setLoginLog(List.of("2024-07-09 11:00", "2024-07-08 13:25")); // 예시
+      dto.setActivity(List.of("2024-07-06: 리뷰 작성", "2024-07-05: 재능 등록")); // 예시
+
+      return dto;
+  }
     
 }

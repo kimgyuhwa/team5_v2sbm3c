@@ -26,26 +26,34 @@ function Header() {
     navigate('/mypage/MyPage');
   };
   const userno = loginUser?.userno;
+  const size = 3;  // 한번에 보여줄 알림 개수
+ const loadMore = () => {
+  fetch(`/notifications/user/${userno}?page=${page}&size=${size}`)
+    .then(res => res.json())
+    .then(data => {
+      setNotificationList(prev => {
+        // 중복 제거
+        const newItems = data.filter(
+          n => !prev.some(p => p.notificationno === n.notificationno)
+        );
+        const merged = [...prev, ...newItems];
 
-  const loadMore = () => {
-      fetch(`/notifications/user/${userno}?page=${page}&size=3`)
-        .then(res => res.json())
-        .then(data => {
-          // 중복 알림 방지
-          setNotificationList(prev => {
-            const newItems = data.filter(
-              newItem => !prev.some(item => item.notificationno === newItem.notificationno)
-            );
-            return [...prev, ...newItems];
-          });
-          setPage(prev => prev + 1);
+        /* === 핵심: hasMore 계산 === */
+        const noMore =
+          newItems.length < size         // 마지막 페이지가 size 미만
+          || merged.length >= unreadCount; // 혹은 화면에 쌓인 총합이 미확인 개수 이상
 
-          // 데이터가 size보다 적으면 더 이상 불러올 알림이 없음
-          if (data.length < 3) {
-            setHasMore(false);
-          }
-        });
-    };
+        setHasMore(!noMore);
+        if (!noMore) return merged;      // 마지막 페이지라면 page++ 안 함
+
+        return merged;
+      });
+
+      // hasMore가 true일 때만 page++
+      setPage(prev => prev + 1);
+    })
+    .catch(console.error);
+};
 
     useEffect(() => {
   if (isNotificationDropdownOpen && page === 0) {

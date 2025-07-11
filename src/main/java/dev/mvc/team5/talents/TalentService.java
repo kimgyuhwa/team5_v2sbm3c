@@ -303,10 +303,11 @@ public class TalentService {
 
       TalentDetailDTO dto = new TalentDetailDTO(
           t.getTalentno(),
+          t.getUser() != null ? t.getUser().getUserno() : null,
           t.getType() != null ? t.getType().getName() : null,
           t.getCategory() != null ? t.getCategory().getName() : null,
           t.getTitle(),
-          t.getDescription(),
+          t.getDescription(),          
           t.getUser() != null ? t.getUser().getUsername() : null,
           t.getCreatedAt(),
           t.getUpdatedAt()

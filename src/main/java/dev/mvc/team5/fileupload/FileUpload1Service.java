@@ -14,14 +14,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class FileUploadService {
+public class FileUpload1Service {
 
-    private final FileUploadRepository fileUploadRepository;
+    private final FileUpload1Repository fileUploadRepository;
 
    // @Value("${file.upload-dir}") // ex: C:/kd/upload
-    private  String uploadDir = "C:/kd/deploy/team5/user";
+    private  String uploadDir = "C:/kd/deploy/team5/storage/user";
 
-    public FileUpload uploadFile(MultipartFile multipartFile, String purpose, String targetType, Long targetId) throws IOException {
+    public FileUpload1 uploadFile(MultipartFile multipartFile, String purpose, String targetType, Long targetId) throws IOException {
       if (multipartFile.isEmpty()) return null;
 
       File uploadPath = new File(uploadDir);
@@ -36,7 +36,7 @@ public class FileUploadService {
       File dest = new File(filePath);
       multipartFile.transferTo(dest);
 
-      FileUpload fileUpload = new FileUpload();
+      FileUpload1 fileUpload = new FileUpload1();
       fileUpload.setOriginalFileName(originalFileName);
       fileUpload.setStoredFileName(storedFileName);
       fileUpload.setFilePath(filePath);

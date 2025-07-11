@@ -18,7 +18,7 @@ function UserLogout() {
         setLoginUser(null);
         sessionStorage.removeItem('sw');
         sessionStorage.removeItem('userno');
-        localStorage.removeItem("loginUser");
+        sessionStorage.removeItem("loginUser");
       })
       .catch(err => console.error(err));
   }, [setSw, setUserno]);

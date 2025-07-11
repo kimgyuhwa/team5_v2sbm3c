@@ -6,6 +6,12 @@ function AdminUserList() {
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(0);  // 0부터 시작
   const [totalPages, setTotalPages] = useState(0);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+   const [userReviews, setUserReviews] = useState([]);
+  const [reviewPage, setReviewPage] = useState(0);
+  const [reviewTotalPages, setReviewTotalPages] = useState(0);
+
 
   const fetchUsers = async () => {
     try {
@@ -20,6 +26,36 @@ function AdminUserList() {
       setTotalPages(res.data.totalPages);
     } catch (err) {
       console.error('유저 목록 불러오기 실패:', err);
+    }
+  };
+const handleDetail = async (userno) => {
+  try {
+    const res = await axios.get(`/user/admin/detail/${userno}`);
+      setSelectedUser(res.data);
+      setShowModal(true);
+      setReviewPage(0);   // 리뷰 페이징 초기화
+      fetchUserReviews(userno, 0);
+  } catch (err) {
+    alert("회원 상세정보를 불러오지 못했습니다.");
+  }
+};
+
+  // 사용자 리뷰 목록 API 호출
+  const fetchUserReviews = async (userno, page) => {
+    try {
+      const res = await axios.get(`/user/admin/${userno}/reviews`, {
+        params: {
+          page: page,
+          size: 2,
+        }
+      });
+      console.log(res.data)
+      setUserReviews(res.data.content);
+      setReviewTotalPages(res.data.totalPages);
+      setReviewPage(page);
+    } catch (err) {
+      console.error('사용자 리뷰 불러오기 실패:', err);
+      setUserReviews([]);
     }
   };
 
@@ -64,6 +100,54 @@ const handleDelete = (userno) => {
   
 
   return (
+    <>
+    {showModal && selectedUser && (
+  <div style={{ background: '#fff', border: '1px solid #ccc', padding: '20px', position: 'fixed', top: '10%', left: '30%', width: '40%', zIndex: 1000 }}>
+    <h3>회원 상세 정보</h3>
+    <p><strong>아이디:</strong> {selectedUser.userId}</p>
+    <p><strong>닉네임:</strong> {selectedUser.username}</p>
+    <p><strong>이메일:</strong> {selectedUser.email}</p>
+    <p><strong>학교:</strong> {selectedUser.schoolname}</p>
+    <p><strong>가입일:</strong> {selectedUser.createdAt?.substring(0,10)}</p>
+    <p><strong>마지막 로그인:</strong> {selectedUser.lastLoginAt}</p>
+    <p><strong>신고 횟수:</strong> {selectedUser.reportCount}</p>
+    <p><strong>작성 리뷰 수:</strong> {selectedUser.reviewCount}</p>
+    
+    <h4>🧾 최근 활동</h4>
+    <ul>
+      {(selectedUser.activity ?? []).map((log, idx) => (
+        <li key={idx}>{log}</li>
+      ))}
+    </ul>
+    
+    <h4>📅 로그인 기록</h4>
+    <ul>
+      {(selectedUser.loginLog ?? []).map((log, idx) => (
+        <li key={idx}>{log}</li>
+      ))}
+    </ul>
+
+    <h4>📝 작성한 리뷰 목록</h4>
+    {userReviews?.length > 0 ? (
+      <ul>
+        {userReviews.map((review) => (
+          <li key={review.reviewno} style={{ marginBottom: '10px' }}>
+            <strong>평점:</strong> {review.rating} / 5<br />
+            <strong>내용:</strong> {review.comments}<br />
+            <small>작성일: {review.createdAt?.substring(0, 10)}</small>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>작성한 리뷰가 없습니다.</p>
+    )}
+
+    <button onClick={() => setShowModal(false)} style={{ marginTop: '10px' }}>닫기</button>
+
+    
+  </div>
+)}
+
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2>관리자 - 사용자 목록</h2>
 
@@ -119,13 +203,14 @@ const handleDelete = (userno) => {
                 <td>{user.userId}</td>
                 <td>{user.username}</td>
                 <td>{user.name}</td>
-                <td>{user.schoolname}</td>
+                <td>{user.schoolname ? user.schoolname : '학교 없음'}</td>
                 <td>{user.role}</td>
                 <td>{user.email}</td>
                 <th>{user.isDeleted ? "탈퇴" : "정상"}</th>
                 <td style={{ whiteSpace: 'nowrap'}}>{user.createdAt?.substring(0, 10)}</td>
                 <td >
                   {/* <button onClick={() => handleEdit(user)}>수정</button> */}
+                  <button onClick={() => handleDetail(user.userno)}>상세</button>
                   <button onClick={() => handleDelete(user.userno)}>삭제</button>
                 </td>
               </tr>
@@ -155,6 +240,7 @@ const handleDelete = (userno) => {
         ))}
       </div>
     </div>
+    </>
   );
 }
 
