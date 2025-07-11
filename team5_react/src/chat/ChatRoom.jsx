@@ -7,8 +7,9 @@ import { GlobalContext } from "../components/GlobalContext";
 
 const SOCKET_URL = "http://localhost:9093/ws-chat";
 
-export default function ChatRoom() {
-  const { chatRoomno } = useParams();
+export default function ChatRoom({ chatRoomno: propChatRoomno }) {
+  const { chatRoomno: paramChatRoomno } = useParams();
+  const chatRoomno = propChatRoomno || paramChatRoomno;
   const { loginUser } = useContext(GlobalContext);
 
   const [messages, setMessages] = useState([]);
@@ -65,7 +66,7 @@ export default function ChatRoom() {
   }, [messages]);
 
   return (
-    <div className="max-w-md mx-auto flex flex-col max-h-[800px] border shadow-lg rounded-lg">
+    <div className="max-w-md mx-auto flex flex-col max-h-[560px] border shadow-lg rounded-lg">
       {/* 상단 */}
       <div className="bg-blue-600 text-white p-4 font-bold flex justify-between items-center">
         <div>💬 채팅방 #{chatRoomno}</div>
@@ -73,7 +74,7 @@ export default function ChatRoom() {
       </div>
 
       {/* 메시지 리스트 */}
-      <div ref={scrollRef} className="overflow-y-auto bg-gray-50 p-4 h-[800px]">
+      <div ref={scrollRef} className="overflow-y-auto bg-gray-50 p-4 h-[560px]">
         {messages.map((msg, idx) => {
           const isMine = msg.senderno === loginUser?.userno;
           return (

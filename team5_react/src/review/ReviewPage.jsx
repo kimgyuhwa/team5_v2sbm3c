@@ -111,7 +111,10 @@ console.log('GlobalContext:', context);
                 <span className="text-yellow-500 font-semibold">{renderStars(r.rating)} {r.rating}점</span>
               </div>
               <p className="text-gray-700">{r.comments}</p>
-              <div className="text-xs text-gray-400 mt-2">{r.createdAt}</div>
+              <div className="text-xs text-gray-400 mt-2">{new Date(r.createdAt).toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}</div>
             </li>
           ))}
         </ul>
