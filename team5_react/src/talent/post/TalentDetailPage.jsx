@@ -82,6 +82,29 @@ function TalentDetailPage() {
     });
   };
 
+  
+  const startChat = async () => {
+  if (!loginUser) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`/chatroom/findOrCreate?senderId=${loginUser.userno}&receiverId=${talent.userno}`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    if (!res.ok) throw new Error('채팅방 생성 실패');
+    const data = await res.json();
+
+    navigate(`/chatroom/${data.chatRoomno}`);
+  } catch (e) {
+    alert('채팅방 오류: ' + e.message);
+  }
+};
+
+
   const cancelEdit = () => {
     setEditMode(false);
     setEditForm({});
@@ -174,10 +197,10 @@ function TalentDetailPage() {
   if (error) return <div className="text-center text-red-500 mt-10">오류: {error}</div>;
   if (!talent) return <div className="text-center text-gray-500 mt-10">불러오는 중...</div>;
 
-  // ✅ 파일 중복 제거
+  // 파일 중복 제거
   const uniqueFiles = talent.fileInfos ? [...new Map(talent.fileInfos.map(f => [f.fileno, f])).values()] : [];
 
-  // ✅ 슬라이더 옵션
+  // 슬라이더 옵션
   const sliderSettings = {
     // dots: uniqueFiles.length > 1,
     dots : false,
@@ -292,6 +315,14 @@ function TalentDetailPage() {
         </div>
 
         <div className="flex justify-end gap-3">
+          {!isOwner && (
+            <button
+              className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow"
+              onClick={startChat}
+            >
+              채팅하기
+            </button>
+          )}
           {isOwner && (
             <>
               <button className="px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700 shadow"

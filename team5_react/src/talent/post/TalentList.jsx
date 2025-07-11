@@ -221,7 +221,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
                 <p className="text-gray-500">{t.description || '[설명 없음]'}</p>
                 {/* 조회수 */}
                 <div className="text-right text-xs text-gray-400 mt-2">
-                  👁‍🗨: {t.viewCount}
+                  {/* 👁 👀*/} 조회수 : {t.viewCount}
                 </div>
               </div>
             </article>
