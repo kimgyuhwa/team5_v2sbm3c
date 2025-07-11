@@ -1,7 +1,7 @@
 // src/components/FileUploader.jsx
 import React, { useState } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebaseConfig'; // 위에서 export한 storage 인스턴스를 가져옵니다.
+import { storage } from './firebaseConfig'; // 위에서 export한 storage 인스턴스를 가져옵니다.
 
 function FileUploader() {
   const [selectedFile, setSelectedFile] = useState(null); // 사용자가 선택한 파일

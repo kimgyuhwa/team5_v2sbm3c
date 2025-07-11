@@ -10,9 +10,10 @@ const firebaseConfig = {
   storageBucket: "team5-25417.firebasestorage.app", // 이 값이 Cloud Storage 버킷 주소입니다.
   messagingSenderId: "975360334343",
   appId: "1:975360334343:web:8334bf1359724e08cd28a2",
+  measurementId: "G-LLY4ND00L3"
 };
 
-//measurementId: "G-LLY4ND00L3"
+//
 
 // Firebase 앱 초기화
 const app = initializeApp(firebaseConfig);

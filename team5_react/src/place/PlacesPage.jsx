@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Search, MapPin, Navigation } from 'lucide-react';
-import Header from '../components/header/Header';
 import PlaceSideBar from '../components/sidebar/PlaceSideBar';
 import axios from 'axios';
 import { GlobalContext } from '../components/GlobalContext';
@@ -195,7 +194,7 @@ const PlacePage = () => {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'white', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-      <Header />
+
 
       <div style={{
         display: 'flex',

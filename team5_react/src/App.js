@@ -19,7 +19,6 @@ import TalentDetailPage from './talent/post/TalentDetailPage';
 import TalentType from './talent/type/TalentType';
 import Talent from './talent/post/Talent';
 import ReservationsManager from './reservation/Reservation';
-import PlacesList from './place/Place';
 import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
@@ -27,8 +26,8 @@ import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
 import MyChatBotListPage from './mypage/MyChatBotListPage';
 import Header from './components/header/Header'
-
-
+import FileUploader from './firebase/FileUploader';
+import firebaseConfig from './firebase/firebaseConfig';
 
 
 function App() {
@@ -58,16 +57,14 @@ function App() {
           <Route path="/place/PlacesPage" element={<PlacesPage />} />
           <Route path="/talent/categrp" element={<TalentCateGrp />} />
           <Route path='/reservation/Reservation' element={<ReservationsManager />} /> 
-          <Route path='/reservation/Place' element={<PlacesList />} />  
           <Route path="/talent/category" element={<TalentCategory />} /> 
           <Route path="/talent/type" element={<TalentType />} /> 
           <Route path="/review/review" element={<ReviewPage />} />
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
           <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
           <Route path="/mypage/MyPage" element={<MyPage />} />
-
-          {/* <Route path="/firebase/FileUploader" element={<FileUploader />} />
-          <Route path="/firebase/firebaseConfig" element={<firebaseConfig />} /> */}
+          <Route path="/firebase/FileUploader" element={<FileUploader />} />
+          <Route path="/firebase/firebaseConfig" element={<firebaseConfig />} /> 
 
         </Routes>
         <hr />
