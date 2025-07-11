@@ -30,6 +30,7 @@ import Header from './components/header/Header'
 
 
 
+
 function App() {
   return (
      <GlobalProvider>
@@ -64,6 +65,10 @@ function App() {
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
           <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
           <Route path="/mypage/MyPage" element={<MyPage />} />
+
+          {/* <Route path="/firebase/FileUploader" element={<FileUploader />} />
+          <Route path="/firebase/firebaseConfig" element={<firebaseConfig />} /> */}
+
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

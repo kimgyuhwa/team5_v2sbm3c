@@ -286,7 +286,14 @@ const PlacePage = () => {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     position: 'relative'
-                  }}>
+                    
+                    
+                  }}
+                  >
+                    
+                    
+
+                    
                     <div style={{
                       position: 'absolute',
                       top: '12px',
