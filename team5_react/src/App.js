@@ -14,6 +14,7 @@ import FindUserPwd from './user/FindUserPwd';
 import ChatRoom from './chat/ChatRoom';
 import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCategory from './talent/category/TalentCategory';
+import TalentCreateForm from './talent/post/TalentCreateForm';
 import TalentType from './talent/type/TalentType';
 import Talent from './talent/post/Talent';
 import ReservationsManager from './reservation/Reservation';
@@ -23,6 +24,7 @@ import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
+
 
 function App() {
   return (
