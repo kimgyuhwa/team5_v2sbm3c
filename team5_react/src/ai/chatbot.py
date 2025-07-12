@@ -1,33 +1,33 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import apitool  # agent가 정의된 파일
+import apitool  # agent 정의된 모듈
+
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-import requests
-
-@app.post("/chat")
+# @app.post("/chat")
+@app.route("/chat", methods=["POST"])
 def chat_proc():
+    if not request.is_json:
+        return jsonify({"error": "Invalid JSON: Content-Type must be application/json"}), 400
     data = request.json
+    print("✅ 받은 요청:", data)
     message = data.get("message", "")
-    user_id = data.get("userId")  # React에서 넘겨줘야 함
+    userno = data.get("userno")  # React에서 보내주는 사용자 번호
 
-    result = apitool.agent.invoke({"input": message})
+    # userno를 agent에 전달
+    apitool.CURRENT_USERNO = userno
+
+    # ✅ agent 실행
+    result = apitool.agent.invoke({"input": message, "userno": userno})
     output = result["output"]
 
-    # 🔥 주요 내용 저장 조건 예시 (원하는 조건으로 바꿔도 됨)
-    if user_id and len(output) > 20:  # 대충 요약/번역 결과라면
-        try:
-            save_res = requests.post("http://localhost:8080/api/chatbot/save", json={
-                "userno": user_id,
-                "content": output
-            })
-            print("✅ Spring에 저장 결과:", save_res.json())
-        except Exception as e:
-            print("❌ 저장 실패:", e)
+    # ✅ 시스템 메시지 필터링
+    if "Agent stopped due to" in output:
+        output = "죄송해요! 제가 질문을 잘 이해하지 못했어요. 궁금한 점을 조금 더 자세히 알려주실 수 있을까요?"
 
     return jsonify({"res": output})
 
-
-app.run(host="0.0.0.0", port=5000, debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

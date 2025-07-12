@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.mvc.team5.schoolgwan.SchoolGwan;
@@ -111,6 +113,61 @@ public class PlacesServiceImpl implements PlacesService {
               return dto;
           });
   }
+
+    
+//    @Override
+//    public List<PlacesDTO> findPlacesBySchoolno(Long schoolno) {
+//        return placesRepository.findBySchoolgwan_School_Schoolno(schoolno)
+//                               .stream()
+//                               .map(this::toDTO)
+//                               .collect(Collectors.toList());
+//    }
+    @Override
+    public List<PlacesDTO> findBySchoolno(Long schoolno) {
+        return placesRepository.findBySchoolGwan_School_Schoolno(schoolno)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<PlacesDTO> findBySchoolnoAndSchoolgwanno(Long schoolno, Long schoolgwanno) {
+        return placesRepository
+                .findBySchoolGwan_School_SchoolnoAndSchoolGwan_Schoolgwanno(schoolno, schoolgwanno)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    private PlacesDTO toDTO(Places entity) {
+        PlacesDTO dto = new PlacesDTO();
+        dto.setPlaceno(entity.getPlaceno());
+        dto.setPlacename(entity.getPlacename());
+        dto.setHosu(entity.getHosu());
+        dto.setStart_time(entity.getStart_time());
+        dto.setEnd_time(entity.getEnd_time());
+        dto.setSchoolgwanno(entity.getSchoolGwan().getSchoolgwanno());
+        dto.setSchoolgwanname(entity.getSchoolGwan().getSchoolgwanname());
+        return dto;
+    }
+    
+
+		@Override
+		public Page<Places> findPlacesBySchool(Long schoolno, Pageable pageable) {
+			return placesRepository.findBySchoolno(schoolno, pageable);
+		}
+
+		@Override
+		public Page<Places> findPlacesBySchoolAndGwan(Long schoolno, Long schoolgwanno, Pageable pageable) {
+			// TODO Auto-generated method stub
+			return   placesRepository.findBySchoolnoAndSchoolgwanno(schoolno, schoolgwanno, pageable);
+		}
     
     
+		public Page<Places> searchPlacesBySchool(Long schoolno, String keyword, Pageable pageable) {
+	    return placesRepository.searchBySchoolAndKeyword(schoolno, keyword, pageable);
+	}
+
+	public Page<Places> searchPlacesBySchoolAndGwan(Long schoolno, Long schoolgwanno, String keyword, Pageable pageable) {
+	    return placesRepository.searchBySchoolAndGwanAndKeyword(schoolno, schoolgwanno, keyword, pageable);
+	}
+	
 }

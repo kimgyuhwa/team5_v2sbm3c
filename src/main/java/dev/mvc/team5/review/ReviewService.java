@@ -3,6 +3,8 @@ package dev.mvc.team5.review;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +33,25 @@ public class ReviewService {
     public List<Review> findByGiver(Long userno) {
         return repo.findByGiverUserno(userno);
     }
+    public Page<ReviewDTO> getReviewsByGiverUserno(Long userno, Pageable pageable) {
+      Page<Review> reviews = repo.findByGiver_Userno(userno, pageable);
+      return reviews.map(this::convertToDTO);  // ⭐ 변환
+  }
+    
 
+    
+    private ReviewDTO convertToDTO(Review review) {
+      ReviewDTO dto = new ReviewDTO();
+      dto.setReviewno(review.getReviewno());
+      dto.setGiver(review.getGiver().getUserno());
+      dto.setGivername(review.getGiver().getUsername());
+      dto.setReceiver(review.getReceiver().getUserno());
+      dto.setRating(review.getRating());
+      dto.setComments(review.getComments());
+      dto.setCreatedAt(review.getCreatedAt().toString()); // 필요 시 포맷팅
+      return dto;
+  }
+    
     // 특정 수신자(receiver)가 받은 리뷰 목록
     public List<Review> findByReceiver(Long userno) {
         return repo.findByReceiverUserno(userno);

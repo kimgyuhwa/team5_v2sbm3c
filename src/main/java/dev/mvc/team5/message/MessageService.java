@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import dev.mvc.team5.chatroom.ChatRoom;
 import dev.mvc.team5.message.Message;
 import dev.mvc.team5.message.MessageRepository;
+import dev.mvc.team5.message.messagedto.LastMessageDTO;
 import dev.mvc.team5.message.messagedto.MessageResponseDTO;
 import dev.mvc.team5.user.User;
 
@@ -36,5 +37,14 @@ public class MessageService {
                          m.getContent(),
                          m.getSentAt()))
                      .collect(Collectors.toList());
+  }
+    
+    public LastMessageDTO getLastMessage(Long chatRoomno) {
+      Message m = messageRepository
+              .findTopByChatRoom_ChatRoomnoOrderBySentAtDesc(chatRoomno);
+
+      return m == null
+             ? new LastMessageDTO("","", null)
+             : new LastMessageDTO(m.getSender().getUsername(),m.getContent(), m.getSentAt());
   }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import dev.mvc.team5.chatroom.ChatRoom;
 import dev.mvc.team5.chatroom.ChatRoomService;
 import dev.mvc.team5.message.*;
+import dev.mvc.team5.message.messagedto.LastMessageDTO;
 import dev.mvc.team5.message.messagedto.MessageCreateDTO;
 import dev.mvc.team5.message.messagedto.MessageResponseDTO;
 import dev.mvc.team5.user.User;
@@ -60,6 +61,11 @@ public class MessageController {
     public ResponseEntity<List<MessageResponseDTO>> getMessagesByChatRoom(@PathVariable(name="chatRoomno") Long chatRoomno) {
         List<MessageResponseDTO> messages = messageService.findMessagesByChatRoomno(chatRoomno);
         return ResponseEntity.ok(messages);
+    }
+    //마지막 채팅친거  정보
+    @GetMapping("/{chatRoomno}/last-message")
+    public LastMessageDTO lastMessage(@PathVariable(name="chatRoomno") Long chatRoomno) {
+        return messageService.getLastMessage(chatRoomno);
     }
 
 }

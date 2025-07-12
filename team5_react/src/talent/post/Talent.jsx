@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import TalentCreateForm from './TalentCreateForm';
 import TalentList from './TalentList';
 
+
 const TalentManager = () => {
   const [refreshKey, setRefreshKey] = useState(0);
 

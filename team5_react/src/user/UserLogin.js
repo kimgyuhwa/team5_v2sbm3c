@@ -100,7 +100,7 @@ function UserLogin() {
       return;
     }
 
-    fetch(`/user/login`, {
+    fetch('/user/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -130,7 +130,8 @@ function UserLogin() {
           console.error('세션 확인 실패:', err);
         });
         } else {
-
+          console.log(id)
+          console.log(passwd)
           alert('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.');
           setSw(false);
           setUserno(null);
@@ -147,8 +148,12 @@ function UserLogin() {
     setPasswd('1234');
   };
 
-  const handleClick = () => {
+  const adminTest = () => {
+    setId('testId');
+    setPasswd('1234');
+  };
 
+  const handleClick = () => {
     navigate('/components/Main'); // 페이지 이동
   }
 
@@ -335,7 +340,28 @@ function UserLogin() {
                 onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
               >
-                테스트 계정
+                사용자 계정
+              </button>
+              <button 
+                id="btnTest" 
+                type="button" 
+                onClick={adminTest}
+                style={{
+                  flex: '1',
+                  padding: '12px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+              >
+                관리자Test계정
               </button>
             </div>
 
@@ -343,7 +369,7 @@ function UserLogin() {
               <Link to="/user/univCert" style={{ marginRight: '10px' }}>
                 학교 인증하기   
               </Link>
-              <Link to="/user/findId">    
+              <Link to="/user/findId" style={{ marginRight: '10px' }}>    
                 아이디 찾기   
               </Link>
 

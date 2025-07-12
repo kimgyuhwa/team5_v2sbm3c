@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import dev.mvc.team5.file.FileUpload;
 import dev.mvc.team5.match.Match;
 import dev.mvc.team5.request.Request;
 import dev.mvc.team5.school.School;
@@ -18,6 +19,7 @@ import dev.mvc.team5.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -88,11 +90,11 @@ public class Talent {
 	 * 재능 설명 (게시글 내용)
 	 */
 	private String description;
-
+	
 	/**
-	 * 재능 언어 (예: Korean, English 등)
+	 * 조회수
 	 */
-	private String language;
+	private int viewCount;
 
 	/**
 	 * 게시물 등록 일시 엔티티 생성 시 자동으로 현재 시간 저장
@@ -115,6 +117,10 @@ public class Talent {
 	// 양방향: Talent ↔ Match
 	@OneToMany(mappedBy = "talent", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Match> matches = new ArrayList<>();
+	
+//연관관계: Talent가 여러 FileUpload를 가짐
+  @OneToMany(mappedBy = "talent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private List<FileUpload> files = new ArrayList<>();
 
 	/**
 	 * 생성자: 필수 정보로 객체 생성할 때 사용 시퀀스, 생성/수정 시간은 자동 처리되므로 포함하지 않음
@@ -135,7 +141,6 @@ public class Talent {
 		this.school = school;
 		this.title = title;
 		this.description = description;
-		this.language = language;
 	}
 
 }

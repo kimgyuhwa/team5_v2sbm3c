@@ -7,18 +7,50 @@ import axios from "axios";
 
 function MainSideBar() {
   const [hoveredCategory, setHoveredCategory] = useState(null);
+  const { loginUser , setSelectedCategoryNo, selectedCategoryNo } = useContext(GlobalContext);
+
+  const [openCategory, setOpenCategory] = useState(null);
   const [categories, setCategories] = useState([]);
-  const { loginUser , setSelectedCategoryNo } = useContext(GlobalContext);
   const navigate = useNavigate();
+
+  // console.log('MainSideBar - selectedCategoryNo:', selectedCategoryNo);
+  // console.log('MainSideBar - categories:', categories);
+
+  let currentDisplayName = '';
+  if (selectedCategoryNo) {
+    // Try to find it as a main category
+    const mainCat = categories.find(cat => cat.id === selectedCategoryNo);
+    if (mainCat) {
+      currentDisplayName = mainCat.name;
+    } else {
+      // Try to find it as a subcategory
+      for (const mainCategory of categories) {
+        const subCat = mainCategory.subcategories.find(sub => sub.id === selectedCategoryNo);
+        if (subCat) {
+          currentDisplayName = `${mainCategory.name}/${subCat.name}`;
+          break;
+        }
+      }
+    }
+  }
+  // console.log('MainSideBar - currentDisplayName:', currentDisplayName);
   const handleCategoryClick = (categoryId, subcategoryId = null) => {
     console.log('카테고리 클릭:', categoryId, subcategoryId);
     if (subcategoryId !== null) {
-    // 소분류 클릭한 경우 → 전역 상태 변경
-    setSelectedCategoryNo(subcategoryId);
-  } else {
-    // 대분류만 클릭한 경우 → 전체 보이게 하려면 null 설정
+      // console.log('Subcategory clicked:', subcategoryId);
+      // 소분류 클릭한 경우 → 전역 상태 변경 및 드롭다운 닫기
+      setSelectedCategoryNo(subcategoryId);
+      // setOpenCategory(null); // Keep dropdown open after subcategory click
+    } else {
+      // 대분류만 클릭한 경우 → 드롭다운 토글 및 전역 상태 변경
+      setOpenCategory(openCategory === categoryId ? null : categoryId); // Toggle dropdown
+      setSelectedCategoryNo(categoryId); // Set to main category ID for main category click
+    }
+  };
+
+  const handleClearCategory = () => {
     setSelectedCategoryNo(null);
-  }
+    setOpenCategory(null);
   };
   
 useEffect(() => {
@@ -35,12 +67,14 @@ useEffect(() => {
             icon: '📁', // 임시 아이콘
             subcategories: cateRes.data.map(c => ({
               id: c.categoryno,
+              
               name: c.name
             }))
           };
         }));
 
         setCategories(result);
+        // console.log('MainSideBar - Categories fetched:', result);
       } catch (error) {
         console.error('카테고리 불러오기 실패', error);
       }
@@ -52,21 +86,20 @@ useEffect(() => {
 
 
   return (
-    
-
-      
       
       <div style={{
         width: '300px',
         display: 'flex',
         flexDirection: 'column',
+        backgroundColor:'white',
         gap: '20px'
+        
       }}>
+        
         {/* 위는  왼쪽 사이드바 - 버튼 2개 */}
         <div style={{
           backgroundColor: 'white',
           borderRadius: '20px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
           padding: '30px',
           boxSizing: 'border-box'
         }}>
@@ -85,11 +118,11 @@ useEffect(() => {
             <button style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'center', 
               gap: '8px',
               backgroundColor: '#007bff',
               color: 'white',
-              padding: '15px 20px',
+              padding: '8px 8px',
               border: 'none',
               borderRadius: '10px',
               fontSize: '16px',
@@ -106,6 +139,7 @@ useEffect(() => {
               <span>내 글 등록</span>
             </button>
             
+            
             <button style={{
               display: 'flex',
               alignItems: 'center',
@@ -113,7 +147,7 @@ useEffect(() => {
               gap: '8px',
               backgroundColor: '#007bff',
               color: 'white',
-              padding: '15px 20px',
+              padding: '8px 8px',
               border: 'none',
               borderRadius: '10px',
               fontSize: '16px',
@@ -127,29 +161,51 @@ useEffect(() => {
               onClick={() => navigate('/place/PlacesPage')}
             >
               <Menu size={20} /> 
-              <span>장소보기</span> 
+              <span>강의실 보기</span> 
             </button>
           </div>
           
         </div>
 
-
+      {/* 구분선 */}
+      <div style={{ 
+        height: '1px', 
+        backgroundColor: '#e5e7eb'
+      }}></div>
 
         {/* 카테고리 섹션 */}
         <div style={{
           backgroundColor: 'white',
-          borderRadius: '20px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
           padding: '30px',
-          boxSizing: 'border-box',
           position: 'relative'
         }}>
+          {selectedCategoryNo && (
+            <div style={{ marginBottom: '10px', textAlign: 'left' }}>
+              <button
+                onClick={handleClearCategory}
+                style={{
+                  padding: '5px 10px',
+                  fontSize: '14px',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s',
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
+              >
+                {currentDisplayName} X
+              </button>
+            </div>
+          )}
           <h3 style={{
-            fontSize: '20px',
+            fontSize: '22px',
             fontWeight: '600',
             color: '#333',
             marginBottom: '20px',
-            textAlign: 'center'
+            textAlign: 'left'
           }}>
             재능 카테고리
           </h3>
@@ -159,71 +215,58 @@ useEffect(() => {
               <div
                 key={category.id}
                 style={{ position: 'relative' }}
-                onMouseEnter={() => setHoveredCategory(category.id)}
-                onMouseLeave={() => setHoveredCategory(null)}
               >
-                <button
+                <div
                   onClick={() => handleCategoryClick(category.id)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     width: '100%',
                     padding: '12px 16px',
-                    backgroundColor: hoveredCategory === category.id ? '#f8f9fa' : 'transparent',
-                    border: '1px solid #e1e5e9',
-                    borderRadius: '10px',
                     fontSize: '14px',
                     color: '#333',
                     cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    outline: 'none',
-                    gap: '12px'
+                    transition: 'background-color 0.2s, border-radius 0.2s',
+                    gap: '12px',
+                    backgroundColor: openCategory === category.id ? '#f0f0f0' : 'transparent',
+                    borderRadius: '5px',
                   }}
                 >
                   <span style={{ fontSize: '16px' }}>{category.icon}</span>
                   <span style={{ fontWeight: '500' }}>{category.name}</span>
-                </button>
+                </div>
 
                 {/* 서브카테고리 드롭다운 */}
-                {hoveredCategory === category.id && (
+                {openCategory === category.id && (
                   <div style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: '100%',
-                    marginLeft: '12px',
-                    width: '180px',
-                    backgroundColor: 'white',
-                    borderRadius: '12px',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
-                    border: '1px solid #e1e5e9',
-                    zIndex: 100,
-                    overflow: 'hidden',
-                    animation: 'slideDown 0.2s ease-out'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginLeft: '24px',
+                    marginTop: '8px',
+                    gap: '4px',
                   }}>
-                    <div style={{ padding: '8px 0' }}>
-                      {category.subcategories.map((subcategory) => (
-                        <button
-                          key={subcategory.id}
-                          onClick={() => handleCategoryClick(category.id, subcategory.id)}
-                          style={{
-                            display: 'block',
-                            width: '100%',
-                            padding: '10px 16px',
-                            fontSize: '13px',
-                            color: '#555',
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transition: 'background-color 0.2s',
-                            textAlign: 'left'
-                          }}
-                          onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                          onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                        >
-                          {subcategory.name}
-                        </button>
-                      ))}
-                    </div>
+                    {category.subcategories.map((subcategory) => (
+                      <div
+                        key={subcategory.id}
+                        onClick={() => handleCategoryClick(category.id, subcategory.id)}
+                        style={{
+                          display: 'block',
+                          width: '100%',
+                          padding: '8px 16px',
+                          fontSize: '13px',
+                          color: '#555',
+                          cursor: 'pointer',
+                          transition: 'background-color 0.2s, border-radius 0.2s',
+                          textAlign: 'left',
+                          backgroundColor: 'transparent',
+                          borderRadius: '5px',
+                        }}
+                        onMouseOver={(e) => e.target.style.backgroundColor = '#f0f0f0'}
+                        onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                      >
+                        {subcategory.name}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

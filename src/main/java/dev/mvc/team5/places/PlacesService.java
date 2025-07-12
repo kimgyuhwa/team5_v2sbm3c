@@ -5,6 +5,9 @@ package dev.mvc.team5.places;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * PlacesService
  * 강의실(장소) 관련 기능들의 인터페이스 정의.
@@ -53,5 +56,26 @@ public interface PlacesService {
 		
 	// 상세보기
     Optional<PlacesDTO> findByPlaceno(Long placeno);
+
+    
+    // 학교 번호에서 장소찾긱 
+   // List<PlacesDTO> findPlacesBySchoolno(Long schoolno);
+    
+    List<PlacesDTO> findBySchoolno(Long schoolno);
+    
+    // 학교 학교관  장소  찾기
+    List<PlacesDTO> findBySchoolnoAndSchoolgwanno(Long schoolno, Long schoolgwanno);
+    
+    
+    
+		Page<Places> findPlacesBySchool(Long schoolno, Pageable pageable);
+
+		Page<Places> findPlacesBySchoolAndGwan(Long schoolno, Long schoolgwanno, Pageable pageable);
+
+		
+		
+		Page<Places> searchPlacesBySchoolAndGwan(Long schoolno, Long schoolgwanno, String keyword, Pageable pageable);
+
+		Page<Places> searchPlacesBySchool(Long schoolno, String keyword, Pageable pageable);
 		
 }

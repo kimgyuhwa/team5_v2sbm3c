@@ -3,22 +3,33 @@ package dev.mvc.team5.user;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.univcert.api.UnivCert;
 
 import dev.mvc.team5.activitylog.ActivityLogService;
+import dev.mvc.team5.review.Review;
+import dev.mvc.team5.review.ReviewDTO;
+import dev.mvc.team5.review.ReviewService;
 import dev.mvc.team5.school.SchoolDTO;
 import dev.mvc.team5.school.SchoolService;
 import dev.mvc.team5.school.SchoolServiceImpl;
 import dev.mvc.team5.tool.MailService;
 import dev.mvc.team5.user.UserDTO.MailRequestDto;
+import dev.mvc.team5.user.UserDTO.UserDetailDTO;
+import dev.mvc.team5.user.UserDTO.UserReviewInfoDTO;
+import dev.mvc.team5.user.UserDTO.UserUpdateDTO;
 import dev.mvc.team5.user.UserDTO.VerifyCodeDto;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,6 +39,8 @@ public class UserController {
     @Autowired
     private UserService userService;
     
+    @Autowired
+    private  ReviewService reviewService;
     @Autowired
     private SchoolServiceImpl schoolService;
     
@@ -160,7 +173,7 @@ public class UserController {
         return result;
     }
 
-    /** 세션 확인 + 회원 정보 전체 제공 */
+    /** 세션 확인 */
     @GetMapping("/session")
     public Map<String, Object> getSessionUser(HttpSession session) {
         Map<String, Object> result = new HashMap<>();
@@ -213,18 +226,41 @@ public class UserController {
     }
 
     /** 회원 정보 수정 */
-    @PutMapping("/update")
-    public Map<String, Object> update(@RequestBody UserDTO userDTO, HttpSession session) {
+//    @PutMapping("/update")
+//    public Map<String, Object> update(@RequestBody UserDTO userDTO, HttpSession session) {
+//        Long userno = (Long) session.getAttribute("userno");
+//        userService.updateProfile(userno, userDTO);
+//        User updatedUser = userService.findByIdOrThrow(userno);
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("sw", true);
+//        result.put("msg", "회원정보 수정 완료!");
+//        result.put("user", updatedUser);  // 엔티티 통째로 반환
+//
+//        return result;
+//    }
+    @PostMapping("/update")
+    public ResponseEntity<?> updateUserWithProfile(
+            @ModelAttribute UserUpdateDTO userDTO,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            HttpSession session) {
+
         Long userno = (Long) session.getAttribute("userno");
-        userService.updateProfile(userno, userDTO);
-        User updatedUser = userService.findByIdOrThrow(userno);
+        try {
+            userService.updateUserWithProfile(userno, userDTO, profileImage);
+            UserDTO updatedUser = userService.getUserByNo(userno);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("sw", true);
-        result.put("msg", "회원정보 수정 완료!");
-        result.put("user", updatedUser);  // 엔티티 통째로 반환
-
-        return result;
+            return ResponseEntity.ok(Map.of(
+                "sw", true,
+                "msg", "회원 정보 수정 완료",
+                "user", updatedUser
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                "sw", false,
+                "msg", e.getMessage()
+            ));
+        }
     }
     
     /** 아이디 찾기*/
@@ -408,4 +444,64 @@ public class UserController {
         result.put("msg", "회원 탈퇴 완료!");
         return result;
     }
+    
+    /**
+     * 유저 소프트 삭제 (탈퇴 처리)
+     * DELETE /users/{userno}/soft-delete
+     */
+    @PatchMapping("/{userno}/deactivate")
+    public ResponseEntity<?> softDeleteUser(@PathVariable(name="userno") Long userno) {
+        userService.softDeleteUser(userno);
+        return ResponseEntity.ok("탈퇴 처리 완료");
+    }
+    
+    // 관리자 페이지용 유저 불러오기 페이징 검색기능 추가
+    @GetMapping("/admin/users")
+    public Page<UserDTO> getUsers(
+        @RequestParam(name="keyword", defaultValue ="") String keyword,
+        @PageableDefault(size = 5, sort = {"userno"}) Pageable pageable
+    ) {
+        Page<User> userPage = userService.findByKeyword(keyword, pageable);
+        return userPage.map(user -> new UserDTO(user)); // DTO 변환
+    }
+    /** 관리자용 회원 정보 수정 */
+    @PutMapping("/admin/update/{userno}")
+    public ResponseEntity<?> adminUpdateUser(@PathVariable(name="userno") Long userno, @RequestBody UserDTO userDTO) {
+        try {
+            userService.adminUpdateUser(userno, userDTO);
+            return ResponseEntity.ok(Map.of("sw", true, "msg", "회원 정보 수정 완료"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("sw", false, "msg", e.getMessage()));
+        }
+    }
+
+    /** 관리자용 회원 삭제 */
+    @DeleteMapping("/admin/delete/{userno}")
+    public ResponseEntity<Map<String, Object>> adminDeleteUser(@PathVariable(name="userno") Long userno) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.deleteUserByUserno(userno);
+            result.put("sw", true);
+            result.put("msg", "사용자 삭제 완료");
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            result.put("sw", false);
+            result.put("msg", "삭제 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }       
+    }
+   // 사용자 상세
+    @GetMapping("/admin/detail/{userno}")
+    public ResponseEntity<UserDetailDTO> getUserDetail(@PathVariable(name="userno") Long userno) {
+        UserDetailDTO detail = userService.getUserDetail(userno);
+        return ResponseEntity.ok(detail);
+    }
+    
+    //사용자 리뷰
+    @GetMapping("/admin/{userno}/reviews")
+    public Page<ReviewDTO> getUserGivenReviews(@PathVariable(name="userno")  Long userno, Pageable pageable) {
+        return reviewService.getReviewsByGiverUserno(userno, pageable);
+    }
+    
+    
 }

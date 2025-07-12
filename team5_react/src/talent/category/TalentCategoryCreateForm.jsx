@@ -5,16 +5,15 @@ const TalentCategoryCreateForm = ({ onCreated }) => {
   const [name, setName] = useState('');
   const [cateGrpno, setCateGrpNo] = useState('');
   const [message, setMessage] = useState('');
-  const [cateGrpList, setCateGrpList] = useState([]); // 대분류 목록 상태
+  const [cateGrpList, setCateGrpList] = useState([]);
 
   useEffect(() => {
-    // 대분류 목록을 API로 받아오기
     axios.get('/talent_cate_grp/list')
-      .then(res => setCateGrpList(res.data.content)) // API 구조에 맞게 조정
+      .then(res => setCateGrpList(res.data.content))
       .catch(err => console.error('대분류 목록 조회 실패', err));
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     if (!cateGrpno) {
@@ -23,11 +22,7 @@ const TalentCategoryCreateForm = ({ onCreated }) => {
     }
 
     try {
-      const dto = {
-        name,
-        cateGrpno: Number(cateGrpno),
-      };
-
+      const dto = { name, cateGrpno: Number(cateGrpno) };
       const response = await axios.post('/talent_category/save', dto);
       setMessage(`등록 성공: ${response.data.name}`);
       setName('');
@@ -40,32 +35,35 @@ const TalentCategoryCreateForm = ({ onCreated }) => {
   };
 
   return (
-    <div>
-      <h2>카테고리 소분류 등록</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          대분류 선택:
-          <select value={cateGrpno} onChange={(e) => setCateGrpNo(e.target.value)} required>
-            <option value="">-- 선택 --</option>
-            {cateGrpList.map(grp => (
-              <option key={grp.cateGrpno} value={grp.cateGrpno}>{grp.name}</option>
-            ))}
-          </select>
-        </label>
-        <br />
-        <label>
-          소분류 이름:
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </label>
-        <br />
-        <button type="submit">등록</button>
+    <div className="talentcate-form-box">
+      <h2 className="talentcate-form-title">카테고리 소분류 등록</h2>
+      <form onSubmit={handleSubmit} className="talentcate-form">
+        <select
+          value={cateGrpno}
+          onChange={e => setCateGrpNo(e.target.value)}
+          className="talentcate-input"
+          required
+        >
+          <option value="">-- 대분류 선택 --</option>
+          {cateGrpList.map(grp => (
+            <option key={grp.cateGrpno} value={grp.cateGrpno}>{grp.name}</option>
+          ))}
+        </select>
+        <input
+          type="text"
+          className="talentcate-input"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="소분류 이름 입력"
+          required
+        />
+        <button type="submit" className="btn create-btn">등록</button>
       </form>
-      {message && <p>{message}</p>}
+      {message && (
+        <p className={message.includes('성공') ? 'form-message success' : 'form-message error'}>
+          {message}
+        </p>
+      )}
     </div>
   );
 };

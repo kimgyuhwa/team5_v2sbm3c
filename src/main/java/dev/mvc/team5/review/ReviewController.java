@@ -1,6 +1,8 @@
 package dev.mvc.team5.review;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
@@ -33,8 +35,15 @@ public class ReviewController {
     }
 
     // 특정 대상자(userno) 기준 리뷰 목록 조회
+//    @GetMapping("/receiver/{userno}")
+//    public List<ReviewDTO> getByReceiver(@PathVariable("userno") Long userno) {
+//        return service.findByReceiver(userno).stream().map(this::toDTO).collect(Collectors.toList());
+//    }
+    
+    // 정 대상자(userno) 기준 리뷰 목록 조회 ,페이징
     @GetMapping("/receiver/{userno}")
-    public List<ReviewDTO> getByReceiver(@PathVariable("userno") Long userno) {
+    public List<ReviewDTO> getByReceiver(@PathVariable("userno") Long userno,
+                                    @PageableDefault(size = 5, sort = {"createdAt", "reviewno"}) Pageable pageable) {
         return service.findByReceiver(userno).stream().map(this::toDTO).collect(Collectors.toList());
     }
 
