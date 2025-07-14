@@ -2,6 +2,7 @@ package dev.mvc.team5.report;
 
 import java.time.LocalDateTime;
 
+import dev.mvc.team5.tool.ReportStatus;
 import dev.mvc.team5.tool.RequestStatus;
 import dev.mvc.team5.user.User;
 import jakarta.persistence.Column;
@@ -15,11 +16,17 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 
 @Entity
-@Table(name = "reports")
+@Table(name = "reports",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_reporter_target_open",
+        columnNames = { "reporter", "reportType", "targetId", "status" }
+      )
+)
 @Data
 public class Report {
 
@@ -48,7 +55,7 @@ public class Report {
     private LocalDateTime createdAt;
 
     @Column(length = 20)
-    private String status = RequestStatus.PENDING;
+    private String status = ReportStatus.OPEN;
     
     
 }

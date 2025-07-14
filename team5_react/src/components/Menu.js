@@ -35,6 +35,7 @@ function Menu() {
           {" | "}<Link to="/talent/category">Category(소분류)</Link>
           {" | "}<Link to="/talent/type">Type</Link>
           {" | "}<Link to="/admin/user">유저 목록</Link>
+          {" | "}<Link to="/admin/report">신고 목록</Link>
         </>
       )}
     </>
