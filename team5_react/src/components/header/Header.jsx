@@ -522,7 +522,7 @@ function Header() {
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
               >
                 <User size={20} />
-                {loginUser.name}님
+                {loginUser?.name}님
                 <ChevronDown size={16} style={{
                   transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                   transition: 'transform 0.3s'
