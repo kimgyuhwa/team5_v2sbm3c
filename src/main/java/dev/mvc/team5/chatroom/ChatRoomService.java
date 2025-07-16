@@ -10,6 +10,7 @@ import dev.mvc.team5.chatroom.ChatRoom;
 import dev.mvc.team5.chatroom.ChatRoomRepository; // JPA Repository 인터페이스라고 가정
 import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.chatroommember.ChatRoomMemberRepository;
+import dev.mvc.team5.notification.NotificationService;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
 import dev.mvc.team5.user.UserService;
@@ -25,6 +26,8 @@ public class ChatRoomService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
     private final UserService userService;
+    
+    private final NotificationService notificationService;
 
     // 채팅방 저장
     public ChatRoom save(ChatRoom chatRoom) {
@@ -71,6 +74,13 @@ public class ChatRoomService {
 
         chatRoomMemberRepository.save(m1);
         chatRoomMemberRepository.save(m2);
+        
+        // 알림보내기
+        notificationService.createNotification(
+            receiverId,   //보낼 대상
+            "chat",                              // 타입 chat, info 등등
+            sender.getUsername() + "님이 새 채팅을 시작했습니다." // 메시지
+        );
 
         return chatRoom;
     }

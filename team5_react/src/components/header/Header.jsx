@@ -1,5 +1,5 @@
 import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, Star } from 'lucide-react';
-import React, { useState, useContext,useEffect } from 'react';
+import React, { useState, useContext,useEffect,useRef } from 'react';
 import ReactDOM from 'react-dom';
 import UserLogout from '../../user/UserLogout';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,7 @@ function Header() {
   const [notificationList, setNotificationList] = useState([]);  // 알림 목록
   const [unreadCount, setUnreadCount] = useState(); // 안읽은 알림 개수
   const [hasMore, setHasMore] = useState(true);   // 더불러올 알람없으면 false > 더보기 없어짐
-
+  const eventSrcRef = useRef(null);  // 알림 SSE연결 객체 보관용
   const [openChatId, setOpenChatId] = useState(null); //  현재 열려 있는 채팅방
 
   const navigate = useNavigate();
@@ -73,8 +73,39 @@ function Header() {
       setUnreadCount(0);
       setHasMore(true);
       setPage(0);
+      if (eventSrcRef.current) {
+        eventSrcRef.current.close();
+        eventSrcRef.current = null;
+      }
       return;
     }
+      /* ⭐ -------------  SSE 구독  -------------- */
+  // 이미 열려 있으면 그대로 둔다
+  if (!eventSrcRef.current) {
+    const es = new EventSource(`/sse/notifications/${userno}`);
+    eventSrcRef.current = es;
+
+    // 일반 메시지 수신
+    es.onmessage = (e) => {
+      try {
+        const payload = JSON.parse(e.data);          // back‑end 에서 보내준 DTO
+
+        // 1) 목록 맨 앞에 추가
+        setNotificationList((prev) => [payload, ...prev]);
+
+        // 2) 뱃지 +1
+        setUnreadCount((c) => (c ?? 0) + 1);
+      } catch (_) { console.error('알림 파싱 오류'); }
+    };
+
+    // 오류(네트워크 등) → 15초 후 재연결 (최소 구현)
+    es.onerror = () => {
+      es.close();
+      eventSrcRef.current = null;
+      setTimeout(() => eventSrcRef.current ?? setHasMore((h) => h), 15000);
+    };
+  }
+  /* ----------------------------------------- */
 
     // 채팅 목록 API 호출
    fetch(`/chatroom/user/${userno}/chatlist`, { credentials: 'include' })
@@ -387,7 +418,8 @@ function Header() {
                               </span>
                             </div>
                             <span style={{ fontSize: 12, color: '#666' }}>
-                              {n.createdAt}
+                              {new Date(n.createdAt)
+                                .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
                             </span>
                           </div>
                           <p style={{

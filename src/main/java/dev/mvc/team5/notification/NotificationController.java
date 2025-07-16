@@ -21,7 +21,7 @@ public class NotificationController {
     public List<NotificationDTO> getAll() {
         return service.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
-
+    
     @PostMapping
     public NotificationDTO create(@RequestBody NotificationDTO dto) {
         return toDTO(service.save(dto));
@@ -55,14 +55,14 @@ public class NotificationController {
     }
 
     private NotificationDTO toDTO(Notification n) {
-        NotificationDTO dto = new NotificationDTO();
-        dto.setNotificationno(n.getNotificationno());
-        dto.setUserno(n.getUser().getUserno());
-        dto.setType(n.getType());
-        dto.setMessage(n.getMessage());
-        dto.setRead(n.getRead());
-        dto.setCreatedAt(n.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        return dto;
+      NotificationDTO dto = new NotificationDTO();
+      dto.setNotificationno(n.getNotificationno());
+      dto.setUserno(n.getUser().getUserno());
+      dto.setType(n.getType());
+      dto.setMessage(n.getMessage());
+      dto.setRead(n.getRead());
+      dto.setCreatedAt(n.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+      return dto;
 
-    }
+  }
 }

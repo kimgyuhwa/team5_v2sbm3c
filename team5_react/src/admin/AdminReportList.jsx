@@ -11,7 +11,7 @@ import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
  */
 function AdminReportList() {
   const [reports, setReports] = useState([]);
-  const [status, setStatus] = useState("OPEN");
+  const [status, setStatus] = useState("ALL");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const size = 10;
@@ -76,10 +76,10 @@ function AdminReportList() {
           }}
           className="border rounded p-2 text-sm"
         >
+          <option value="ALL">전체</option>
           <option value="OPEN">미처리(OPEN)</option>
           <option value="APPROVED">승인(APPROVED)</option>
-          <option value="REJECTED">기각(REJECTED)</option>
-          <option value="ALL">전체</option>
+          <option value="REJECTED">기각(REJECTED)</option>          
         </select>
       </div>
 

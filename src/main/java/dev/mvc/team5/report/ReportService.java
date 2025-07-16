@@ -1,5 +1,6 @@
 package dev.mvc.team5.report;
 
+import dev.mvc.team5.block.BlockService;
 import dev.mvc.team5.tool.ReportStatus;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
@@ -22,7 +23,10 @@ public class ReportService {
 
     @Autowired
     private UserRepository userRepo;
-
+    
+    @Autowired
+    private  BlockService blockSvc;
+    
     public List<Report> findAll() {
         return repo.findAll();
     }
@@ -30,7 +34,7 @@ public class ReportService {
     public Optional<Report> findById(Long id) {
         return repo.findById(id);
     }
-
+     // 신고 중복확인후 저장
     public Report save(ReportDTO dto) {
         boolean dup = repo.existsByReporter_UsernoAndReportTypeAndTargetIdAndStatus(
           dto.getReporter(), dto.getReportType(), dto.getTargetId(), "OPEN");
@@ -75,10 +79,13 @@ public class ReportService {
         if (newStatus == ReportStatus.APPROVED) {
             int approvedCnt = repo.countByReportedAndStatus(report.getReported(), ReportStatus.APPROVED);
             if (approvedCnt >= AUTO_BLOCK) {
-//                blockSvc.blockUser(report.getReported().getUserno(),
-//                                   \"신고 누적 \" + approvedCnt + \"회\");
+                blockSvc.blockUser(report.getReported().getUserno(),
+                                   "신고 누적 " + approvedCnt + "회");
+                
             }
+                
         }
+      
     }
 
     /* 삭제 */

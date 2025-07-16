@@ -158,7 +158,7 @@ function TalentDetailPage() {
 
     try {
       const res = await fetch(
-        `/chatroom/findOrCreate?senderId=${loginUser.userno}&receiverId=${talent.userno}`,
+        `/chatroom/findOrCreate?senderId=${loginUser?.userno}&receiverId=${talent?.userno}`,
         {
           method: "POST",
           credentials: "include",
@@ -302,7 +302,7 @@ function TalentDetailPage() {
             >
               <option value="">타입 선택</option>
               {typeList.map((type) => (
-                <option key={type.typeno} value={type.typeno}>
+                <option key={type.typeno} value={type.typeno}>  
                   {type.name}
                 </option>
               ))}

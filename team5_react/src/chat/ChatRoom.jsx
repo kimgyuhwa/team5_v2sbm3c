@@ -5,7 +5,7 @@ import { Client } from "@stomp/stompjs";
 import axios from "axios";
 import { GlobalContext } from "../components/GlobalContext";
 
-const SOCKET_URL = "http://192.168.12.141:9093/ws-chat";
+const SOCKET_URL = "http://192.168.12.145:9093/ws-chat";
 
 export default function ChatRoom({ chatRoomno: propChatRoomno }) {
   const { chatRoomno: paramChatRoomno } = useParams();

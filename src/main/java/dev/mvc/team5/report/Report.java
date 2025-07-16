@@ -21,11 +21,11 @@ import lombok.Data;
 
 
 @Entity
-@Table(name = "reports",
-    uniqueConstraints = @UniqueConstraint(
-        name = "uk_reporter_target_open",
-        columnNames = { "reporter", "reportType", "targetId", "status" }
-      )
+@Table(name = "reports"
+//    uniqueConstraints = @UniqueConstraint(
+//        name = "uk_reporter_target_open",
+//        columnNames = { "reporter", "reportType", "targetId", "status" }
+//      )
 )
 @Data
 public class Report {

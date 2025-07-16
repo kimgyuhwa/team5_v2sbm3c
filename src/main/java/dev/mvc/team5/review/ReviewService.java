@@ -40,7 +40,7 @@ public class ReviewService {
     
 
     
-    private ReviewDTO convertToDTO(Review review) {
+    public ReviewDTO convertToDTO(Review review) {
       ReviewDTO dto = new ReviewDTO();
       dto.setReviewno(review.getReviewno());
       dto.setGiver(review.getGiver().getUserno());

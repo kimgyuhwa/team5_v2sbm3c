@@ -1,14 +1,18 @@
 package dev.mvc.team5.notification;
 
 
+import dev.mvc.team5.sse.SseService;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +25,8 @@ public class NotificationService {
 
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    private  SseService sseService; 
 
     public List<Notification> findAll() {
         return repo.findAll();
@@ -64,7 +70,28 @@ public class NotificationService {
         n.setMessage(dto.getMessage());
         n.setRead(false);
         n.setCreatedAt(LocalDateTime.now());
-        return repo.save(n);
+        // 2) DB 저장
+        Notification saved = repo.save(n);
+
+        // 3) DTO 변환 후 SSE 전송
+        sseService.send(user.getUserno(), toDTO(saved));
+
+        return saved;
+    }
+    //알림 헬퍼  다른 곳에서 이거쓰면돼
+    @Transactional
+    public Notification createNotification(Long userno,
+                                           String type,
+                                           String message) {
+
+        // 1) DTO 생성 (재활용 가능)
+        NotificationDTO dto = new NotificationDTO();
+        dto.setUserno(userno);       // 알림 받을 사용자
+        dto.setType(type);           // 예: "chat", "info", "meeting" …
+        dto.setMessage(message);     // 알림 내용
+
+        // 2) 기존 save(dto) 메서드 재사용 → DB 저장 & 엔티티 반환
+        return save(dto);
     }
 
     // 알림 삭제
@@ -81,5 +108,17 @@ public class NotificationService {
     
     public Page<Notification> findUnreadByUserPaged(Long userno, Pageable pageable) {
       return repo.findByUser_UsernoAndReadFalseOrderByCreatedAtDesc(userno, pageable);
+  }
+    
+    private NotificationDTO toDTO(Notification n) {
+      NotificationDTO dto = new NotificationDTO();
+      dto.setNotificationno(n.getNotificationno());
+      dto.setUserno(n.getUser().getUserno());
+      dto.setType(n.getType());
+      dto.setMessage(n.getMessage());
+      dto.setRead(n.getRead());
+      dto.setCreatedAt(n.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+      return dto;
+
   }
 }
