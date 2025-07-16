@@ -32,6 +32,9 @@ import MyChatBotListPage from './mypage/MyChatBotListPage';
 import AdminUserList from './admin/AdminUserList';
 import Header from './components/header/Header'
 import PlaceDetailPage from './place/PlaceDetailPage';
+import AdminReportList from './admin/AdminReportList';
+import ReportCreate from './components/report/ReportCreate';
+
 
 function App() {
   return (
@@ -44,7 +47,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           {/** 관리자 페이지 */}
-          <Route path="/admin/user" element={<AdminUserList />} />  
+          <Route path="/admin/user" element={<AdminUserList />} />
+          <Route path="/admin/report" element={<AdminReportList />} />  
           {/** 회원 */}
           <Route path="/mypage/MyPage" element={<MyPage />} />
           <Route path="/mypage/MyPageSetting" element={<MyPageSetting />} />
@@ -81,7 +85,8 @@ function App() {
           <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
           <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
           <Route path="/mypage/MyPage" element={<MyPage />} />
-
+          {/** 신고 */}
+          <Route path="/report/create" element={<ReportCreate />} />
         </Routes>
         <hr />
         <div style={{ textAlign: 'center', margin: '20px 0' }}>

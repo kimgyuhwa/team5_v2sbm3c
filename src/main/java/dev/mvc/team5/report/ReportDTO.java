@@ -12,4 +12,15 @@ public class ReportDTO {
     private Integer targetId;
     private String createdAt;
     private String status;
+    
+    /* 요청용 */
+    @Data
+    public static class ReportCreateDTO {
+        private Long reportno;
+        private Long reporter;     // userno
+        private Long reported;
+        private String reason;
+        private String reportType;
+        private Long targetId;
+    }
 }
