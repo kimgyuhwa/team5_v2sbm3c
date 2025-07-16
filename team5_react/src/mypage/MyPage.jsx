@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
+import { useLocation } from 'react-router-dom'; // 쿼리 파라미터를 읽기 위한 훅
 import Header from '../components/header/Header';
 import MyPageSideBar from './MyPageSideBar';
 import SecuritySettings from './MyPageSetting';
 import MyPageProfile from './MyPageProfile';
 import MyPageSurvey from './MyPageSurvey';
+import MyPageReservation from './MyPageReservation';
 
 
 
-export default function MainPage() {
-  const [currentPage, setCurrentPage] = useState('security');
+export default function MyPage() {
+  
 
+  
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const tab = query.get('tab') || 'profile';
+
+  const [currentPage, setCurrentPage] = useState(tab);
   const renderContent = () => {
     switch (currentPage) {
       case 'profile':
@@ -19,10 +27,15 @@ export default function MainPage() {
         return <SecuritySettings />;
       case 'history':
         return <MyPageSurvey />;
-      default:
-        return <MyPageProfile />;
+      case 'reservation':
+        return <MyPageReservation />;  
     }
   };
+
+    // URL의 tab 값이 바뀌면 상태도 같이 반영
+    useEffect(() => {
+      setCurrentPage(tab);
+    }, [tab]);
 
   return (
     <div style={{
@@ -38,8 +51,9 @@ export default function MainPage() {
         padding: '30px 20px',
         gap: '20px'
       }}>
+
         {/* 사이드바 컴포넌트 */}
-        <MyPageSideBar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <MyPageSideBar currentPage={currentPage} />
       
         {/* 메인 콘텐츠 */}
         <main style={{

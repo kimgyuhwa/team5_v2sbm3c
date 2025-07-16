@@ -12,7 +12,6 @@ function Header() {
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-
   const [chatList, setChatList] = useState([]);
 
   const [page, setPage] = useState(0);    //페이지
@@ -28,8 +27,27 @@ function Header() {
   const isLoggedIn = !!loginUser;
   
   const handleMyPage = () => {
-    navigate('/mypage/MyPage');
+    navigate('/mypage/Mypage?tab=profile');  // 바로 navigate 호출
+    setIsDropdownOpen(false);          // 드롭다운 닫기
   };
+
+  const handleSetting = () => {
+    navigate('/mypage/Mypage?tab=security')
+    setIsDropdownOpen(false);
+  };
+
+  const handleReservation = () => {
+    navigate('/mypage/Mypage?tab=history');
+    setIsDropdownOpen(false);
+  };
+
+  const handleResearch = () => {
+    navigate('/mypage/Mypage?tab=reservation');
+    setIsDropdownOpen(false);
+  };
+
+
+
   const userno = loginUser?.userno;
   const size = 3;  // 한번에 보여줄 알림 개수
  const loadMore = () => {
@@ -179,6 +197,7 @@ function Header() {
       });
   };
 
+  
   const handleMarkAllRead = () => {
   if (!userno) return;
 
@@ -205,6 +224,7 @@ function Header() {
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+    
   };
 
   const searchChange = (e) => {
@@ -479,14 +499,67 @@ function Header() {
                     <button onClick={handleMyPage} style={dropdownBtn}>
                       <User size={16} style={{ marginRight: 12 }} /> 프로필 보기
                     </button>
-                    <button style={dropdownBtn}>
-                      <Settings size={16} style={{ marginRight: 12 }} /> 설정
+                    <button 
+                    onClick={handleSetting}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                    >
+                      <Settings size={16} style={{ marginRight: '12px' }} />
+                      설정
                     </button>
-                    <button style={dropdownBtn}>
-                      <Star size={16} style={{ marginRight: 12 }} /> 예약 확인
+
+                    <button
+                    onClick={handleReservation}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                    >
+                      <Star size={16} style={{ marginRight: '12px' }} />
+                      예약 확인
+
                     </button>
-                    <button style={dropdownBtn}>
-                      <Star size={16} style={{ marginRight: 12 }} /> 설문조사
+                    <button 
+                    onClick={handleResearch}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                    >
+                      <Star size={16} style={{ marginRight: '12px' }} />
+                      설문조사
                     </button>
                     <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
                     <button onClick={handleLogout} style={{ ...dropdownBtn, color: '#dc3545' }}>

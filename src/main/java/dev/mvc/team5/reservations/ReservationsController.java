@@ -38,4 +38,6 @@ public class ReservationsController {
         reservationsService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    
+    
 }

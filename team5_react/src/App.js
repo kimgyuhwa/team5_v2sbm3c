@@ -24,9 +24,14 @@ import UnivCertPage from './user/UnivCertPage';
 import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
+import MyPageSetting from './mypage/MyPageSetting';
+import MyPageSurvey from './mypage/MyPageSurvey';
+import MyPageProfile from './mypage/MyPageProfile';
+import MyPageReservation from './mypage/MyPageReservation';
 import MyChatBotListPage from './mypage/MyChatBotListPage';
 import AdminUserList from './admin/AdminUserList';
 import Header from './components/header/Header'
+import PlaceDetailPage from './place/PlaceDetailPage';
 import AdminReportList from './admin/AdminReportList';
 import ReportCreate from './components/report/ReportCreate';
 
@@ -45,7 +50,11 @@ function App() {
           <Route path="/admin/user" element={<AdminUserList />} />
           <Route path="/admin/report" element={<AdminReportList />} />  
           {/** 회원 */}
-          <Route path="/mypage/MyPage" element={<MyPage />} />  
+          <Route path="/mypage/MyPage" element={<MyPage />} />
+          <Route path="/mypage/MyPageSetting" element={<MyPageSetting />} />
+          <Route path="/mypage/MyPageSurvey" element={<MyPageSurvey />} />
+          <Route path="/mypage/MyPageProfile" element={<MyPageProfile />} />
+          <Route path="/mypage/MyPageReservation" element={<MyPageReservation />} />
           <Route path="/components/Main" element={<MainPage />} />
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/logout" element={<UserLogout />} />
@@ -65,7 +74,9 @@ function App() {
           <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
           {/** 장소 */}
           <Route path="/place/PlacesPage" element={<PlacesPage />} />
-          {/* <Route path='/reservation/Place' element={<PlacesList />} />  << 이거머임? 없음파일이*/}  
+          {/*<Route path="/places/:placeno" element={<PlaceDetailPage />} />  */}
+          <Route path="/place/detail/:placeno" element={<PlaceDetailPage />} />
+          
           <Route path='/reservation/Reservation' element={<ReservationsManager />} />  
            {/** 채팅 */}
           <Route path="/chat" element={<ChatRoom />} /> 

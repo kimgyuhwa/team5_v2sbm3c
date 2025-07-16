@@ -78,10 +78,6 @@ function PlaceSideBar({ setSelectedCategory, selectedCategory }) {
         </h2>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <button style={buttonStyle} onClick={() => navigate('/place/create')}>
-            <Plus size={20} />
-            <span>내 장소 등록</span>
-          </button>
 
           <button style={buttonStyle} onClick={() => navigate('/components/Main')}>
             <Menu size={20} />
