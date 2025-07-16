@@ -38,8 +38,6 @@ public class PlacesController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
-
     // 수정
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody PlacesDTO dto) {
@@ -84,16 +82,6 @@ public class PlacesController {
         return ResponseEntity.ok(list);
     }
     
-// // 페이징 처리된 전체 장소 조회 (/placesAll?page=0&size=10)
-//    @GetMapping("/placesAll")
-//    public ResponseEntity<?> getAllPlacesPaged(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size
-//    ) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<PlacesDTO> pagedResult = placesService.findAll(pageable);
-//        return ResponseEntity.ok(pagedResult);
-//    }
     
          /**
           * 특정 학교의 모든 장소 목록을 페이징하여 조회

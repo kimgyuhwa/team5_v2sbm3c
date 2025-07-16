@@ -25,10 +25,7 @@ public class ReservationsServiceImpl implements ReservationsService {
       Places place = placesRepository.findById(dto.getPlaceno())
           .orElseThrow(() -> new IllegalArgumentException("장소 없음"));
     	
-      // 1. 강의 시간대와 겹치면 안 됨
-      if (!isOutsidePlaceTime(place, dto.getStart_time(), dto.getEnd_time())) {
-          throw new IllegalArgumentException("해당 장소의 강의 시간에는 예약이 불가능합니다.");
-      }
+
 
       // 2. 이미 겹치는 예약이 있으면 안 됨
       List<Reservations> conflict = reservationsRepository.findConflict(
@@ -54,10 +51,7 @@ public class ReservationsServiceImpl implements ReservationsService {
         return toResponseDTO(saved);
     }
 
-    private boolean isOutsidePlaceTime(Places place, LocalDateTime start, LocalDateTime end) {
-      // 예약 시간이 강의 시간 안에 포함되어 있다면 예약 불가 → false
-      return end.isBefore(place.getStart_time()) || start.isAfter(place.getEnd_time());
-  }
+
     
     @Override
     public ReservationsResponseDTO read(Long reservationno) {

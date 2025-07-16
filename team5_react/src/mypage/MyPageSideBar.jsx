@@ -2,10 +2,17 @@
 import React, { useContext } from 'react';
 import { User, Edit3 } from 'lucide-react';
 import { GlobalContext } from '../components/GlobalContext';
+import { useNavigate } from 'react-router-dom';
 
-const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
+const MyPageSideBar = ({ currentPage }) => {
   const { loginUser } = useContext(GlobalContext);
+  const navigate = useNavigate();
    const baseUrl = '/uploads/user/';
+
+  const handleTabClick = (tabName) => {
+    navigate(`/mypage/Mypage?tab=${tabName}`);
+  };
+
   return (
     <aside style={{
       width: '260px',
@@ -77,11 +84,27 @@ const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
             cursor: 'pointer',
             display: 'inline-block',
             borderBottom: currentPage === 'profile' ? '2px solid black' : 'none',
-            paddingBottom: '8px'
+            paddingBottom: '5px'
           }}
-          onClick={() => setCurrentPage('profile')}
+          onClick={() => handleTabClick('profile')}
         >
           내 프로필
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <div
+          style={{
+            fontSize: '18px',
+            fontWeight: 'bold',
+            paddingBottom: '5px',
+            display: 'inline-block',
+            borderBottom: currentPage === 'security' ? '2px solid black' : 'none',
+            cursor: 'pointer'
+          }}
+          onClick={() => handleTabClick('security')}
+        >
+          설정
         </div>
       </div>
 
@@ -91,32 +114,44 @@ const MyPageSideBar = ({ currentPage, setCurrentPage }) => {
             cursor: 'pointer',
             fontWeight: 'bold',
             fontSize: '18px',
-            borderBottom: currentPage === 'history' ? '2px solid black' : 'none',
+            borderBottom: currentPage === 'reservation' ? '2px solid black' : 'none',
             display: 'inline-block',
-            paddingBottom: '8px'
+            paddingBottom: '5px'
 
           }}
-          onClick={() => setCurrentPage('history')}
+          onClick={() => handleTabClick('reservation')}
         >
-          설문조사
+          예약 확인
         </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <div
-          style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            paddingBottom: '8px',
-            display: 'inline-block',
-            borderBottom: currentPage === 'security' ? '2px solid black' : 'none',
-            cursor: 'pointer'
-          }}
-          onClick={() => setCurrentPage('security')}
-        >
-          설정
-        </div>
+
+    {/* 구분선 */}
+      <div style={{
+        height: '1px',
+        backgroundColor: '#e5e7eb',
+        margin: '20px 0'
+      }}></div>
+
+
+
+    <div style={{ marginBottom: '20px' }}>
+      <div
+        style={{
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          fontSize: '18px',
+          borderBottom: currentPage === 'history' ? '2px solid black' : 'none',
+          display: 'inline-block',
+          paddingBottom: '5px'
+
+        }}
+        onClick={() => handleTabClick('history')}
+      >
+        설문조사
       </div>
+    </div>
+
 
     </aside>
   );

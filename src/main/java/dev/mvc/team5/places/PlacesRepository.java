@@ -14,14 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlacesRepository extends JpaRepository<Places, Long> {
 
-    // 1. 예약 시간 겹침 확인
-    @Query("SELECT p FROM Places p WHERE p.schoolGwan.schoolgwanno = :schoolgwanno " +
-           "AND ((p.start_time < :endTime AND p.end_time > :startTime))")
-    List<Places> findOverlappingPlaces(
-        @Param("schoolgwanno") Long schoolgwanno,
-        @Param("startTime") LocalDateTime startTime,
-        @Param("endTime") LocalDateTime endTime
-    );
 
     // 2. 이름 키워드 검색
     List<Places> findByPlacenameContaining(String keyword);
@@ -30,9 +22,8 @@ public interface PlacesRepository extends JpaRepository<Places, Long> {
     List<Places> findBySchoolGwan_Schoolgwanno(Long schoolgwanno);
     
     // 상세보기
-    Optional<PlacesDTO> findByPlaceno(Long placeno);
+    Optional<Places> findByPlaceno(Long placeno);
     
-    //List<Places> findBySchoolgwanno(Long schoolgwanno);
     
  // 특정 학교번호에 해당하는 모든 장소 가져오기 (관까지 탐색)
     List<Places> findBySchoolGwan_School_Schoolno(Long schoolno);

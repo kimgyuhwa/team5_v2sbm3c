@@ -1,49 +1,23 @@
 package dev.mvc.team5.reservations;
 
+import dev.mvc.team5.match.Match;
+import dev.mvc.team5.places.Places;
+import dev.mvc.team5.user.User;
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import dev.mvc.team5.match.Match;
-import dev.mvc.team5.places.Places;
-import dev.mvc.team5.request.Request;
-import dev.mvc.team5.user.User;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
 @Entity
 @Table(name = "reservations")
 @Data
-@Getter
-@Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"user", "place", "matches"})
 public class Reservations {
-	
-//	  // 양방향: schoolgwan ↔ places
-//	  @OneToMany(mappedBy = "reservationno", cascade = CascadeType.ALL, orphanRemoval = true)
-//	  private List<Reservations> reservation = new ArrayList<>();
-  
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reservation_seq")
     @SequenceGenerator(name = "reservation_seq", sequenceName = "RESERVATION_SEQ", allocationSize = 1)
@@ -56,36 +30,34 @@ public class Reservations {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "placeno", nullable = false)
     private Places place;
-    
+
     /**
-     * 예약한 시간
-     * 예약한 시간과 끝나는 시간은 불가능하도록 막고 다른 시간은 가능하도록 설계
+     * 예약 시작 시간 (사용자가 직접 입력)
      */
-    @CreationTimestamp
     private LocalDateTime start_time;
-    
+
     /**
-     * 끝나는 시간
-     * 예약한 시간과 끝나는 시간은 불가능하도록 막고 다른 시간은 가능하도록 설계
-     */    
-    @UpdateTimestamp
+     * 예약 종료 시간 (사용자가 직접 입력)
+     */
     private LocalDateTime end_time;
-    
-    
+
     @Column(name = "placesinfo", length = 100)
     private String placesinfo;
 
     /**
-     * 요청 상태
+     * 예약 상태 (예: 예약됨, 취소됨, 승인대기 등)
      */
     private String status;
-    
-    // 양방향: Reservation ↔ Match
+
+    /**
+     * 예약과 연결된 매치 리스트 (양방향)
+     */
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Match> matches = new ArrayList<>();
-    
-    // 생성자 (필요시)
 
+    /**
+     * 생성자: DTO → Entity 변환 시 사용
+     */
     public Reservations(User user, Places place, LocalDateTime start_time, LocalDateTime end_time, String placesinfo, String status) {
         this.user = user;
         this.place = place;

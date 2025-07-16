@@ -12,7 +12,6 @@ function Header() {
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-
   const [chatList, setChatList] = useState([]);
 
   const [page, setPage] = useState(0);    //페이지
@@ -26,8 +25,27 @@ function Header() {
   const { LoginUser, setSw, loginUser, setLoginUser } = useContext(GlobalContext);
 
   const handleMyPage = () => {
-    navigate('/mypage/MyPage');
+    navigate('/mypage/Mypage?tab=profile');  // 바로 navigate 호출
+    setIsDropdownOpen(false);          // 드롭다운 닫기
   };
+
+  const handleSetting = () => {
+    navigate('/mypage/Mypage?tab=security')
+    setIsDropdownOpen(false);
+  };
+
+  const handleReservation = () => {
+    navigate('/mypage/Mypage?tab=history');
+    setIsDropdownOpen(false);
+  };
+
+  const handleResearch = () => {
+    navigate('/mypage/Mypage?tab=reservation');
+    setIsDropdownOpen(false);
+  };
+
+
+
   const userno = loginUser?.userno;
   const size = 3;  // 한번에 보여줄 알림 개수
  const loadMore = () => {
@@ -146,6 +164,7 @@ function Header() {
       });
   };
 
+  
   const handleMarkAllRead = () => {
   if (!userno) return;
 
@@ -172,6 +191,7 @@ function Header() {
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+    
   };
 
   const searchChange = (e) => {
@@ -566,7 +586,9 @@ function Header() {
                       프로필 보기
                       
                     </button>
-                    <button style={{
+                    <button 
+                    onClick={handleSetting}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       width: '100%',
@@ -584,7 +606,10 @@ function Header() {
                       <Settings size={16} style={{ marginRight: '12px' }} />
                       설정
                     </button>
-                    <button style={{
+
+                    <button
+                    onClick={handleReservation}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       width: '100%',
@@ -603,7 +628,9 @@ function Header() {
                       예약 확인
 
                     </button>
-                    <button style={{
+                    <button 
+                    onClick={handleResearch}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       width: '100%',

@@ -3,8 +3,10 @@ import { Search, MapPin, Navigation } from 'lucide-react';
 import PlaceSideBar from '../components/sidebar/PlaceSideBar';
 import axios from 'axios';
 import { GlobalContext } from '../components/GlobalContext';
+import { useNavigate } from 'react-router-dom';
 
-const PlacePage = () => {
+const PlacePage = ({place}) => {
+  const navigate = useNavigate();
   const { loginUser } = useContext(GlobalContext); // 로그인 유저 정보 (schoolno 등)
   const [selectedCategory, setSelectedCategory] = useState(); // {categoryId}
   const [places, setPlaces] = useState([]);  // 장소 목록 (API에서 받아옴)
@@ -98,11 +100,11 @@ const PlacePage = () => {
             schoolno: schoolno,
           };
           res = await axios.get(`/places/places/list-by-school/${schoolno}`, { params });
-            //console.log('전부->',res.data);
+            console.log('전부->',res.data);
             //console.log('API 호출 파라미터 (전체):', params);
         }
         
-        //console.log('API 응답 데이터:', res.data);
+        console.log('API 응답 데이터:', res.data);
 
         // API 응답이 페이징 구조(content, totalPages)를 포함한다고 가정하고 상태 업데이트
         if (res.data && res.data.content) {
@@ -124,8 +126,8 @@ const PlacePage = () => {
     if (loginUser?.schoolno) {
         fetchPlaces();
     }
-    //console.log(categories);
-    //console.log(selectedCategory);
+    console.log(categories);
+    console.log(selectedCategory);
   }, [selectedCategory, loginUser, currentPage, searchQuery]);
 
   
@@ -222,7 +224,7 @@ const PlacePage = () => {
                 {(categories.find(c => c.id === selectedCategory.categoryId)?.name)}
               </span>
             )}
-            강의실 위치
+            강의실
             </h1>
 
 
@@ -271,6 +273,7 @@ const PlacePage = () => {
               places.map(place => (
                 <div
                   key={place.placeno}
+                  onClick={() => navigate(`/place/detail/${place.placeno}`)} // ✅ 이 부분
                   style={{
                     backgroundColor: 'white',
                     borderRadius: '16px',
@@ -289,9 +292,6 @@ const PlacePage = () => {
                     
                   }}
                   >
-                    
-                    
-
                     
                     <div style={{
                       position: 'absolute',
