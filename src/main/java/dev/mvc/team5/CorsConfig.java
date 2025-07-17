@@ -14,5 +14,6 @@ public class CorsConfig implements WebMvcConfigurer {
       .allowedHeaders("*")   // 모든 요청 헤더 허용
       .allowCredentials(true)   // 인증 쿠키/세션 허용
       .maxAge(3600);   //캐시 시간 1시간
+    
   }
 }

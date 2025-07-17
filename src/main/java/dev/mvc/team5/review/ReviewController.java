@@ -1,6 +1,8 @@
 package dev.mvc.team5.review;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
@@ -33,15 +35,25 @@ public class ReviewController {
     }
 
     // 특정 대상자(userno) 기준 리뷰 목록 조회
+//    @GetMapping("/receiver/{userno}")
+//    public List<ReviewDTO> getByReceiver(@PathVariable("userno") Long userno) {
+//        return service.findByReceiver(userno).stream().map(this::toDTO).collect(Collectors.toList());
+//    }
+    
+    // 정 대상자(userno) 기준 리뷰 목록 조회 ,페이징
     @GetMapping("/receiver/{userno}")
-    public List<ReviewDTO> getByReceiver(@PathVariable("userno") Long userno) {
+    public List<ReviewDTO> getByReceiver(@PathVariable("userno") Long userno,
+                                    @PageableDefault(size = 5, sort = {"createdAt", "reviewno"}) Pageable pageable) {
         return service.findByReceiver(userno).stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     // 리뷰 생성
     @PostMapping
     public ReviewDTO create(@RequestBody ReviewDTO dto) {
-        return toDTO(service.save(dto));
+        // ① service.save(dto)는 Review 엔티티를 리턴하도록
+        Review saved = service.save(dto);
+        // ② 엔티티 → DTO 변환
+        return service.convertToDTO(saved);
     }
 
     // 리뷰 삭제
@@ -55,6 +67,7 @@ public class ReviewController {
         ReviewDTO dto = new ReviewDTO();
         dto.setReviewno(r.getReviewno());
         dto.setGiver(r.getGiver().getUserno());
+        dto.setGivername(r.getGiver().getName());
         dto.setReceiver(r.getReceiver().getUserno());
         dto.setRating(r.getRating());
         dto.setComments(r.getComments());

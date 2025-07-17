@@ -1,104 +1,71 @@
-import React, { useContext, useState } from 'react';
-import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
-
-import { useNavigate } from 'react-router-dom';
-import '../style/MainPage.css';
-import TalentList from '../talent/post/TalentList';
-import TalentCreateForm from '../talent/post/TalentCreateForm';
-import ChatWidget from '../ai/ChatWidget';
-import MyPageSideBar from '../components/sidebar/MyPageSideBar';
-import SearchBar from '../searchBar/SearchBar';
-import { GlobalContext } from '../components/GlobalContext';
+import React, { useState, useEffect } from 'react';
+import { Info } from 'lucide-react';
+import { useLocation } from 'react-router-dom'; // 쿼리 파라미터를 읽기 위한 훅
 import Header from '../components/header/Header';
+import MyPageSideBar from './MyPageSideBar';
+import SecuritySettings from './MyPageSetting';
+import MyPageProfile from './MyPageProfile';
+import MyPageSurvey from './MyPageSurvey';
+import MyPageReservation from './MyPageReservation';
 
 
-export default function MainPage() {
-  const { loginUser } = useContext(GlobalContext);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [hoveredCategory, setHoveredCategory] = useState(null);
-  const [refresh, setRefresh] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
+
+export default function MyPage() {
+  
 
   
-  const toggleCreateForm = () => setShowCreateForm((prev) => !prev);
-  const triggerRefresh = () => setRefresh((prev) => !prev);
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const tab = query.get('tab') || 'profile';
 
-    const handleUpdated = () => {
-  setRefresh(prev => !prev);  // refresh 값 토글해서 useEffect 다시 실행
-  };
-
-  const handleDeleted = () => {
-    setRefresh(prev => !prev);
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const handleSearch = (event) => {
-    if (event.keyCode === 13) {
-      console.log('검색어:', searchQuery);
+  const [currentPage, setCurrentPage] = useState(tab);
+  const renderContent = () => {
+    switch (currentPage) {
+      case 'profile':
+        return <MyPageProfile />;
+      case 'security':
+        return <SecuritySettings />;
+      case 'history':
+        return <MyPageSurvey />;
+      case 'reservation':
+        return <MyPageReservation />;  
     }
   };
 
-
-  const searchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-
+    // URL의 tab 값이 바뀌면 상태도 같이 반영
+    useEffect(() => {
+      setCurrentPage(tab);
+    }, [tab]);
 
   return (
     <div style={{
       minHeight: '100vh',
-      
-      backgroundColor: '#f8f9fa ',
+      backgroundColor: '#f8f9fa',
       fontFamily: 'Arial, sans-serif'
     }}>
-      <Header />
+      {/* 메인 컨테이너 */}
+      <div style={{
+        display: 'flex',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '30px 20px',
+        gap: '20px'
+      }}>
 
-
-        {/* 사이드바 영역 */}
-        <div style={{
-          justifyContent: 'center',
-          gap: '50px',
-          padding: '30px 20px',
-          margin: '0 auto'
-        }}>
-          <div style={{
-            
-          }}>
-          </div>
-
-        <MyPageSideBar />
-
-        {/* 중앙 컨텐츠 영역 */}
-        
-        <div style={{
+        {/* 사이드바 컴포넌트 */}
+        <MyPageSideBar currentPage={currentPage} />
+      
+        {/* 메인 콘텐츠 */}
+        <main style={{
           flex: 1,
-          maxWidth: '800px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px'
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          padding: '30px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          
+          {renderContent()}
 
-
-          {showCreateForm && (
-            <TalentCreateForm
-              onCreated={() => {
-                setShowCreateForm(false); // 작성 후 폼 닫기
-                triggerRefresh();         // 리스트 새로고침
-              }}
-            />
-          )}
-
-          
-
-            <ChatWidget />
-          
-        </div>
+        </main>
       </div>
     </div>
   );

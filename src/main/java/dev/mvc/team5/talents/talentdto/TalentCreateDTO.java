@@ -1,6 +1,11 @@
 package dev.mvc.team5.talents.talentdto;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import dev.mvc.team5.file.FileUpload;
+import dev.mvc.team5.file.FileUploadDTO;
 import dev.mvc.team5.school.School;
 import dev.mvc.team5.talentcategory.TalentCategory;
 import dev.mvc.team5.talenttype.TalentType;
@@ -20,7 +25,8 @@ public class TalentCreateDTO {
     private Long categoryno;
     private String title;
     private String description;
-    private String language;
+    
+    private List<FileUploadDTO> fileInfos;
 
     /**
      * 이 DTO 데이터를 기반으로 JPA 엔티티인 Talent 객체를 생성해서 반환한다.
@@ -57,7 +63,26 @@ public class TalentCreateDTO {
         // 5. 나머지 필드 세팅
         talent.setTitle(this.title);
         talent.setDescription(this.description);
-        talent.setLanguage(this.language);
+        
+     // -------------- 사진 파일 처리 추가 --------------
+        if (this.fileInfos != null && !this.fileInfos.isEmpty()) {
+            List<FileUpload> files = this.fileInfos.stream().map(fileDto -> {
+                FileUpload file = new FileUpload();
+                file.setOriginalFileName(fileDto.getOriginalFileName());
+                file.setStoredFileName(fileDto.getStoredFileName());
+                file.setFilePath(fileDto.getFilePath());
+                file.setFileSize(fileDto.getFileSize());
+                file.setTargetType(fileDto.getTargetType());
+                file.setTalent(talent);
+                file.setProfile(fileDto.getProfile());
+
+                // Talent와 연관관계 설정
+                file.setTalent(talent);
+                return file;
+            }).collect(Collectors.toList());
+
+            talent.setFiles(files);
+        }
 
         return talent;
     }

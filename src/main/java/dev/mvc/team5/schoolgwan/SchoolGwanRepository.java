@@ -9,4 +9,6 @@ public interface SchoolGwanRepository extends JpaRepository<SchoolGwan, Long> {
 
     // 특정 학교에 속한 학교관 목록
     List<SchoolGwan> findBySchool_Schoolno(Long schoolno);
+    
+//    List<SchoolGwan> findBySchoolno(Long schoolno);
 }

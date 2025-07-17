@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import dev.mvc.team5.schoolgwan.SchoolGwan;
@@ -21,23 +23,11 @@ public class PlacesServiceImpl implements PlacesService {
     public Places save(PlacesDTO dto) {
         SchoolGwan schoolGwan = schoolGwanRepository.findById(dto.getSchoolgwanno())
                 .orElseThrow(() -> new IllegalArgumentException("학교관 정보가 존재하지 않습니다."));
-        
-     // 시간 겹침 검사
-        List<Places> overlaps = placesRepository.findOverlappingPlaces(
-                dto.getSchoolgwanno(),
-                dto.getStart_time(),
-                dto.getEnd_time()
-        );
-
-        if (!overlaps.isEmpty()) {
-            throw new IllegalStateException("해당 시간에 이미 등록된 강의실이 있습니다.");
-        }
+       
         Places place = new Places(
                 schoolGwan,
                 dto.getPlacename(),
-                dto.getHosu(),
-                dto.getStart_time(),
-                dto.getEnd_time()
+                dto.getHosu()
         );
         return placesRepository.save(place);
     }
@@ -63,8 +53,6 @@ public class PlacesServiceImpl implements PlacesService {
         place.setSchoolGwan(schoolGwan);
         place.setPlacename(dto.getPlacename());
         place.setHosu(dto.getHosu());
-        place.setStart_time(dto.getStart_time());
-        place.setEnd_time(dto.getEnd_time());
 
         return placesRepository.save(place);
     }
@@ -90,8 +78,6 @@ public class PlacesServiceImpl implements PlacesService {
                 dto.setPlaceno(entity.getPlaceno());
                 dto.setPlacename(entity.getPlacename());
                 dto.setHosu(entity.getHosu());
-                dto.setStart_time(entity.getStart_time());
-                dto.setEnd_time(entity.getEnd_time());
                 dto.setSchoolgwanno(entity.getSchoolGwan().getSchoolgwanno());
                 return dto;
             })
@@ -105,12 +91,63 @@ public class PlacesServiceImpl implements PlacesService {
               dto.setPlaceno(place.getPlaceno());
               dto.setPlacename(place.getPlacename());
               dto.setHosu(place.getHosu());
-              dto.setStart_time(place.getStart_time());
-              dto.setEnd_time(place.getEnd_time());
               dto.setSchoolgwanno(place.getSchoolGwan().getSchoolgwanno());
               return dto;
           });
   }
+
+    
+//    @Override
+//    public List<PlacesDTO> findPlacesBySchoolno(Long schoolno) {
+//        return placesRepository.findBySchoolgwan_School_Schoolno(schoolno)
+//                               .stream()
+//                               .map(this::toDTO)
+//                               .collect(Collectors.toList());
+//    }
+    @Override
+    public List<PlacesDTO> findBySchoolno(Long schoolno) {
+        return placesRepository.findBySchoolGwan_School_Schoolno(schoolno)
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<PlacesDTO> findBySchoolnoAndSchoolgwanno(Long schoolno, Long schoolgwanno) {
+        return placesRepository
+                .findBySchoolGwan_School_SchoolnoAndSchoolGwan_Schoolgwanno(schoolno, schoolgwanno)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    private PlacesDTO toDTO(Places entity) {
+        PlacesDTO dto = new PlacesDTO();
+        dto.setPlaceno(entity.getPlaceno());
+        dto.setPlacename(entity.getPlacename());
+        dto.setHosu(entity.getHosu());
+        dto.setSchoolgwanno(entity.getSchoolGwan().getSchoolgwanno());
+        dto.setSchoolgwanname(entity.getSchoolGwan().getSchoolgwanname());
+        return dto;
+    }
+    
+
+		@Override
+		public Page<Places> findPlacesBySchool(Long schoolno, Pageable pageable) {
+			return placesRepository.findBySchoolno(schoolno, pageable);
+		}
+
+		@Override
+		public Page<Places> findPlacesBySchoolAndGwan(Long schoolno, Long schoolgwanno, Pageable pageable) {
+			// TODO Auto-generated method stub
+			return   placesRepository.findBySchoolnoAndSchoolgwanno(schoolno, schoolgwanno, pageable);
+		}
     
     
+		public Page<Places> searchPlacesBySchool(Long schoolno, String keyword, Pageable pageable) {
+	    return placesRepository.searchBySchoolAndKeyword(schoolno, keyword, pageable);
+	}
+
+	public Page<Places> searchPlacesBySchoolAndGwan(Long schoolno, Long schoolgwanno, String keyword, Pageable pageable) {
+	    return placesRepository.searchBySchoolAndGwanAndKeyword(schoolno, schoolgwanno, keyword, pageable);
+	}
+	
 }

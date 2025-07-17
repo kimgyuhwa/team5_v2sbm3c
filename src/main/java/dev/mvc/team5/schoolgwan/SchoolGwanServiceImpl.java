@@ -62,17 +62,17 @@ public class SchoolGwanServiceImpl implements SchoolGwanService {
         schoolGwanRepository.deleteById(schoolgwanno);
     }
 
-    @Override
-    public List<SchoolGwanDTO> findBySchoolNo(Long schoolno) {
-        return schoolGwanRepository.findBySchool_Schoolno(schoolno)
-            .stream()
-            .map(entity -> {
-                SchoolGwanDTO dto = new SchoolGwanDTO();
-                dto.setSchoolgwanno(entity.getSchoolgwanno());
-                dto.setSchoolno(entity.getSchool().getSchoolno());
-                dto.setSchoolgwanname(entity.getSchoolgwanname());
-                return dto;
-            })
-            .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<SchoolGwanDTO> findBySchoolNo(Long schoolno) {
+//        return schoolGwanRepository.findBySchool_Schoolno(schoolno)
+//            .stream()
+//            .map(entity -> {
+//                SchoolGwanDTO dto = new SchoolGwanDTO();
+//                dto.setSchoolgwanno(entity.getSchoolgwanno());
+//                dto.setSchoolno(entity.getSchool().getSchoolno());
+//                dto.setSchoolgwanname(entity.getSchoolgwanname());
+//                return dto;
+//            })
+//            .collect(Collectors.toList());
+//    }
 }

@@ -1,5 +1,8 @@
 package dev.mvc.team5.talents.talentdto;
 
+import java.util.List;
+
+import dev.mvc.team5.file.FileUploadDTO;
 import dev.mvc.team5.talentcategory.TalentCategory;
 import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.talenttype.TalentType;
@@ -20,5 +23,7 @@ public class TalentUpdateDTO {
     private String language;      // 수정할 언어
     private Long typeno;
     private Long categoryno;
+    
+    private List<FileUploadDTO> fileInfos;
     
 }

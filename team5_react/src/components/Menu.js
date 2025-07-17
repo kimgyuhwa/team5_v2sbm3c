@@ -16,18 +16,26 @@ function Menu() {
     <>
       <Link to="/components/main">메인창</Link> |{" "}
       <Link to="/user/profile">회원정보</Link> |{" "}
+      {loginUser && (
+        <>
+         <Link to="/user/logout">로그아웃</Link> |{" "}
+        </>
+      )}
       <Link to="/reservation/Reservation">예약ex</Link> |{" "}
-      <Link to="/reservation/Place">강의실조회</Link> |{" "}
       <Link to="/user/session">Session Info</Link> |{" "}
       <Link to="/chat">Chat</Link> |{" "}
       <Link to="/talent/post">게시물</Link> |{" "}
-      <Link to="/review/review">리뷰</Link>
+      <Link to="/review/review">리뷰</Link> |{" "}
+      <Link to="/mypage/chatbot-list">챗봇리스트 |</Link>
+      <Link to="/reservation/Reservation"> 예약 ex</Link>{" "}
 
       {loginUser && loginUser.role === "admin" && (
         <>
           {" | "}<Link to="/talent/categrp">CateGrp(대분류)</Link>
           {" | "}<Link to="/talent/category">Category(소분류)</Link>
           {" | "}<Link to="/talent/type">Type</Link>
+          {" | "}<Link to="/admin/user">유저 목록</Link>
+          {" | "}<Link to="/admin/report">신고 목록</Link>
         </>
       )}
     </>

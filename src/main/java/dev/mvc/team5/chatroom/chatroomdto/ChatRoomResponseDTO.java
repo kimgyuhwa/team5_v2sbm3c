@@ -13,4 +13,6 @@ public class ChatRoomResponseDTO {
     private Long chatRoomno;
     private String roomName;
     private LocalDateTime createdAt;
+    
+    
 }

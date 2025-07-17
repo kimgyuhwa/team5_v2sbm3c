@@ -1,48 +1,230 @@
-import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle } from 'lucide-react';
-import React, { useState } from 'react';
+import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, Star } from 'lucide-react';
+import React, { useState, useContext,useEffect,useRef } from 'react';
+import ReactDOM from 'react-dom';
 import UserLogout from '../../user/UserLogout';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
 import { GlobalContext } from '../GlobalContext';
+import ChatRoom from '../../chat/ChatRoom';
 
 function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isChatDropdownOpen, setIsChatDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [chatList, setChatList] = useState([]);
+
+  const [page, setPage] = useState(0);    //페이지
+  const [notificationList, setNotificationList] = useState([]);  // 알림 목록
+  const [unreadCount, setUnreadCount] = useState(); // 안읽은 알림 개수
+  const [hasMore, setHasMore] = useState(true);   // 더불러올 알람없으면 false > 더보기 없어짐
+  const eventSrcRef = useRef(null);  // 알림 SSE연결 객체 보관용
+  const [openChatId, setOpenChatId] = useState(null); //  현재 열려 있는 채팅방
+
   const navigate = useNavigate();
+  const { LoginUser, setSw, loginUser, setLoginUser } = useContext(GlobalContext);
 
-  const { setSw, setUserno, setLoginUser } = useContext(GlobalContext);
-
+  const isLoggedIn = !!loginUser;
+  
   const handleMyPage = () => {
-    navigate('/mypage/MyPage');
-  }
-const handleLogout = () => {
-  fetch('/user/logout', {
-    method: 'GET'
-  })
-    .then(result => result.text())
-    .then(text => {
-      console.log('->', text);
-      setSw(false);
-      setUserno(0);
-      setLoginUser(null);
-      sessionStorage.removeItem('sw');
-      sessionStorage.removeItem('userno');
-      localStorage.removeItem('loginUser');
+    navigate('/mypage/Mypage?tab=profile');  // 바로 navigate 호출
+    setIsDropdownOpen(false);          // 드롭다운 닫기
+  };
 
-      alert("로그아웃 되었습니다.");
-      navigate('/'); // 로그아웃 후 홈으로 이동
+  const handleSetting = () => {
+    navigate('/mypage/Mypage?tab=security')
+    setIsDropdownOpen(false);
+  };
+
+  const handleReservation = () => {
+    navigate('/mypage/Mypage?tab=history');
+    setIsDropdownOpen(false);
+  };
+
+  const handleResearch = () => {
+    navigate('/mypage/Mypage?tab=reservation');
+    setIsDropdownOpen(false);
+  };
+
+
+
+  const userno = loginUser?.userno;
+  const size = 3;  // 한번에 보여줄 알림 개수
+ const loadMore = () => {
+  fetch(`/notifications/user/${userno}?page=${page}&size=${size}`)
+    .then(res => res.json())
+    .then(data => {
+      setNotificationList(prev => {
+        // 중복 제거
+        const newItems = data.filter(
+          n => !prev.some(p => p.notificationno === n.notificationno)
+        );
+        const merged = [...prev, ...newItems];
+        
+        const noMore =
+          newItems.length < size         // 마지막 페이지가 size 미만
+          || merged.length >= unreadCount; // 혹은 화면에 쌓인 총합이 미확인 개수 이상
+
+        setHasMore(!noMore);
+        if (!noMore) return merged;      // 마지막 페이지라면 page++ 안 함
+
+        return merged;
+      });
+
+      // hasMore가 true일 때만 page++
+      setPage(prev => prev + 1);
+    })
+    .catch(console.error);
+};
+
+    useEffect(() => {
+  if (isNotificationDropdownOpen && page === 0) {
+        loadMore();
+      }
+    }, [isNotificationDropdownOpen]);
+    
+
+  useEffect(() => {
+    if (!userno) {
+      setChatList([]);
+      setNotificationList([]);
+      setUnreadCount(0);
+      setHasMore(true);
+      setPage(0);
+      if (eventSrcRef.current) {
+        eventSrcRef.current.close();
+        eventSrcRef.current = null;
+      }
+      return;
+    }
+      /* ⭐ -------------  SSE 구독  -------------- */
+  // 이미 열려 있으면 그대로 둔다
+  if (!eventSrcRef.current) {
+    const es = new EventSource(`/sse/notifications/${userno}`);
+    eventSrcRef.current = es;
+
+    // 일반 메시지 수신
+    es.onmessage = (e) => {
+      try {
+        const payload = JSON.parse(e.data);          // back‑end 에서 보내준 DTO
+
+        // 1) 목록 맨 앞에 추가
+        setNotificationList((prev) => [payload, ...prev]);
+
+        // 2) 뱃지 +1
+        setUnreadCount((c) => (c ?? 0) + 1);
+      } catch (_) { console.error('알림 파싱 오류'); }
+    };
+
+    // 오류(네트워크 등) → 15초 후 재연결 (최소 구현)
+    es.onerror = () => {
+      es.close();
+      eventSrcRef.current = null;
+      setTimeout(() => eventSrcRef.current ?? setHasMore((h) => h), 15000);
+    };
+  }
+  /* ----------------------------------------- */
+
+    // 채팅 목록 API 호출
+   fetch(`/chatroom/user/${userno}/chatlist`, { credentials: 'include' })
+    .then(res => res.json())
+    .then(async rooms => {
+      // rooms: [{ chatRoomno, roomName, createdAt }, ...]
+      const withLast = await Promise.all(
+        rooms.map(async r => {
+          const res = await fetch(`/message/${r.chatRoomno}/last-message`);
+          const last = await res.json();     // {content, createdAt}
+
+          return {
+            id: r.chatRoomno,
+            name: r.roomName,
+            senderName:last.senderName,
+            lastMessage: last.content,
+            time: new Date(last.createdAt || r.createdAt)
+                     .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})
+          };
+        })
+      );
+      setChatList(withLast);
+    })
+    .catch(console.error);
+    // //알림 목록 API 호출
+    // fetch(`/notifications/user/${userno}?page=${page}&size=3`)
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     setNotificationList(data);
+    //   })
+    //   .catch(err => {
+    //     console.error('알림 목록 API 호출 실패:', err);
+    //     setNotificationList([]); // 에러 시 빈 배열
+    //   });
+    
+      // 안읽은 알림 개수
+      fetch(`/notifications/user/${userno}/unreadCount`)
+      .then(res => res.json())
+      .then(count => {
+        setUnreadCount(count);
+      })
+      .catch(() => setUnreadCount(0));
+
+      setHasMore(true);
+      setPage(0);
+  }, [userno]);
+
+    // 채팅 아이템 클릭 시
+  const handleOpenChat = (roomId) => {
+    setIsChatDropdownOpen(false);  // 드롭다운 닫고
+    setOpenChatId(roomId);         // 모달 열기
+  };
+
+  const handleCloseChat = () => setOpenChatId(null);
+
+  const handleLogout = () => {
+    fetch('/user/logout', { method: 'GET' })
+      .then(result => result.text())
+      .then(text => {
+        console.log('->', text);
+        setSw(false);
+        setLoginUser(null);
+        sessionStorage.removeItem('sw');
+        sessionStorage.removeItem('loginUser');
+        alert("로그아웃 되었습니다.");
+        navigate('/');
+      })
+      .catch(err => {
+        console.error(err);
+        alert("로그아웃 중에 문제가 발생했습니다.");
+      });
+  };
+
+  
+  const handleMarkAllRead = () => {
+  if (!userno) return;
+
+  fetch(`/notifications/user/${userno}/readAll`, {
+    method: 'PUT',
+  })
+    .then(res => {
+       if (!res.ok) throw new Error('실패');
+      // 읽음 처리 완료되면 최신 알림 목록 재요청
+      return fetch(`/notifications/user/${userno}?page=0&size=3`)
+    })
+    .then(res => res.json())
+    .then(data => {
+      setNotificationList(data);
+      setUnreadCount(0);
+      setHasMore(data.length >= 3);
+      setPage(1); // page 0 데이터 로드 완료이므로 1로 설정
     })
     .catch(err => {
-      console.error(err);
-      alert("로그아웃 중에 문제가 발생했습니다..");
+      console.error('모두 읽음 처리 실패:', err);
+      alert('모두 읽음 처리에 실패했습니다.');
     });
-
 };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+    
   };
 
   const searchChange = (e) => {
@@ -57,24 +239,7 @@ const handleLogout = () => {
   const handleNotificationClick = () => {
     setIsNotificationDropdownOpen(!isNotificationDropdownOpen);
     setIsChatDropdownOpen(false); // 다른 드롭다운 닫기
-  };
-
-  // 샘플 채팅 데이터
-  const chatList = [
-    { id: 1, name: '김철수', lastMessage: '안녕하세요! 문의사항이 있어서 연락드려요.', time: '2분 전', unread: 2 },
-    { id: 2, name: '이영희', lastMessage: '프로젝트 진행상황은 어떻게 되나요?', time: '1시간 전', unread: 1 },
-    { id: 3, name: '박민수', lastMessage: '내일 회의 시간 변경 가능한가요?', time: '3시간 전', unread: 0 },
-  ];
-
-  // 샘플 알림 데이터
-  const notificationList = [
-    { id: 1, title: '새로운 메시지', content: '김철수님이 메시지를 보냈습니다.', time: '5분 전', type: 'message' },
-    { id: 2, title: '프로젝트 업데이트', content: '프로젝트 A의 상태가 변경되었습니다.', time: '30분 전', type: 'update' },
-    { id: 3, title: '회의 알림', content: '오후 3시 팀 회의가 예정되어 있습니다.', time: '1시간 전', type: 'meeting' },
-    { id: 4, title: '시스템 공지', content: '시스템 점검이 예정되어 있습니다.', time: '2시간 전', type: 'system' },
-  ];
-
-  
+  };  
 
   return (
     <div style={{
@@ -93,7 +258,7 @@ const handleLogout = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          height: '64px'
+          height: '50px'
         }}>
           {/* 로고 */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -104,373 +269,239 @@ const handleLogout = () => {
                 color: '#333',
                 margin: 0
               }}>
-                로고 누르면 메인
+                메인
               </h1>
             </a>
           </div>
 
           {/* 오른쪽 메뉴 영역 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* 채팅 아이콘 버튼 */}
+           {isLoggedIn ? (
+          /* ----- 로그인 상태 ----- */
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+
+            {/* 채팅 아이콘 */}
             <div style={{ position: 'relative' }}>
               <button
                 onClick={handleChatClick}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '48px',
-                  height: '48px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 44, height: 44,
                   backgroundColor: isChatDropdownOpen ? '#138496' : '#17a2b8',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  outline: 'none',
-                  position: 'relative'
+                  color: 'white', border: 'none', borderRadius: '50%',
+                  cursor: 'pointer', transition: 'all .3s', outline: 'none'
                 }}
-                onMouseOver={(e) => {
+                onMouseOver={e => {
                   e.currentTarget.style.backgroundColor = '#138496';
                   e.currentTarget.style.transform = 'scale(1.05)';
                 }}
-                onMouseOut={(e) => {
+                onMouseOut={e => {
                   e.currentTarget.style.backgroundColor = isChatDropdownOpen ? '#138496' : '#17a2b8';
                   e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                <MessageCircle size={20} />
-                {/* 채팅 알림 뱃지 */}
-                <span style={{
-                  position: 'absolute',
-                  top: '-2px',
-                  right: '-2px',
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  fontSize: '10px',
-                  padding: '2px 6px',
-                  borderRadius: '10px',
-                  minWidth: '18px',
-                  textAlign: 'center'
                 }}>
-                  3
-                </span>
+                <MessageCircle size={20} />
               </button>
 
-              {/* 채팅 드롭다운 메뉴 */}
-              {isChatDropdownOpen && (  
+              {/* 채팅 드롭다운 */}
+              {isChatDropdownOpen && (
                 <div style={{
-                  position: 'absolute',
-                  right: 0,
-                  marginTop: '8px',
-                  width: '350px',
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-                  border: '1px solid #e1e5e9',
-                  zIndex: 50,
-                  overflow: 'hidden'
+                  position: 'absolute', right: 0, marginTop: 8, width: 350,
+                  backgroundColor: 'white', borderRadius: 10,
+                  boxShadow: '0 8px 24px rgba(0,0,0,.1)',
+                  border: '1px solid #e1e5e9', zIndex: 50, overflow: 'hidden'
                 }}>
-                  <div style={{ 
-                    padding: '16px 20px', 
-                    borderBottom: '1px solid #e1e5e9',
-                    backgroundColor: '#f8f9fa',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
+                  <div style={{
+                    padding: '16px 20px', borderBottom: '1px solid #e1e5e9',
+                    backgroundColor: '#f8f9fa', display: 'flex',
+                    justifyContent: 'space-between', alignItems: 'center'
                   }}>
-                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#333' }}>
+                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#333' }}>
                       채팅 목록
                     </h3>
-                    <span style={{ fontSize: '12px', color: '#666' }}>
-                      {chatList.filter(chat => chat.unread > 0).length}개의 새 메시지
-                    </span>
                   </div>
-                  <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+
+                  <div style={{ maxHeight: 300, overflowY: 'auto' }}>
                     {chatList.map(chat => (
-                      <div key={chat.id} style={{
-                        padding: '12px 20px',
-                        borderBottom: '1px solid #f1f3f4',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s',
-                        backgroundColor: chat.unread > 0 ? '#f8f9ff' : 'transparent'
-                      }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = chat.unread > 0 ? '#f8f9ff' : 'transparent'}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                          <span style={{ fontWeight: '600', color: '#333', fontSize: '14px' }}>
+                      <div key={chat.id}
+                        onClick={() => handleOpenChat(chat.id)}
+                        style={{
+                          padding: '12px 20px', borderBottom: '1px solid #f1f3f4',
+                          cursor: 'pointer', transition: 'background-color .2s'
+                        }}
+                        onMouseOver={e => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                        onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                        <div style={{
+                          display: 'flex', justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <span style={{ fontWeight: 600, color: '#333', fontSize: 14 }}>
                             {chat.name}
                           </span>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '12px', color: '#666' }}>
-                              {chat.time}
-                            </span>
-                            {chat.unread > 0 && (
-                              <span style={{
-                                backgroundColor: '#17a2b8',
-                                color: 'white',
-                                fontSize: '10px',
-                                padding: '2px 6px',
-                                borderRadius: '10px',
-                                minWidth: '16px',
-                                textAlign: 'center'
-                              }}>
-                                {chat.unread}
-                              </span>
-                            )}
-                          </div>
+                          <span style={{ fontSize: 12, color: '#666' }}>
+                            {chat.time}
+                          </span>
                         </div>
-                        <p style={{ 
-                          margin: 0, 
-                          fontSize: '13px', 
-                          color: '#666',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap'
+                        <p style={{
+                          margin: 0, fontSize: 13, color: '#666',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                         }}>
-                          {chat.lastMessage}
+                          {chat.senderName}:{chat.lastMessage}
                         </p>
                       </div>
                     ))}
-                  </div>
-                  <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
-                    <button style={{
-                      width: '100%',
-                      padding: '8px',
-                      backgroundColor: '#17a2b8',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#138496'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#17a2b8'}
-                    >
-                      모든 채팅 보기
-                    </button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 알림 아이콘 버튼 */}
+            {/* 알림 아이콘 */}
             <div style={{ position: 'relative' }}>
               <button
                 onClick={handleNotificationClick}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '48px',
-                  height: '48px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 44, height: 44,
                   backgroundColor: isNotificationDropdownOpen ? '#e0a800' : '#ffc107',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  outline: 'none',
-                  position: 'relative'
+                  color: 'white', border: 'none', borderRadius: '50%',
+                  cursor: 'pointer', transition: 'all .3s', outline: 'none'
                 }}
-                onMouseOver={(e) => {
+                onMouseOver={e => {
                   e.currentTarget.style.backgroundColor = '#e0a800';
                   e.currentTarget.style.transform = 'scale(1.05)';
                 }}
-                onMouseOut={(e) => {
+                onMouseOut={e => {
                   e.currentTarget.style.backgroundColor = isNotificationDropdownOpen ? '#e0a800' : '#ffc107';
                   e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                <Bell size={20} />
-                {/* 알림 뱃지 */}
-                <span style={{
-                  position: 'absolute',
-                  top: '-2px',
-                  right: '-2px',
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  fontSize: '10px',
-                  padding: '2px 6px',
-                  borderRadius: '10px',
-                  minWidth: '18px',
-                  textAlign: 'center'
                 }}>
-                  4
-                </span>
+                <Bell size={20} />
+                {/* 뱃지: unreadCount > 0 일때만 */}
+                {unreadCount > 0 && (
+                  <span style={{
+                    position: 'absolute', top: -2, right: -2,
+                    backgroundColor: '#dc3545', color: 'white',
+                    fontSize: 10, padding: '2px 6px', borderRadius: 10,
+                    minWidth: 18, textAlign: 'center'
+                  }}>
+                    {unreadCount}
+                  </span>
+                )}
               </button>
 
-              {/* 알림 드롭다운 메뉴 */}
+              {/* 알림 드롭다운 */}
               {isNotificationDropdownOpen && (
                 <div style={{
-                  position: 'absolute',
-                  right: 0,
-                  marginTop: '8px',
-                  width: '380px',
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-                  border: '1px solid #e1e5e9',
-                  zIndex: 50,
-                  overflow: 'hidden'
+                  position: 'absolute', right: 0, marginTop: 8, width: 380,
+                  backgroundColor: 'white', borderRadius: 10,
+                  boxShadow: '0 8px 24px rgba(0,0,0,.1)',
+                  border: '1px solid #e1e5e9', zIndex: 50, overflow: 'hidden'
                 }}>
-                  <div style={{ 
-                    padding: '16px 20px', 
-                    borderBottom: '1px solid #e1e5e9',
-                    backgroundColor: '#f8f9fa',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
+                  <div style={{
+                    padding: '16px 20px', borderBottom: '1px solid #e1e5e9',
+                    backgroundColor: '#f8f9fa', display: 'flex',
+                    justifyContent: 'space-between', alignItems: 'center'
                   }}>
-                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#333' }}>
-                      알림
-                    </h3>
-                    <button style={{
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      color: '#ffc107',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      textDecoration: 'underline'
-                    }}>
-                      모두 읽음
-                    </button>
+                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#333' }}>알림</h3>
+                    <button onClick={handleMarkAllRead} style={{
+                      background: 'none', border: 'none', color: '#ffc107',
+                      fontSize: 12, cursor: 'pointer', textDecoration: 'underline'
+                    }}>모두 읽음</button>
                   </div>
-                  <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
-                    {notificationList.map(notification => (
-                      <div key={notification.id} style={{
-                        padding: '12px 20px',
-                        borderBottom: '1px solid #f1f3f4',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s'
-                      }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{
-                              width: '8px',
-                              height: '8px',
-                              backgroundColor: notification.type === 'message' ? '#17a2b8' : 
-                                             notification.type === 'update' ? '#28a745' :
-                                             notification.type === 'meeting' ? '#ffc107' :
-                                             notification.type === 'system' ? '#dc3545' : '#6c757d',
-                              borderRadius: '50%',
-                              flexShrink: 0
-                            }}></div>
-                            <span style={{ fontWeight: '600', color: '#333', fontSize: '14px' }}>
-                              {notification.title}
+
+                  <div style={{ maxHeight: 350, overflowY: 'auto' }}>
+                    {notificationList.length === 0 ? (
+                      <div style={{
+                        padding: 20, color: '#999', textAlign: 'center',
+                        fontSize: 14, userSelect: 'none'
+                      }}>알림이 없습니다.</div>
+                    ) : (
+                      notificationList.map(n => (
+                        <div key={n.notificationno} style={{
+                          padding: '12px 20px', borderBottom: '1px solid #f1f3f4',
+                          cursor: 'pointer', transition: 'background-color .2s'
+                        }}
+                          onMouseOver={e => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                          onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                          <div style={{
+                            display: 'flex', justifyContent: 'space-between',
+                            alignItems: 'flex-start', marginBottom: 6
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <div style={{
+                                width: 8, height: 8, borderRadius: '50%',
+                                backgroundColor:
+                                  n.type === 'message' ? '#17a2b8' :
+                                  n.type === 'update'  ? '#28a745' :
+                                  n.type === 'meeting' ? '#ffc107' :
+                                  n.type === 'system'  ? '#dc3545' : '#6c757d'
+                              }} />
+                              <span style={{ fontWeight: 600, color: '#333', fontSize: 14 }}>
+                                {n.type}
+                              </span>
+                            </div>
+                            <span style={{ fontSize: 12, color: '#666' }}>
+                              {new Date(n.createdAt)
+                                .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
                             </span>
                           </div>
-                          <span style={{ fontSize: '12px', color: '#666', flexShrink: 0 }}>
-                            {notification.time}
-                          </span>
+                          <p style={{
+                            margin: 0, fontSize: 13, color: '#666',
+                            lineHeight: 1.4, paddingLeft: 16
+                          }}>{n.message}</p>
                         </div>
-                        <p style={{ 
-                          margin: 0, 
-                          fontSize: '13px', 
-                          color: '#666',
-                          lineHeight: '1.4',
-                          paddingLeft: '16px'
-                        }}>
-                          {notification.content}
-                        </p>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
-                  <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
-                    <button style={{
-                      width: '100%',
-                      padding: '8px',
-                      backgroundColor: '#ffc107',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#e0a800'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#ffc107'}
-                    >
-                      모든 알림 보기
-                    </button>
-                  </div>
+
+                  {notificationList.length > 0 && hasMore && (
+                    <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
+                      <button onClick={loadMore} style={{
+                        width: '100%', padding: 8, backgroundColor: '#ffc107',
+                        color: 'white', border: 'none', borderRadius: 6,
+                        fontSize: 14, cursor: 'pointer',
+                        transition: 'background-color .2s'
+                      }}
+                        onMouseOver={e => e.target.style.backgroundColor = '#e0a800'}
+                        onMouseOut={e => e.target.style.backgroundColor = '#ffc107'}>
+                        더보기
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
-            {/* 마이페이지 드롭다운 메뉴 */}
+            {/* 프로필 드롭다운 */}
             <div style={{ position: 'relative' }}>
-              <button
-                onClick={toggleDropdown}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  padding: '12px 20px',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s',
-                  outline: 'none'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
-              >
+              <button onClick={toggleDropdown} style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                backgroundColor: '#007bff', color: 'white',
+                padding: '8px 10px', border: 'none', borderRadius: 10,
+                fontSize: 16, fontWeight: 600, cursor: 'pointer',
+                transition: 'background-color .3s', outline: 'none'
+              }}
+                onMouseOver={e => e.currentTarget.style.backgroundColor = '#0056b3'}
+                onMouseOut={e => e.currentTarget.style.backgroundColor = '#007bff'}>
                 <User size={20} />
-                마이페이지
+                {loginUser?.name}님
                 <ChevronDown size={16} style={{
                   transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.3s'
+                  transition: 'transform .3s'
                 }} />
               </button>
-                
-              {/* 드롭다운 메뉴 */}
+
               {isDropdownOpen && (
                 <div style={{
-                  position: 'absolute',
-                  right: 0,
-                  marginTop: '8px',
-                  width: '200px',
-                  backgroundColor: 'white',
-                  borderRadius: '10px',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-                  border: '1px solid #e1e5e9',
-                  zIndex: 50,
-                  overflow: 'hidden'
+                  position: 'absolute', right: 0, marginTop: 4, width: 200,
+                  backgroundColor: 'white', borderRadius: 10,
+                  boxShadow: '0 8px 24px rgba(0,0,0,.1)',
+                  border: '1px solid #e1e5e9', zIndex: 50, overflow: 'hidden'
                 }}>
                   <div style={{ padding: '4px 0' }}>
-                    <button 
-                    onClick={handleMyPage}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      width: '100%',
-                      padding: '12px 16px',
-                      fontSize: '14px',
-                      color: '#333',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s'
-                    }}
-                    
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                    >
-                      <User size={16} style={{ marginRight: '12px' }} />
-                      프로필 보기
-                      
+                    <button onClick={handleMyPage} style={dropdownBtn}>
+                      <User size={16} style={{ marginRight: 12 }} /> 프로필 보기
                     </button>
-                    <button style={{
+                    <button 
+                    onClick={handleSetting}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       width: '100%',
@@ -488,7 +519,10 @@ const handleLogout = () => {
                       <Settings size={16} style={{ marginRight: '12px' }} />
                       설정
                     </button>
-                    <button style={{
+
+                    <button
+                    onClick={handleReservation}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       width: '100%',
@@ -503,42 +537,97 @@ const handleLogout = () => {
                     onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
-                      <Bell size={16} style={{ marginRight: '12px' }} />
-                      알림
+                      <Star size={16} style={{ marginRight: '12px' }} />
+                      예약 확인
+
                     </button>
-                    <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
                     <button 
-                    
-                    onClick={handleLogout}
+                    onClick={handleResearch}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       width: '100%',
                       padding: '12px 16px',
                       fontSize: '14px',
-                      color: '#dc3545',
+                      color: '#333',
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
                       transition: 'background-color 0.2s'
                     }}
-                    
                     onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
-                      <LogOut size={16} style={{ marginRight: '12px' }} />
-                      
-                      로그아웃
+                      <Star size={16} style={{ marginRight: '12px' }} />
+                      설문조사
+                    </button>
+                    <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
+                    <button onClick={handleLogout} style={{ ...dropdownBtn, color: '#dc3545' }}>
+                      <LogOut size={16} style={{ marginRight: 12 }} /> 로그아웃
                     </button>
                   </div>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        ) : (
+          /* ----- 비로그인 상태 ----- */
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button onClick={() => navigate('/user/login')} style={guestBtnStyle}>
+              로그인
+            </button>
+            <button onClick={() => navigate('/user/register')}
+              style={{ ...guestBtnStyle, backgroundColor: '#17a2b8', color: 'white', border: 'none' }}>
+              회원가입
+            </button>
+          </div>
+        )}
       </div>
     </div>
-  );
-}
 
+    {/* 채팅 모달 Portal */}
+    {openChatId && ReactDOM.createPortal(
+      <div style={{
+        position: 'fixed', bottom: 20, right: 20,
+        width: 400, height: 600, backgroundColor: 'white',
+        border: '1px solid #ccc', borderRadius: 10,
+        boxShadow: '0 8px 24px rgba(0,0,0,.2)',
+        zIndex: 9999, display: 'flex', flexDirection: 'column'
+      }}>
+        <div style={{
+          padding: 10, backgroundColor: '#007bff', color: 'white',
+          borderTopLeftRadius: 10, borderTopRightRadius: 10,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+        }}>
+          <span>채팅방 #{openChatId}</span>
+          <button onClick={handleCloseChat} style={{
+            background: 'transparent', color: 'white',
+            border: 'none', fontSize: 16, cursor: 'pointer'
+          }}>✕</button>
+        </div>
+        <div style={{ flex: 1, overflow: 'hidden' }}>
+          <ChatRoom chatRoomno={openChatId.toString()} />
+        </div>
+      </div>,
+      document.body
+    )}
+    </div>
+
+    
+  );
+
+  
+}
+/* 공통 스타일 */
+const dropdownBtn = {
+  display: 'flex', alignItems: 'center', width: '100%',
+  padding: '12px 16px', fontSize: 14, color: '#333',
+  background: 'none', border: 'none', cursor: 'pointer',
+  transition: 'background-color .2s'
+};
+const guestBtnStyle = {
+  padding: '6px 14px', borderRadius: 8,
+  border: '1px solid #007bff', backgroundColor: 'white',
+  color: '#007bff', fontWeight: 600, cursor: 'pointer'
+};
 export default Header;

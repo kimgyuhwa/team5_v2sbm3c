@@ -13,4 +13,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT m FROM Message m JOIN FETCH m.sender WHERE m.chatRoom.chatRoomno = :chatRoomno ORDER BY m.sentAt ASC")
     List<Message> findByChatRoomWithSender(@Param("chatRoomno") Long chatRoomno);
 
+    // chatRoomno 기준 최근 1건
+    Message findTopByChatRoom_ChatRoomnoOrderBySentAtDesc(Long chatRoomno);
 }
