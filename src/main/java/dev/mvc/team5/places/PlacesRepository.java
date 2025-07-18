@@ -38,6 +38,10 @@ public interface PlacesRepository extends JpaRepository<Places, Long> {
 
     @Query("SELECT p FROM Places p WHERE p.schoolGwan.school.schoolno = :schoolno AND p.schoolGwan.schoolgwanno = :schoolgwanno")
     Page<Places> findBySchoolnoAndSchoolgwanno(@Param("schoolno") Long schoolno, @Param("schoolgwanno") Long schoolgwanno, Pageable pageable);
+    
+    // placename으로 장소를 찾는 메서드
+    @Query("SELECT p FROM Places p WHERE LOWER(p.placename) = LOWER(:placename)")
+    Places findByPlacenameIgnoreCase(@Param("placename") String placename);
 		 
 		 
 	// 학교 전체 + 검색

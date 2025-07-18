@@ -96,6 +96,13 @@ public class ReservationsServiceImpl implements ReservationsService {
         reservationsRepository.deleteById(reservationno);
     }
     
+    // chatbot 예약
+    @Override
+    public List<Reservations> findConflict(Long placeno, LocalDateTime start, LocalDateTime end) {
+        return reservationsRepository.findConflict(placeno, start, end);
+    }
+
+    
     
     
     private ReservationsResponseDTO toResponseDTO(Reservations r) {

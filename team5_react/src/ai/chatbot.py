@@ -1,33 +1,89 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import apitool  # agent 정의된 모듈
-
+from ai_agent import apitool
+from rag import query_engine
+from agent_reservation.agent import reservation_agent
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-# @app.post("/chat")
+
+# ✅ RAG 응답 신뢰도 판단
+def is_confident(answer: str, query: str) -> bool:
+    if not answer or len(answer.strip()) < 30:
+        return False
+
+    low_conf_phrases = [
+        "정확하지 않을 수 있습니다", "자세한 정보는 없습니다", "일반적으로",
+        "도움이 되었으면 좋겠습니다", "확실하지 않습니다", "경우에 따라 다릅니다",
+        "저는 알 수 없습니다", "정확한 답변은 어렵습니다", "명확한 정보가 없습니다",
+    ]
+    if any(phrase in answer for phrase in low_conf_phrases):
+        return False
+
+    keywords = [w for w in query.strip().replace("?", "").split() if len(w) >= 2]
+    hit_count = sum(1 for w in keywords if w in answer)
+    return hit_count >= 3
+
+
+# ✅ 예약 관련 질문인지 판별
+def is_reservation_query(message: str) -> bool:
+    keywords = ["예약해", "예약해줘"]
+    return any(k in message for k in keywords)
+
+
+# ✅ 메인 엔드포인트
 @app.route("/chat", methods=["POST"])
 def chat_proc():
     if not request.is_json:
-        return jsonify({"error": "Invalid JSON: Content-Type must be application/json"}), 400
+        return jsonify({"error": "Invalid JSON"}), 400
+
     data = request.json
-    print("✅ 받은 요청:", data)
     message = data.get("message", "")
-    userno = data.get("userno")  # React에서 보내주는 사용자 번호
+    userno = data.get("userno")
 
-    # userno를 agent에 전달
+    print("-> 사용자 질문:", message)
+
+    # 0️⃣ 예약 관련이면 예약 에이전트로 분기
+    if is_reservation_query(message):
+        import agent_reservation.context  # 초기화 지연
+        agent_reservation.context.CURRENT_USERNO = userno
+
+        print("🏢 예약 Agent 사용")
+        result = reservation_agent.invoke({"input": message})
+        return jsonify({"res": result["output"], "source": "reservation"})
+
+    # 1️⃣ RAG 시도
+    rag_answer = query_engine.query(message).response
+    if is_confident(rag_answer, message):
+        print("📚 RAG 응답 사용")
+        return jsonify({"res": rag_answer, "source": "rag"})
+
+    # 2️⃣ Agent fallback
     apitool.CURRENT_USERNO = userno
-
-    # ✅ agent 실행
     result = apitool.agent.invoke({"input": message, "userno": userno})
-    output = result["output"]
+    agent_answer = result["output"]
 
-    # ✅ 시스템 메시지 필터링
-    if "Agent stopped due to" in output:
-        output = "죄송해요! 제가 질문을 잘 이해하지 못했어요. 궁금한 점을 조금 더 자세히 알려주실 수 있을까요?"
+    if "Agent stopped due to" in agent_answer:
+        agent_answer = "죄송해요! 질문을 잘 이해하지 못했어요. 조금 더 자세히 설명해주실 수 있나요?"
 
-    return jsonify({"res": output})
+    print("🤖 Agent 응답 사용")
+    return jsonify({"res": agent_answer, "source": "agent"})
+
+
+# ✅ 예약 전용 엔드포인트 (테스트용 직접 호출 가능)
+@app.route("/reservation-chat", methods=["POST"])
+def reservation_chat():
+    data = request.json
+    message = data.get("message", "")
+    userno = data.get("userno")
+
+    import agent_reservation.context
+    agent_reservation.context.CURRENT_USERNO = userno
+
+    result = reservation_agent.invoke({"input": message})
+    return jsonify({"res": result["output"]})
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -15,7 +15,6 @@ import ChatRoom from './chat/ChatRoom';
 import TalentCateGrp from './talent/categrp/TalentCateGrp';
 import TalentCreateForm from './talent/post/TalentCreateForm';
 import TalentCategory from './talent/category/TalentCategory';
-import TalentCreateForm from './talent/post/TalentCreateForm';
 import TalentDetailPage from './talent/post/TalentDetailPage';
 import TalentType from './talent/type/TalentType';
 import Talent from './talent/post/Talent';
