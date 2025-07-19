@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import dev.mvc.team5.places.Places;
+
 @Repository
 public interface ReservationsRepository extends JpaRepository<Reservations, Long> {
 
@@ -17,6 +19,6 @@ public interface ReservationsRepository extends JpaRepository<Reservations, Long
 	List<Reservations> findConflict(@Param("placeno") Long placeno,
                                 @Param("start") LocalDateTime start,
                                 @Param("end") LocalDateTime end);
-	
+
 	
 }

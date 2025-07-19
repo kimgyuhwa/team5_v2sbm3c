@@ -12,4 +12,8 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
   boolean existsByBlockerUsernoAndBlockedUserno(Long blocker, Long blocked);
   // 사용자가 차단한 사람 목록 보기
   List<Block> findByBlockerUserno(Long userno);
+  // 이미 활성 차단이 있는지 
+  boolean existsByBlocked_UsernoAndActiveTrue(Long targetUserno);
+  /* 사용자가 차단한 목록 */
+  List<Block> findByBlocker_Userno(Long blockerUserno);
 }

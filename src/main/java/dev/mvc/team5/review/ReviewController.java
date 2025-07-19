@@ -50,7 +50,10 @@ public class ReviewController {
     // 리뷰 생성
     @PostMapping
     public ReviewDTO create(@RequestBody ReviewDTO dto) {
-        return toDTO(service.save(dto));
+        // ① service.save(dto)는 Review 엔티티를 리턴하도록
+        Review saved = service.save(dto);
+        // ② 엔티티 → DTO 변환
+        return service.convertToDTO(saved);
     }
 
     // 리뷰 삭제
@@ -64,6 +67,7 @@ public class ReviewController {
         ReviewDTO dto = new ReviewDTO();
         dto.setReviewno(r.getReviewno());
         dto.setGiver(r.getGiver().getUserno());
+        dto.setGivername(r.getGiver().getName());
         dto.setReceiver(r.getReceiver().getUserno());
         dto.setRating(r.getRating());
         dto.setComments(r.getComments());

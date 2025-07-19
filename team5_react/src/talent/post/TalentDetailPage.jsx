@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios"; 
 import uploadFile from "../../fileupload/FileUpload";
 import { GlobalContext } from "../../components/GlobalContext";
 import Slider from "react-slick";
@@ -24,6 +25,11 @@ function TalentDetailPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  const [reportType, setReportType] = useState("");
+  const [showReport, setShowReport] = useState(false);   // 신고 모달 on/off
+  const [reportReason, setReportReason] = useState("");  // 사유 입력
 
   const isOwner =
     loginUser?.userno && talent?.userno && loginUser.userno === talent.userno;
@@ -152,7 +158,7 @@ function TalentDetailPage() {
 
     try {
       const res = await fetch(
-        `/chatroom/findOrCreate?senderId=${loginUser.userno}&receiverId=${talent.userno}`,
+        `/chatroom/findOrCreate?senderId=${loginUser?.userno}&receiverId=${talent?.userno}`,
         {
           method: "POST",
           credentials: "include",
@@ -209,6 +215,42 @@ function TalentDetailPage() {
     }
   };
 
+   /* ----------------------------------------------------------- */
+  /* 2) 신고 제출                                                 */
+  /* ----------------------------------------------------------- */
+  const submitReport = async () => {
+    if (!loginUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    if (!reportReason.trim()) {
+      alert("신고 사유를 입력하세요.");
+      return;
+    }
+
+    try {
+      const res = await axios.post("/reports", {
+        reporter: loginUser.userno,
+        reported: talent.userno,          // 피신고자
+        reason: reportReason,
+        reportType,            // 타입 구분값
+        targetId: talent.talentno,
+      });
+       if (res.status === 201) {
+      alert("신고가 접수되었습니다.");
+      setShowReport(false);
+      setReportReason("");
+       }
+    } catch (e) {
+      if (e.response?.status === 409) {
+    alert("이미 신고한 대상입니다.");
+  }else {
+      console.error(e);
+      alert("신고 실패");
+    }
+  }
+  };
+
   /* ------------------------------------------------------------------ */
   /* 렌더링                                                               */
   /* ------------------------------------------------------------------ */
@@ -260,7 +302,7 @@ function TalentDetailPage() {
             >
               <option value="">타입 선택</option>
               {typeList.map((type) => (
-                <option key={type.typeno} value={type.typeno}>
+                <option key={type.typeno} value={type.typeno}>  
                   {type.name}
                 </option>
               ))}
@@ -379,12 +421,22 @@ function TalentDetailPage() {
           {/* 버튼 영역 */}
           <div className="flex justify-end gap-3">
             {!isOwner && (
+              <>
               <button
                 className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow"
                 onClick={startChat}
               >
                 채팅하기
               </button>
+            
+            {/** 신고 버튼 */}
+            <button
+              className="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-600 shadow"
+              onClick={() => setShowReport(true)}
+            >
+              신고
+            </button>
+            </>
             )}
             {isOwner && (
               <>
@@ -402,6 +454,7 @@ function TalentDetailPage() {
                 </button>
               </>
             )}
+             
             {/* 요청 버튼 */}
             {/* <button
               className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow"
@@ -410,13 +463,71 @@ function TalentDetailPage() {
               요청
             </button> */}
           </div>
+          {/** 신고 모달 */}
+      {showReport && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+          <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg relative">
+            <h3 className="text-lg font-bold mb-4">🚨 신고하기</h3>
+
+            <label className="block mb-2 font-semibold">신고 유형</label>
+            <select
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+            >
+              <option value="">-- 선택하세요 --</option>
+              <option value="욕설/비방">욕설/비방</option>
+              <option value="광고/홍보">광고/홍보</option>
+              <option value="음란/선정성">음란/선정성</option>
+              <option value="사기/허위">사기/허위</option>
+              <option value="중복/도배">중복/도배</option>
+              <option value="기타">기타</option>
+            </select>
+
+            <label className="block mb-2 font-semibold">신고 사유</label>
+            <textarea
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              rows="5"
+              placeholder="신고 사유를 입력하세요."
+              className="w-full border border-gray-300 rounded p-2 mb-4"
+            />
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowReport(false)}
+                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+              >
+                취소
+              </button>
+              <button
+                onClick={submitReport}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                제출
+              </button>
+            </div>
+
+            {/* 모달 바깥 클릭 닫기 */}
+            <button
+              onClick={() => setShowReport(false)}
+              className="absolute top-2 right-2 text-xl"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
           {/* 리뷰 페이지 */}
           <ReviewPage receiverno={talent?.userno} />
         </>
       )}
     </div>
+    
   );
+  
 }
+
 
 export default TalentDetailPage;

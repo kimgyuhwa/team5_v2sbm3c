@@ -23,23 +23,11 @@ public class PlacesServiceImpl implements PlacesService {
     public Places save(PlacesDTO dto) {
         SchoolGwan schoolGwan = schoolGwanRepository.findById(dto.getSchoolgwanno())
                 .orElseThrow(() -> new IllegalArgumentException("학교관 정보가 존재하지 않습니다."));
-        
-     // 시간 겹침 검사
-        List<Places> overlaps = placesRepository.findOverlappingPlaces(
-                dto.getSchoolgwanno(),
-                dto.getStart_time(),
-                dto.getEnd_time()
-        );
-
-        if (!overlaps.isEmpty()) {
-            throw new IllegalStateException("해당 시간에 이미 등록된 강의실이 있습니다.");
-        }
+       
         Places place = new Places(
                 schoolGwan,
                 dto.getPlacename(),
-                dto.getHosu(),
-                dto.getStart_time(),
-                dto.getEnd_time()
+                dto.getHosu()
         );
         return placesRepository.save(place);
     }
@@ -65,8 +53,6 @@ public class PlacesServiceImpl implements PlacesService {
         place.setSchoolGwan(schoolGwan);
         place.setPlacename(dto.getPlacename());
         place.setHosu(dto.getHosu());
-        place.setStart_time(dto.getStart_time());
-        place.setEnd_time(dto.getEnd_time());
 
         return placesRepository.save(place);
     }
@@ -92,8 +78,6 @@ public class PlacesServiceImpl implements PlacesService {
                 dto.setPlaceno(entity.getPlaceno());
                 dto.setPlacename(entity.getPlacename());
                 dto.setHosu(entity.getHosu());
-                dto.setStart_time(entity.getStart_time());
-                dto.setEnd_time(entity.getEnd_time());
                 dto.setSchoolgwanno(entity.getSchoolGwan().getSchoolgwanno());
                 return dto;
             })
@@ -107,8 +91,6 @@ public class PlacesServiceImpl implements PlacesService {
               dto.setPlaceno(place.getPlaceno());
               dto.setPlacename(place.getPlacename());
               dto.setHosu(place.getHosu());
-              dto.setStart_time(place.getStart_time());
-              dto.setEnd_time(place.getEnd_time());
               dto.setSchoolgwanno(place.getSchoolGwan().getSchoolgwanno());
               return dto;
           });
@@ -142,8 +124,6 @@ public class PlacesServiceImpl implements PlacesService {
         dto.setPlaceno(entity.getPlaceno());
         dto.setPlacename(entity.getPlacename());
         dto.setHosu(entity.getHosu());
-        dto.setStart_time(entity.getStart_time());
-        dto.setEnd_time(entity.getEnd_time());
         dto.setSchoolgwanno(entity.getSchoolGwan().getSchoolgwanno());
         dto.setSchoolgwanname(entity.getSchoolGwan().getSchoolgwanname());
         return dto;

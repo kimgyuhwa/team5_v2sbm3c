@@ -45,7 +45,7 @@ public class Review {
     @JoinColumn(name = "receiver", nullable = false)
     private User receiver;
 
-    private Integer rating;
+    private Float rating;
     
     @Column
     private String comments;

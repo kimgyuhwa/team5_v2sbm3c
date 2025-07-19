@@ -32,4 +32,6 @@ public class Block {
     private User blocked;
 
     private LocalDateTime createdAt;
+    private String  reason;
+    private Boolean active = false;
 }

@@ -1,6 +1,5 @@
 package dev.mvc.team5.places;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,64 +27,47 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Places {
-		
-
   
-  /**
-   * placeno
-   * @param 강의실 번호
-   */
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "places_seq")
-    @SequenceGenerator(name = "places_seq", sequenceName = "PLACES_SEQ", allocationSize = 1)
-    @Column(name = "placeno")
-    private Long placeno;
+  /** 강의실 번호 (PK) */
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "places_seq")
+  @SequenceGenerator(name = "places_seq", sequenceName = "PLACES_SEQ", allocationSize = 1)
+  @Column(name = "placeno")
+  private Long placeno;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schoolgwanno", nullable = false)
-    @JsonIgnore
-    private SchoolGwan schoolGwan;
+  /** 소속 건물 (SchoolGwan) - 지연로딩 */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "schoolgwanno", nullable = false)
+  @JsonIgnore
+  private SchoolGwan schoolGwan;
 
-    
-    /**
-     * placename
-     * @param 강의실 이름
-     */
-    @Column(name = "placename", length = 100)
-    private String placename;
-    
-    /**
-     * placename
-     * @param 강의실 호수
-     */
-    @Column(name = "hosu", length = 100)
-    private String hosu;
+  /** 강의실 이름 */
+  @Column(name = "placename", length = 100, nullable = false)
+  private String placename;
 
-    
-    /**
-     * 강의 시간
-     * 강의시간 제외하고 다른 시간은 가능하도록 설계
-     */
-    private LocalDateTime start_time;
-    
-    /**
-     * 강의 끝나는 시간
-     * 강의시간 제외하고 다른 시간은 가능하도록 설계
-     */    
-    private LocalDateTime end_time;
-    
-    // 양방향: schoolgwan ↔ places
-    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reservations> Reservation = new ArrayList<>();
-    
-    
-    
-    public Places(/*User userno,*/ SchoolGwan schoolGwan, String placename, String hosu, LocalDateTime start_time, LocalDateTime end_time) {
-//        this.userno = userno;
-        this.schoolGwan = schoolGwan;
-        this.placename = placename;
-        this.hosu = hosu;
-        this.start_time = start_time;
-        this.end_time = end_time;
-    }
+  /** 강의실 호수 */
+  @Column(name = "hosu", length = 100)
+  private String hosu;
+
+  /** 예약 목록 - 양방향 연관관계 */
+  @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private List<Reservations> reservations = new ArrayList<>();
+
+  // 강의 시간 관련 필드는 별도 엔티티(ClassSchedule)에서 관리하기 때문에 제거
+
+  public Places(SchoolGwan schoolGwan, String placename, String hosu) {
+    this.schoolGwan = schoolGwan;
+    this.placename = placename;
+    this.hosu = hosu;
+  }
+  
+  // 클래스 스케줄에 쓸 것
+	//“이 객체는 placeno만 있고 나머지 필드는 몰라도 되니까,
+	//  JPA 너가 DB에서 외래키만 써서 연관관계 연결해줘~” 라는 뜻
+	public Places(Long placeno) {
+	   this.placeno = placeno;
+}
+
+
 }

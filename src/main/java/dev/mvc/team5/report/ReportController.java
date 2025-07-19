@@ -1,6 +1,12 @@
 package dev.mvc.team5.report;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
@@ -14,30 +20,41 @@ public class ReportController {
     @Autowired
     private ReportService service;
 
-    //전체 신고 보기
+    /* 목록: /reports?status=OPEN&page=0&size=10 */
     @GetMapping
-    public List<ReportDTO> getAll() {
-        return service.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    public Page<ReportDTO> list(
+            @RequestParam(name="status",required = false) String status,
+            @RequestParam(name="page",defaultValue = "0") int page,
+            @RequestParam(name="size",defaultValue = "10") int size) {
+        return service.findAll(status, PageRequest.of(page, size, Sort.by("reportno").descending()));
     }
-    //신고자로 신고검색
+    /* 단건 */
     @GetMapping("/{id}")
-    public ReportDTO get(@PathVariable Long id) {
-        return toDTO(service.findById(id).orElseThrow());
+    public ReportDTO one(@PathVariable(name="id") Long id) {
+        return service.findAll(null, Pageable.unpaged())   // 재활용
+                 .stream().filter(r -> r.getReportno().equals(id))
+                 .findFirst().orElseThrow();
     }
-    //신고 생성
     @PostMapping
-    public ReportDTO create(@RequestBody ReportDTO dto) {
-        return toDTO(service.save(dto));
+    public ResponseEntity<ReportDTO> create(@RequestBody ReportDTO dto) {
+        try {
+            ReportDTO saved = toDTO(service.save(dto));        // 정상 저장
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+
+        } catch (IllegalStateException e) {                    // 중복 신고
+            return ResponseEntity.status(HttpStatus.CONFLICT)  // 409
+                                 .body(null);                  // 또는 e.getMessage()
+        }
+    }
+    /* 상태 변경 */
+    @PutMapping("/{id}/status")
+    public void updateStatus(@PathVariable(name="id") Long id, @RequestBody String status) {
+        service.updateStatus(id, status);
     }
     //신고 삭제
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable(name="id")  Long id) {
         service.delete(id);
-    }
-    // 상태변경 / 대기중/승인됨/거절됨/완료됨
-    @PutMapping("/{id}/status")
-    public void updateStatus(@PathVariable Long id, @RequestBody String status) {
-        service.updateStatus(id, status);
     }
     
     private ReportDTO toDTO(Report report) {

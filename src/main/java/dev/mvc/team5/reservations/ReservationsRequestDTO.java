@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class ReservationsRequestDTO {
     private Long userno;
     private Long placeno;
+    private String placename;
     private LocalDateTime start_time;
     private LocalDateTime end_time;
     private String placesinfo;

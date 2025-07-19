@@ -27,7 +27,7 @@ function Menu() {
       <Link to="/talent/post">게시물</Link> |{" "}
       <Link to="/review/review">리뷰</Link> |{" "}
       <Link to="/mypage/chatbot-list">챗봇리스트 |</Link>
-      <Link to="/firebase/FileUploader"> 파이어베이스</Link>{" "}
+      <Link to="/reservation/Reservation"> 예약 ex</Link>{" "}
 
       {loginUser && loginUser.role === "admin" && (
         <>
@@ -35,6 +35,7 @@ function Menu() {
           {" | "}<Link to="/talent/category">Category(소분류)</Link>
           {" | "}<Link to="/talent/type">Type</Link>
           {" | "}<Link to="/admin/user">유저 목록</Link>
+          {" | "}<Link to="/admin/report">신고 목록</Link>
         </>
       )}
     </>

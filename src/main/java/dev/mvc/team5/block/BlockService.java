@@ -2,6 +2,8 @@ package dev.mvc.team5.block;
 
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,20 @@ public class BlockService {
         block.setCreatedAt(LocalDateTime.now());
 
         return repo.save(block);
+    }
+    @Transactional
+    public void blockUser(Long targetUserno, String reason) {
+        // 이미 활성 차단이면 건너뜀
+        if (repo.existsByBlocked_UsernoAndActiveTrue(targetUserno)) return;
+
+        Block block = new Block();
+        block.setBlocker(null);                                   // 시스템 차단
+        block.setBlocked(userRepo.getReferenceById(targetUserno));
+        block.setReason(reason);
+        block.setActive(true);
+        block.setCreatedAt(LocalDateTime.now());
+
+        repo.save(block);
     }
 
     public void delete(Long id) {
