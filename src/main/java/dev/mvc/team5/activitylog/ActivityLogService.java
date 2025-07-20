@@ -135,6 +135,37 @@ public class ActivityLogService {
       log.setCreatedAt(LocalDateTime.now());
       activityLogRepository.save(log);
   }
-    
+    /**
+     * ✅ 신고 활동 로그 기록  
+     * @param reporterUserno 신고를 한 사용자 번호
+     * @param reportedTargetId 신고 대상의 ID (예: 게시물 ID, 댓글 ID, 사용자 ID 등)
+     * @param reportedTargetType 신고 대상의 타입 (예: "POST", "COMMENT", "USER" 등)
+     * @param reason 신고 사유
+     * 이거 그대로 리포트서비스에서 사용하면됨
+     */
+    public void logReport(Long reporterUserno, Integer reportedTargetId, String reportedTargetType, String reason) {
+        User reporter = userRepository.findById(reporterUserno)
+                .orElseThrow(() -> new IllegalArgumentException("Reporter user not found for userno: " + reporterUserno));
+        
+        ActivityLog log = new ActivityLog();
+        log.setUser(reporter); // 신고를 한 사용자를 로그에 기록
+        log.setAction("REPORT"); // 액션 타입은 "REPORT"로 설정
 
+        // detail 필드에 신고와 관련된 상세 정보 JSON 형태로 저장
+        String detailJson = String.format("{\"reportedTargetId\":%d, \"reportedTargetType\":\"%s\", \"reason\":\"%s\"}",
+                                        reportedTargetId, reportedTargetType, escapeJson(reason));
+        log.setDetail(detailJson);
+        
+        log.setCreatedAt(LocalDateTime.now());
+        activityLogRepository.save(log);
+    }
+
+    // JSON 문자열 내 특수 문자 이스케이프를 위한 헬퍼 메서드 (선택 사항이나 권장)
+    private String escapeJson(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
+    }
 }
+

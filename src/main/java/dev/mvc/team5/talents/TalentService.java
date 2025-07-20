@@ -377,6 +377,7 @@ public class TalentService {
                 System.out.println("  로그인된 Userno: " + loggedInUserno);
                 System.out.println("  나의 차단 여부 (" + loggedInUserno + " -> " + currentTalentUserno + "): " + isBlockedByMe);
                 System.out.println("  최종 차단 상태 (재능 ID " + talent.getTalentno() + "): " + dto.isBlocked());
+                System.out.println(isBlockedByMe);
 
             } else {
                 dto.setBlocked(false); // 본인 글이거나 로그인되지 않은 경우 차단되지 않은 것으로 간주

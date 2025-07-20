@@ -87,7 +87,7 @@ public class BlockService {
     }
     // 차단 여부( 되어있는지 아닌지)
     public boolean isBlocked(Long blocker, Long blocked) {
-      return repo.existsByBlockerUsernoAndBlockedUserno(blocker, blocked);
+      return repo.existsByBlocker_UsernoAndBlocked_Userno(blocker, blocked);
   }
     
     
