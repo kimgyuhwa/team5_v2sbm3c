@@ -1,5 +1,6 @@
 package dev.mvc.team5.block;
 
+import dev.mvc.team5.block.BlockDTO.BlockedUserDTO;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BlockService {
@@ -58,13 +60,35 @@ public class BlockService {
         repo.deleteById(id);
     }
  // 사용자가 차단한 사람 목록 보기
-    public List<Block> findByBlocker(Long userno) {
-      return repo.findAll().stream()
-              .filter(b -> b.getBlocker().getUserno().equals(userno))
-              .toList();
-  }
+    public List<BlockedUserDTO> getBlockedUsers(Long blockerUserno) {
+        return repo.findByBlockerUserno(blockerUserno)
+                .stream()
+                .map(block -> {
+                    BlockedUserDTO dto = new BlockedUserDTO();
+                    dto.setUserno(block.getBlocked().getUserno());
+                    dto.setUsername(block.getBlocked().getUsername());
+                    dto.setEmail(block.getBlocked().getEmail());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+    @Transactional
+    public void unblockUser(Long blockerUserno, Long blockedUserno) {
+    	repo.deleteByBlockerUsernoAndBlockedUserno(blockerUserno, blockedUserno);
+    }
+
+    // 차단 해제
+    @Transactional
+    public void unblock(Long blockno) {
+        Block block = repo.findById(blockno)
+            .orElseThrow(() -> new IllegalArgumentException("차단 정보 없음"));
+
+        block.setActive(false);
+    }
     // 차단 여부( 되어있는지 아닌지)
     public boolean isBlocked(Long blocker, Long blocked) {
-      return repo.existsByBlockerUsernoAndBlockedUserno(blocker, blocked);
+      return repo.existsByBlocker_UsernoAndBlocked_Userno(blocker, blocked);
   }
+    
+    
 }

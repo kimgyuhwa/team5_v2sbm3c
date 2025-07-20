@@ -7,6 +7,7 @@ import SecuritySettings from './MyPageSetting';
 import MyPageProfile from './MyPageProfile';
 import MyPageSurvey from './MyPageSurvey';
 import MyPageReservation from './MyPageReservation';
+import MyPageBlockList from './MyPageBlockList';
 
 
 
@@ -27,6 +28,8 @@ export default function MyPage() {
         return <SecuritySettings />;
       case 'history':
         return <MyPageSurvey />;
+      case 'block':
+        return <MyPageBlockList />;
       case 'reservation':
         return <MyPageReservation />;  
     }

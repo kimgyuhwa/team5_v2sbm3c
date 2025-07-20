@@ -14,7 +14,7 @@ function UserLogin({ isModalOpen = true, closeModal = () => {} }) {
   const [passwd, setPasswd] = useState('');
   const [savePasswd, setSavePasswd] = useState(false);
   const navigate = useNavigate();
-const { sw, setSw, userno, setUserno, loginUser, setLoginUser } = useContext(GlobalContext);
+  const { sw, setSw, userno, setUserno, loginUser, setLoginUser } = useContext(GlobalContext);
 
   useEffect(() => {
     const storedId = localStorage.getItem('savedUserId');
@@ -327,3 +327,4 @@ const { sw, setSw, userno, setUserno, loginUser, setLoginUser } = useContext(Glo
 }
 
 export default UserLogin;
+

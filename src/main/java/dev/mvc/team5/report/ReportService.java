@@ -1,5 +1,8 @@
 package dev.mvc.team5.report;
 
+import dev.mvc.team5.activitylog.ActivityLogService;
+import dev.mvc.team5.block.Block;
+import dev.mvc.team5.block.BlockRepository;
 import dev.mvc.team5.block.BlockService;
 import dev.mvc.team5.tool.ReportStatus;
 import dev.mvc.team5.user.User;
@@ -22,10 +25,16 @@ public class ReportService {
     private ReportRepository repo;
 
     @Autowired
+    private BlockRepository blockRepo;
+    
+    @Autowired
     private UserRepository userRepo;
     
     @Autowired
     private  BlockService blockSvc;
+    
+    @Autowired
+    private ActivityLogService activityLogSvc;
     
     public List<Report> findAll() {
         return repo.findAll();
@@ -52,7 +61,32 @@ public class ReportService {
         report.setTargetId(dto.getTargetId());
         report.setCreatedAt(LocalDateTime.now());
         report.setStatus(dto.getStatus() != null ? dto.getStatus() : "OPEN");
-
+        
+        //자동 차단 이거후 blockservice에서 글 안보이게도함
+        Block block = new Block();
+        block.setBlocker(reporter); // 신고자
+        block.setBlocked(reported);   // 피신고자
+        blockRepo.save(block);
+        
+        // ⭐ 4. 활동 로그 기록 ⭐
+        // logReport(reporterUserno, reportedTargetId, reportedTargetType, reason)
+        // dto.getReason()을 그대로 쓰면 따옴표나 줄바꿈 있을 시 JSON 깨질 수 있으니,
+        // ActivityLogService의 logReport 메서드 안에서 escapeJson 헬퍼 메서드를 사용하도록 했습니다.
+        // reportedTargetId는 Long 타입이므로 dto.getTargetId()를 그대로 사용하고,
+        // reportedTargetType은 String이므로 dto.getReportType()을 그대로 사용합니다.
+        try {
+            activityLogSvc.logReport(
+                dto.getReporter(),      // 신고를 한 사용자 userno
+                dto.getTargetId(),      // 신고 대상 ID (예: 게시물, 댓글, 사용자 ID)
+                dto.getReportType(),    // 신고 대상 타입 (예: "POST", "COMMENT", "USER" 등)
+                dto.getReason()         // 신고 사유
+            );
+            System.out.println("활동 로그: 신고 이벤트가 성공적으로 기록되었습니다.");
+        } catch (Exception e) {
+            System.err.println("활동 로그 기록 중 오류 발생: " + e.getMessage());
+            // 활동 로그 기록 실패가 핵심 기능(신고)에 영향을 주지 않도록 예외를 다시 던지지 않습니다.
+        }
+        
         return repo.save(report);
     }
 //    /* 신고 중복 여부 */

@@ -87,7 +87,7 @@ function AdminReportList() {
       <div className="overflow-auto">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="bg-gray-100 text-gray-600 text-left">
+            <tr className="bg-gray-100 text-gray-600 text-center">
               <th className="px-3 py-2 whitespace-nowrap">ID</th>
               <th className="px-3 py-2 whitespace-nowrap">신고자</th>
               <th className="px-3 py-2 whitespace-nowrap">피신고자</th>

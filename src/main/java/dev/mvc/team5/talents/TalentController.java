@@ -154,9 +154,11 @@ public class TalentController {
             @RequestParam(name = "categoryno", required = false) Long categoryno,
             @RequestParam(name = "schoolno", required = false) Long schoolno,  // 추가
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
-
-        Page<TalentListDTO> resultPage = service.searchTalents(keyword, categoryno, schoolno, page, size);
+            @RequestParam(name = "size", defaultValue = "10") int size
+            ,HttpSession session) {
+    	 Long loggedInUserno = (Long) session.getAttribute("userno");
+    	 //System.out.println("DEBUG: TalentController - loggedInUserno from session: " + loggedInUserno);
+        Page<TalentListDTO> resultPage = service.searchTalents(keyword, categoryno, schoolno, page, size,loggedInUserno);
         return ResponseEntity.ok(resultPage);
     }
 }
