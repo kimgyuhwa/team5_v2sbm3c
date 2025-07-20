@@ -41,6 +41,7 @@ def chat_proc():
     data = request.json
     message = data.get("message", "")
     userno = data.get("userno")
+    source = data.get("source", "user")  # ✅ 'faq'일 경우 RAG 무조건 사용
 
     print("-> 사용자 질문:", message)
 
@@ -53,13 +54,19 @@ def chat_proc():
         result = reservation_agent.invoke({"input": message})
         return jsonify({"res": result["output"], "source": "reservation"})
 
-    # 1️⃣ RAG 시도
+    # ✅ FAQ 버튼에서 온 요청은 RAG로 강제 처리
+    if source == "faq":
+        rag_answer = query_engine.query(message).response
+        print("📚 [FAQ] RAG 응답:", rag_answer)
+        return jsonify({"res": rag_answer, "source": "rag"})
+
+    # 1️⃣ 일반 입력: RAG → 신뢰도 체크
     rag_answer = query_engine.query(message).response
     if is_confident(rag_answer, message):
         print("📚 RAG 응답 사용")
         return jsonify({"res": rag_answer, "source": "rag"})
 
-    # 2️⃣ Agent fallback
+    # 2️⃣ LangChain Agent fallback
     apitool.CURRENT_USERNO = userno
     result = apitool.agent.invoke({"input": message, "userno": userno})
     agent_answer = result["output"]
@@ -69,6 +76,7 @@ def chat_proc():
 
     print("🤖 Agent 응답 사용")
     return jsonify({"res": agent_answer, "source": "agent"})
+
 
 
 # ✅ 예약 전용 엔드포인트 (테스트용 직접 호출 가능)
