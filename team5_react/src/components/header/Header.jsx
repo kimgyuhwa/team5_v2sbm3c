@@ -134,18 +134,19 @@ function Header() {
         rooms.map(async r => {
           const res = await fetch(`/message/${r.chatRoomno}/last-message`);
           const last = await res.json();     // {content, createdAt}
-
+          console.log(last)
           return {
             id: r.chatRoomno,
             name: r.roomName,
             senderName:last.senderName,
             lastMessage: last.content,
-            time: new Date(last.createdAt || r.createdAt)
+            time: new Date(last.sentAt || r.createdAt)
                      .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})
           };
         })
       );
       setChatList(withLast);
+      
     })
     .catch(console.error);
     // //알림 목록 API 호출

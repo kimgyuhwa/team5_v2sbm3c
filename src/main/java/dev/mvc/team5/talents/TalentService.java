@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import dev.mvc.team5.block.BlockService;
 import dev.mvc.team5.file.FileUpload;
 import dev.mvc.team5.file.FileUploadDTO;
 import dev.mvc.team5.file.FileUploadRepository;
@@ -49,6 +50,9 @@ public class TalentService {
     
     @Autowired
     private FileUploadRepository fileUploadRepository;
+    
+    @Autowired
+    private BlockService blockService;
 
     /**
      * 엔티티 → 상세 조회용 DTO 변환
@@ -258,7 +262,8 @@ public class TalentService {
                 t.getCategory() != null ? t.getCategory().getName() : "없음",
                 t.getType() != null ? t.getType().getName() : "없음",
                 t.getUser().getUserno(),
-                fileDTOs
+                fileDTOs,
+                false
         );
     }
 
@@ -330,15 +335,18 @@ public class TalentService {
     /**
      * 제목 또는 설명에 키워드가 포함된 재능 리스트 조회 (페이징 + 정렬)
      * @param keyword 검색어 (null 또는 빈 문자열일 경우 전체 조회)
+     * @param categoryno 카테고리 번호
+     * @param schoolno 학교 번호
      * @param page 페이지 번호 (0부터 시작)
      * @param size 페이지 당 데이터 개수
+     * @param loggedInUserno 로그인한 사용자의 userno (⭐ 파라미터 추가 ⭐)
      * @return 페이징된 DTO 리스트
      */
-      public Page<TalentListDTO> searchTalents(String keyword, Long categoryno, Long schoolno, int page, int size) {
+    public Page<TalentListDTO> searchTalents(String keyword, Long categoryno, Long schoolno, int page, int size, Long loggedInUserno) { // ⭐ loggedInUserno 파라미터 추가 ⭐
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "talentno"));
-  
+
         Page<Talent> talentPage;
-  
+
         if ((keyword == null || keyword.trim().isEmpty()) && categoryno == null && schoolno == null) {
             talentPage = talentRepository.findAll(pageable);
         } else {
@@ -349,8 +357,34 @@ public class TalentService {
                 pageable
             );
         }
-  
-        return talentPage.map(this::toListDTO);
+
+        // ⭐ 핵심 수정 부분: 람다 표현식으로 DTO 변환 및 isBlocked 설정 ⭐
+        return talentPage.map(talent -> {
+            TalentListDTO dto = toListDTO(talent); // toListDTO를 사용하여 기본 DTO 생성
+
+            Long currentTalentUserno = (talent.getUser() != null) ? talent.getUser().getUserno() : null;
+
+            // 로그인한 사용자가 존재하고, 현재 재능 글 작성자와 로그인한 사용자가 다르다면
+            // (즉, 본인 글이 아닐 경우에만 차단 여부 확인)
+            if (loggedInUserno != null && currentTalentUserno != null && !loggedInUserno.equals(currentTalentUserno)) {
+                // ⭐ 내가 상대방을 차단했는지 여부만 확인 ⭐
+                boolean isBlockedByMe = blockService.isBlocked(loggedInUserno, currentTalentUserno); 
+                dto.setBlocked(isBlockedByMe); // ⭐ isBlockedByMe 값으로 바로 설정 ⭐
+
+                // 디버그 로그 (필요시 사용)
+                System.out.println("--- 재능 ID 처리 중: " + talent.getTalentno() + " ---");
+                System.out.println("  재능 작성자 Userno: " + currentTalentUserno);
+                System.out.println("  로그인된 Userno: " + loggedInUserno);
+                System.out.println("  나의 차단 여부 (" + loggedInUserno + " -> " + currentTalentUserno + "): " + isBlockedByMe);
+                System.out.println("  최종 차단 상태 (재능 ID " + talent.getTalentno() + "): " + dto.isBlocked());
+
+            } else {
+                dto.setBlocked(false); // 본인 글이거나 로그인되지 않은 경우 차단되지 않은 것으로 간주
+                // 디버그 로그 (필요시 사용)
+                System.out.println("  본인 글이거나 비로그인 상태. 재능 ID " + talent.getTalentno() + "의 차단 상태: false");
+            }
+            return dto;
+        });
     }
 
 

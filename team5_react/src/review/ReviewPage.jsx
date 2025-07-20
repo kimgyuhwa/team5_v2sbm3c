@@ -8,6 +8,7 @@ const ReviewPage = ({receiverno}) => {
   const [givenReviews, setGivenReviews] = useState([]);
   const [receivedPage, setReceivedPage] = useState(0); // 현재 페이지
   const [receivedTotalPages, setReceivedTotalPages] = useState(0); // 총 페이지 수
+  const [reviewSummary, setReviewSummary] = useState(''); // 리뷰 요약 상태 추가
   const [form, setForm] = useState({
     receiver: receiverno,
     rating: '',
@@ -28,7 +29,7 @@ console.log('GlobalContext:', context);
   const res = await axios.get(`/reviews/receiver/${receiverno}`, {
     params: { page, size: 3},
   });
-  setReceivedReviews(res.data);
+  setReceivedReviews(res.data);   //이거고침
   setReceivedTotalPages(res.data.totalPages);
   setReceivedPage(res.data.number);
 };
@@ -52,6 +53,7 @@ console.log('GlobalContext:', context);
     await axios.post('/reviews', data);
     setForm({ receiver: '', rating: '', comments: '' });
     fetchGiven();
+    fetchReceived();
   };
   //props받을떄 {receiverno} 괄호안하니까 객체로받아버림 ㄷㄷ
   //console.log("receiverUserno:", receiverno); 
@@ -59,7 +61,29 @@ console.log('GlobalContext:', context);
     fetchReceived();
     fetchGiven();
   }, [giverno]);
+//  receivedReviews가 업데이트될 때마다 자동으로 AI 요약 요청  // 이게 돈 엄청나갈거같은데
+  useEffect(() => {
+    if (receivedReviews && receivedReviews.length > 0) {
+        const reviewComments = receivedReviews.map(r => r.comments);
 
+        const summarizeReviews = async () => {
+            try {
+                // 이 부분에서 receiverno와 reviewComments가 제대로 보내지는지 확인
+                const res = await axios.post('/reviews/summary', { 
+                    receiverNo: receiverno, // receiverno도 함께 보냄
+                    reviewComments: reviewComments 
+                }); 
+                setReviewSummary(res.data.summary);
+            } catch (error) {
+                console.error("리뷰 요약 실패:", error);
+                setReviewSummary("리뷰 요약에 실패했습니다."); 
+            }
+        };
+        summarizeReviews();
+    } else if (receivedReviews && receivedReviews.length === 0) {
+        setReviewSummary('');
+    }
+}, [receivedReviews, receiverno]);
   // 리뷰 평점 평균,  이제 ai로 리뷰 데이터해서 리뷰요약들 해야됨
   const avg =
     receivedReviews.length > 0
@@ -140,6 +164,13 @@ console.log(receivedReviews)
         </form>
       </>
     )}
+     {/* ⭐ AI 리뷰 요약 섹션 ⭐ */}
+      {reviewSummary && ( // reviewSummary가 있을 때만 표시
+        <div className="mb-6 p-4 border rounded-lg bg-indigo-50 shadow-sm mt-8">
+          <h3 className="text-md font-semibold mb-3 text-indigo-700">AI 리뷰 요약</h3>
+          <p className="text-indigo-800 whitespace-pre-wrap">{reviewSummary}</p>
+        </div>
+      )}
 
       <h2 className="text-xl font-bold mb-4 text-gray-800">💬 받은 리뷰</h2>
       {receivedReviews.length === 0 ? (

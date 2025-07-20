@@ -1,5 +1,7 @@
 package dev.mvc.team5.report;
 
+import dev.mvc.team5.block.Block;
+import dev.mvc.team5.block.BlockRepository;
 import dev.mvc.team5.block.BlockService;
 import dev.mvc.team5.tool.ReportStatus;
 import dev.mvc.team5.user.User;
@@ -21,6 +23,9 @@ public class ReportService {
     @Autowired
     private ReportRepository repo;
 
+    @Autowired
+    private BlockRepository blockRepo;
+    
     @Autowired
     private UserRepository userRepo;
     
@@ -52,6 +57,12 @@ public class ReportService {
         report.setTargetId(dto.getTargetId());
         report.setCreatedAt(LocalDateTime.now());
         report.setStatus(dto.getStatus() != null ? dto.getStatus() : "OPEN");
+        
+        Block block = new Block();
+        
+        block.setBlocker(reporter); // 신고자
+        block.setBlocked(reported);   // 피신고자
+        blockRepo.save(block);
 
         return repo.save(report);
     }
