@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../GlobalContext';
 import ChatRoom from '../../chat/ChatRoom';
 
-function Header() {
+function Header( { openLoginModal } ) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isChatDropdownOpen, setIsChatDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
@@ -241,6 +242,14 @@ function Header() {
     setIsChatDropdownOpen(false); // 다른 드롭다운 닫기
   };  
 
+    const handleLogoClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault(); // 로그인 안 된 경우 클릭 막기
+    } else {
+      navigate('/components/main'); // 로그인 된 경우 메인으로 이동
+    }
+  };
+
   return (
     <div style={{
       backgroundColor: 'white',
@@ -262,13 +271,20 @@ function Header() {
         }}>
           {/* 로고 */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <a href='/components/main'>
-              <h1 style={{
-                fontSize: '24px',
-                fontWeight: '700',
-                color: '#333',
-                margin: 0
-              }}>
+            <a 
+              href="/components/main" 
+              onClick={handleLogoClick} 
+              style={{ cursor: isLoggedIn ? 'pointer' : 'default' }}
+              aria-disabled={!isLoggedIn}
+            >
+              <h1
+                style={{
+                  fontSize: '24px',
+                  fontWeight: '700',
+                  color: isLoggedIn ? '#333' : '#aaa',
+                  margin: 0
+                }}
+              >
                 메인
               </h1>
             </a>
@@ -573,10 +589,13 @@ function Header() {
         ) : (
           /* ----- 비로그인 상태 ----- */
           <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={() => navigate('/user/login')} style={guestBtnStyle}>
+            <button
+              onClick={openLoginModal}
+              style={guestBtnStyle}
+            >
               로그인
             </button>
-            <button onClick={() => navigate('/user/register')}
+            <button onClick={() => navigate('/user/univCert')}
               style={{ ...guestBtnStyle, backgroundColor: '#17a2b8', color: 'white', border: 'none' }}>
               회원가입
             </button>

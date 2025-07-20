@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GlobalProvider,GlobalContext } from './components/GlobalContext';
 import Menu from './components/Menu';
@@ -37,63 +37,71 @@ import ReportCreate from './components/report/ReportCreate';
 
 
 function App() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
-     <GlobalProvider>
-    <div className="App">
-      <BrowserRouter>
-        <Menu />
-        <Header />
-        <hr />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {/** 관리자 페이지 */}
-          <Route path="/admin/user" element={<AdminUserList />} />
-          <Route path="/admin/report" element={<AdminReportList />} />  
-          {/** 회원 */}
-          <Route path="/mypage/MyPage" element={<MyPage />} />
-          <Route path="/mypage/MyPageSetting" element={<MyPageSetting />} />
-          <Route path="/mypage/MyPageSurvey" element={<MyPageSurvey />} />
-          <Route path="/mypage/MyPageProfile" element={<MyPageProfile />} />
-          <Route path="/mypage/MyPageReservation" element={<MyPageReservation />} />
-          <Route path="/components/Main" element={<MainPage />} />
-          <Route path="/user/login" element={<UserLogin />} />
-          <Route path="/user/logout" element={<UserLogout />} />
-          <Route path="/user/session" element={<UserSession />} /> 
-          <Route path="/user/register" element={<UserRegister />} />  
-          <Route path="/user/profile" element={<UserProfile />} />  
-          <Route path="/user/findId" element={<FindUserId />} /> 
-          <Route path="/user/findPwd" element={<FindUserPwd />} />
-          <Route path="/user/univCert" element={<UnivCertPage />} /> 
-          <Route path="/review/review" element={<ReviewPage />} />
-          {/** 재능 */}
-          <Route path="/talent/post" element={<Talent />} />
-          <Route path="/talent/type" element={<TalentType />} />
-          <Route path="/talent/category" element={<TalentCategory />} /> 
-          <Route path="/talent/type" element={<TalentType />} /> 
-          <Route path="/talent/categrp" element={<TalentCateGrp />} />
-          <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
-          {/** 장소 */}
-          <Route path="/place/PlacesPage" element={<PlacesPage />} />
-          {/*<Route path="/places/:placeno" element={<PlaceDetailPage />} />  */}
-          <Route path="/place/detail/:placeno" element={<PlaceDetailPage />} />
-          
-          <Route path='/reservation/Reservation' element={<ReservationsManager />} />  
-           {/** 채팅 */}
-          <Route path="/chat" element={<ChatRoom />} /> 
-          <Route path="/chatroom/:chatRoomno" element={<ChatRoom />} /> 
-           {/** 챗봇 */}
-          <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
-          <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
-          <Route path="/mypage/MyPage" element={<MyPage />} />
-          {/** 신고 */}
-          <Route path="/report/create" element={<ReportCreate />} />
-        </Routes>
-        <hr />
-        <div style={{ textAlign: 'center', margin: '20px 0' }}>
-          &copy; 2025 My User System
-        </div>
-      </BrowserRouter>
-    </div>
+    <GlobalProvider>
+      <div className="App">
+        <BrowserRouter>
+          <Menu />
+          {/* Header에 로그인 모달 열기 함수 전달 */}
+          <Header openLoginModal={() => setIsModalOpen(true)} />
+          <hr />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            {/* 관리자 페이지 */}
+            <Route path="/admin/user" element={<AdminUserList />} />
+            <Route path="/admin/report" element={<AdminReportList />} />
+            {/* 회원 */}
+            <Route path="/mypage/MyPage" element={<MyPage />} />
+            <Route path="/mypage/MyPageSetting" element={<MyPageSetting />} />
+            <Route path="/mypage/MyPageSurvey" element={<MyPageSurvey />} />
+            <Route path="/mypage/MyPageProfile" element={<MyPageProfile />} />
+            <Route path="/mypage/MyPageReservation" element={<MyPageReservation />} />
+            <Route path="/components/Main" element={<MainPage />} />
+            <Route path="/user/login" element={<UserLogin />} />
+            <Route path="/user/logout" element={<UserLogout />} />
+            <Route path="/user/session" element={<UserSession />} />
+            <Route path="/user/register" element={<UserRegister />} />
+            <Route path="/user/profile" element={<UserProfile />} />
+            <Route path="/user/findId" element={<FindUserId />} />
+            <Route path="/user/findPwd" element={<FindUserPwd />} />
+            <Route path="/user/univCert" element={<UnivCertPage />} />
+            <Route path="/review/review" element={<ReviewPage />} />
+            {/* 재능 */}
+            <Route path="/talent/post" element={<Talent />} />
+            <Route path="/talent/type" element={<TalentType />} />
+            <Route path="/talent/category" element={<TalentCategory />} />
+            <Route path="/talent/type" element={<TalentType />} />
+            <Route path="/talent/categrp" element={<TalentCateGrp />} />
+            <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
+            {/* 장소 */}
+            <Route path="/place/PlacesPage" element={<PlacesPage />} />
+            <Route path="/place/detail/:placeno" element={<PlaceDetailPage />} />
+            <Route path="/reservation/Reservation" element={<ReservationsManager />} />
+            {/* 채팅 */}
+            <Route path="/chat" element={<ChatRoom />} />
+            <Route path="/chatroom/:chatRoomno" element={<ChatRoom />} />
+            {/* 챗봇 */}
+            <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
+            <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
+            <Route path="/mypage/MyPage" element={<MyPage />} />
+            {/* 신고 */}
+            <Route path="/report/create" element={<ReportCreate />} />
+          </Routes>
+          <hr />
+          <div style={{ textAlign: 'center', margin: '20px 0' }}>
+            &copy; 2025 My User System
+          </div>
+          {/* 로그인 모달 조건부 렌더링 */}
+          {isModalOpen && (
+            <UserLogin
+              isModalOpen={isModalOpen}
+              closeModal={() => setIsModalOpen(false)}
+            />
+          )}
+        </BrowserRouter>
+      </div>
     </GlobalProvider>
   );
 }

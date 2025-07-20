@@ -1,22 +1,20 @@
 import React, { useState, useContext, useEffect } from 'react';
-import '../App.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { GlobalContext } from '../components/GlobalContext';
-import SearchBar  from '../searchBar/SearchBar';
+
 function enter_chk(event, nextTag) {
   if (event.keyCode === 13) {
     document.getElementById(nextTag).focus();
   }
 }
 
-function UserLogin() {
+function UserLogin({ isModalOpen = true, closeModal = () => {} }) {
   const [id, setId] = useState('');
   const [saveId, setSaveId] = useState(false);
   const [passwd, setPasswd] = useState('');
   const [savePasswd, setSavePasswd] = useState(false);
-
-  const { sw, setSw, userno, setUserno, loginUser, setLoginUser } = useContext(GlobalContext);
   const navigate = useNavigate();
+const { sw, setSw, userno, setUserno, loginUser, setLoginUser } = useContext(GlobalContext);
 
   useEffect(() => {
     const storedId = localStorage.getItem('savedUserId');
@@ -32,29 +30,6 @@ function UserLogin() {
       setSavePasswd(true);
     }
   }, []);
-
-  //  useEffect(() => {
-  //     fetch('/user/session', {
-  //       method: 'GET',
-  //       credentials: 'include',
-  //     })
-  //       .then(res => res.json())
-  //       .then(data => {
-  //         if (data.sw && data.user) {
-  //           setSw(true);
-  //           setUserno(data.user.userno);
-  //           setLoginUser(data.user);
-  //           //localStorage.setItem('loginUser', JSON.stringify(data.user)); // 선택
-  //         } else {
-  //           setSw(false);
-  //           setUserno(0);
-  //           setLoginUser(null);
-  //         }
-  //       })
-  //       .catch(err => {
-  //         console.error('세션 확인 실패:', err);
-  //       });
-  //   }, []);
 
   const idChange = (e) => {
     const value = e.target.value;
@@ -142,6 +117,7 @@ function UserLogin() {
       });
   };
 
+
   const test = () => {
     setId('kimgyuhwa123');
     setPasswd('1234');
@@ -152,233 +128,200 @@ function UserLogin() {
     setPasswd('1234');
   };
 
-  const handleClick = () => {
-    navigate('/components/Main'); // 페이지 이동
-  }
+  const handleModalClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    } 
+  };
+
+  if (!isModalOpen) return null;
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center',
-      alignItems: 'center', 
-      minHeight: '100vh',
-      backgroundColor: '#f5f5f5',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      {sw === true ? (
-        <div style={{
-          width: '600px',
-          height: '450px',
-          backgroundColor: 'white',
-          borderRadius: '20px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          textAlign: 'center',
-          fontSize: '18px',
-          color: '#333'
-        }}>
-            <div style={{ marginBottom: '20px' }}>
-              사용자 로그인 성공했습니다.
+    <div
+      className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm"
+      onClick={handleModalClick}
+    >
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-2xl w-11/12 max-w-md">
+        <button
+          onClick={closeModal}
+          className="absolute top-4 right-6 text-2xl text-slate-500 hover:text-blue-600 cursor-pointer"
+        >
+          &times;
+        </button>
+
+        {sw === true ? (
+          // 로그인 성공 화면
+          <div className="text-center">
+            <div className="mb-6">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <h3
+                className="text-blue-600 mb-2 text-2xl font-semibold"
+                style={{
+                  fontFamily:
+                    "'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif",
+                }}
+              >
+                로그인 성공!
+              </h3>
+              <p
+                className="text-slate-500"
+                style={{
+                  fontFamily:
+                    "'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif",
+                }}
+              >
+                환영합니다! 메인 페이지로 이동합니다.
+              </p>
             </div>
-            <button 
-              onClick={handleClick}
+            <button
+              onClick={() => navigate('/components/Main')}
+              className="w-full bg-blue-600 text-white p-4 rounded-xl font-semibold hover:shadow-lg hover:bg-blue-700 transition-all duration-300"
+            >
+              확인
+            </button>
+          </div>
+        ) : (
+          // 기존 로그인 폼
+          <>
+            <h3
+              className="text-blue-600 mb-4 text-2xl font-semibold text-center"
               style={{
-                padding: '12px 24px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '16px',
-                cursor: 'pointer',
-                textDecoration: 'none'
-                
+                fontFamily:
+                  "'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif",
               }}
             >
-              메인으로 돌아가기
-            </button>
+              로그인
+            </h3>
 
-          </div>
-          
-        
-        
-      ) : (
-        <div style={{
-          width: '600px',
-          height: '450px',
-          backgroundColor: 'white',
-          borderRadius: '20px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-          padding: '30px',
-          boxSizing: 'border-box'
-        }}>
-          <h3 style={{ 
-            textAlign: 'center', 
-            marginBottom: '25px', 
-            color: '#333',
-            fontSize: '22px',
-            fontWeight: '600'
-          }}>
-            사용자 로그인
-          </h3>
-          
-          <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ marginBottom: '12px' }}>
-              <input
-                type="text"
-                id="id"
-                placeholder="아이디"
-                name="id"
-                autoFocus={true}
-                onKeyDown={e => enter_chk(e, 'passwd')}
-                onChange={idChange}
-                value={id}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e1e5e9',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  outline: 'none',
-                  transition: 'border-color 0.3s',
-                  boxSizing: 'border-box'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#007bff'}
-                onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
-              />
-            </div>
-            
-            <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', fontSize: '14px' }}>
-              <input
-                type="checkbox"
-                id="saveId"
-                checked={saveId}
-                onChange={saveIdChange}
-                style={{ marginRight: '8px' }}
-              />
-              <label htmlFor="saveId" style={{ color: '#666', cursor: 'pointer' }}>아이디 저장</label>
-            </div>
+            <p
+              className="text-slate-500 mb-6 text-center"
+              style={{
+                fontFamily:
+                  "'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif",
+              }}
+            >
+              대학생 재능 교환을 시작해보세요!
+            </p>
 
-            <div style={{ marginBottom: '12px' }}>
-              <input
-                type="password"
-                id="passwd"
-                placeholder="패스워드"
-                name="passwd"
-                onKeyDown={e => enter_chk(e, 'btnSend')}
-                onChange={passwdChange}
-                value={passwd}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e1e5e9',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  outline: 'none',
-                  transition: 'border-color 0.3s',
-                  boxSizing: 'border-box'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#007bff'}
-                onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
-              />
-            </div>
-            
-            <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', fontSize: '14px' }}>
-              <input
-                type="checkbox"
-                id="savePasswd"
-                checked={savePasswd}
-                onChange={savePasswdChange}
-                style={{ marginRight: '8px' }}
-              />
-              <label htmlFor="savePasswd" style={{ color: '#666', cursor: 'pointer' }}>패스워드 저장</label>
-            </div>
+            <form onSubmit={send}>
+              <div className="mb-4">
+                <input
+                  type="text"
+                  id="id"
+                  placeholder="아이디"
+                  name="id"
+                  autoFocus={true}
+                  onKeyDown={(e) => enter_chk(e, 'passwd')}
+                  onChange={idChange}
+                  value={id}
+                  className="w-full p-4 border-2 border-slate-200 rounded-xl text-base focus:outline-none focus:border-blue-600"
+                />
+              </div>
 
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-              <button 
-                id="btnSend" 
-                onClick={send}
-                style={{
-                  flex: '1',
-                  padding: '12px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+              <div className="mb-3 flex items-center">
+                <input
+                  type="checkbox"
+                  id="saveId"
+                  checked={saveId}
+                  onChange={saveIdChange}
+                  className="mr-2"
+                />
+                <label
+                  htmlFor="saveId"
+                  className="text-sm text-slate-600 cursor-pointer"
+                >
+                  아이디 저장
+                </label>
+              </div>
+
+              <div className="mb-4">
+                <input
+                  type="password"
+                  id="passwd"
+                  placeholder="패스워드"
+                  name="passwd"
+                  onKeyDown={(e) => enter_chk(e, 'btnSend')}
+                  onChange={passwdChange}
+                  value={passwd}
+                  className="w-full p-4 border-2 border-slate-200 rounded-xl text-base focus:outline-none focus:border-blue-600"
+                />
+              </div>
+
+              <div className="mb-6 flex items-center">
+                <input
+                  type="checkbox"
+                  id="savePasswd"
+                  checked={savePasswd}
+                  onChange={savePasswdChange}
+                  className="mr-2"
+                />
+                <label
+                  htmlFor="savePasswd"
+                  className="text-sm text-slate-600 cursor-pointer"
+                >
+                  패스워드 저장
+                </label>
+              </div>
+
+              <button
+                id="btnSend"
+                type="submit"
+                className="w-full bg-blue-600 text-white p-4 rounded-xl font-semibold hover:shadow-lg hover:bg-blue-700 transition-all duration-300 mb-3"
               >
                 로그인
               </button>
-              
-              <button 
-                id="btnTest" 
-                type="button" 
+            </form>
+
+            <div className="flex gap-2 mb-4">
+              <button
+                type="button"
                 onClick={test}
-                style={{
-                  flex: '1',
-                  padding: '12px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+                className="flex-1 bg-slate-500 text-white p-3 rounded-xl text-sm font-semibold hover:bg-slate-600 transition-all duration-300"
               >
                 사용자 계정
               </button>
-              <button 
-                id="btnTest" 
-                type="button" 
+              <button
+                type="button"
                 onClick={adminTest}
-                style={{
-                  flex: '1',
-                  padding: '12px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#545b62'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+                className="flex-1 bg-slate-500 text-white p-3 rounded-xl text-sm font-semibold hover:bg-slate-600 transition-all duration-300"
               >
-                관리자Test계정
+                관리자 계정
               </button>
             </div>
 
-            <div style={{ marginTop: '10px' }}>
-              <Link to="/user/univCert" style={{ marginRight: '10px' }}>
-                학교 인증하기   
+            <div className="text-center text-sm text-slate-500 mb-4">
+              <Link
+                to="/user/findId"
+                style={{ marginRight: '10px' }}
+                onClick={() => closeModal()}
+              >
+                아이디 찾기
               </Link>
-              <Link to="/user/findId" style={{ marginRight: '10px' }}>    
-                아이디 찾기   
-              </Link>
-
-              
-              <Link to="/user/findPwd">  
+              <Link to="/user/findPwd"
+              onClick={() => closeModal()}>  
                 비밀번호 찾기  
               </Link>
             </div>
-          </div>
-          </div>
-      )}
-      
+
+            <p className="text-slate-500 text-center text-sm">
+              아직 계정이 없으신가요?{' '}
+              <span
+                onClick={() => {
+                  navigate('/user/univCert');
+                  closeModal();
+                }}
+                className="text-blue-600 font-semibold hover:text-blue-700 cursor-pointer"
+              >
+                회원가입
+              </span>
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }
