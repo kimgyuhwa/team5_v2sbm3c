@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import uploadFile from '../../fileupload/FileUpload';
 
 const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCategoryNo }) => {
-  const [talents, setTalents] = useState([]);
+  const [talents, setTalents] = useState([]); // 이제 이 상태에 필터링된 최종 목록을 저장합니다.
   const [totalPages, setTotalPages] = useState(1);
+  // const [filteredTalents, setFilteredTalents] = useState([]); // 🚩 이 줄을 제거합니다! 🚩
   const [page, setPage] = useState(0);
   const [size] = useState(10);
 
@@ -29,7 +30,11 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
   };
 
   useEffect(() => {
-    if (!schoolno) return;
+    if (!schoolno) {
+        setTalents([]); // 학교 번호가 없으면 목록을 비움
+        setTotalPages(1);
+        return;
+    }
     const params = new URLSearchParams();
     if (searchQuery?.trim()) params.append('keyword', searchQuery.trim());
     if (selectedCategoryNo) params.append('categoryno', selectedCategoryNo);
@@ -37,13 +42,25 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
     params.append('size', size);
     params.append('schoolno', schoolno);
 
+    console.log("요청 파라미터:", params.toString()); // 어떤 파라미터로 요청하는지 확인
+    console.log("로그인 유저 정보:", loginUser); // loginUser 정보 확인
+
     axios.get(`/talent/search?${params.toString()}`)
       .then(res => {
-        setTalents(res.data.content || []);
+        const fetchedTalents = res.data.content || [];
         setTotalPages(res.data.totalPages || 1);
+        
+        // 백엔드에서 넘어온 isBlocked 필드를 사용하여 필터링
+        const filtered = fetchedTalents.filter(t => 
+            (loginUser && loginUser.userno === t.userno) || !t.blocked
+        );
+        setTalents(filtered); // 필터링된 최종 목록을 talents 상태에 바로 저장
       })
-      .catch(err => alert('목록 불러오기 실패: ' + err.message));
-  }, [refresh, schoolno, searchQuery, selectedCategoryNo, page, size]);
+      .catch(err => {
+        console.error('목록 불러오기 실패:', err);
+        alert('목록 불러오기 실패: ' + err.message);
+      });
+  }, [refresh, schoolno, searchQuery, selectedCategoryNo, page, size, loginUser]);
 
   useEffect(() => {
     axios.get('/talent_type/list').then(res => setTypeList(res.data.content));
@@ -156,10 +173,11 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
   return (
     <div className="w-full p-6 bg-white rounded-2xl shadow">
       <h2 className="text-xl font-bold mb-6 text-center">재능 목록</h2>
+      {/* ⭐ filteredTalents 대신 talents를 사용합니다! ⭐ */}
       {talents.length === 0 ? (
         <div className="text-center text-gray-500">목록이 없습니다.</div>
       ) : (
-        talents.map(t =>
+        talents.map(t => // ⭐ 여기서도 talents를 사용합니다! ⭐
           editId === t.talentno ? (
             <article key={t.talentno} className="border p-4 rounded-lg mb-4">
               <header className="mb-4">
@@ -221,7 +239,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
                 <p className="text-gray-500">{t.description || '[설명 없음]'}</p>
                 {/* 조회수 */}
                 <div className="text-right text-xs text-gray-400 mt-2">
-                  {/* 👁 👀*/} 조회수 : {t.viewCount}
+                  조회수 : {t.viewCount}
                 </div>
               </div>
             </article>

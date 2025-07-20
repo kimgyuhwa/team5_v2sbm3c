@@ -148,77 +148,89 @@ const handleDelete = (userno) => {
   </div>
 )}
 
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <h2>관리자 - 사용자 목록</h2>
 
-      <div style={{ marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="아이디 또는 닉네임 검색"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          style={{ padding: '6px', marginRight: '8px', width: '300px' }}
-        />
-        <button onClick={handleSearch} style={{ padding: '6px 12px' }}>
-          검색
-        </button>
-      </div>
+  <h2 className="text-xl font-bold mb-4">관리자 - 사용자 목록</h2>
 
-      <table border="1" width="100%" cellPadding="8" style={{ borderCollapse: 'collapse' }}>
-        <colgroup>
-          <col style={{ width: '5%' }} />{/* 번호 */}
-          <col style={{ width: '10%' }} />{/* 아이디 */}
-          <col style={{ width: '10%' }} />{/* 닉네임 */}
-          <col style={{ width: '10%' }} />{/* 이름 */}
-          <col style={{ width: '20%' }} />{/* 학교명 */}
-          <col style={{ width: '5%' }} />{/* 역할 */}
-          <col style={{ width: '5%' }} />{/* 탈퇴여부 */}
-          <col style={{ width: '15%' }} />{/* 이메일 */}
-          <col style={{ width: '15%' }} />{/* 가입일 */}
-          <col style={{ width: '5%' }} />{/* 관리 */}
-        </colgroup>
-        <thead>
+     {/* 검색창 */}
+  <div className="flex items-center gap-2 mb-4">
+    <input
+      type="text"
+      placeholder="아이디 또는 닉네임 검색"
+      value={keyword}
+      onChange={(e) => setKeyword(e.target.value)}
+      className="border rounded px-3 py-2 w-72 text-sm"
+    />
+    <button
+      onClick={handleSearch}
+      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm"
+    >
+      검색
+    </button>
+  </div>
+    {/* 사용자 테이블 */}
+    <div className="overflow-auto">
+    <table className="min-w-full text-sm text-center border border-gray-200">
+      <thead className="bg-gray-100 text-gray-600">
+        <tr>
+          <th className="px-3 py-2 whitespace-nowrap">번호</th>
+          <th className="px-3 py-2 whitespace-nowrap">아이디</th>
+          <th className="px-3 py-2 whitespace-nowrap">닉네임</th>
+          <th className="px-3 py-2 whitespace-nowrap">이름</th>
+          <th className="px-3 py-2 whitespace-nowrap">학교명</th>
+          <th className="px-3 py-2 whitespace-nowrap">역할</th>
+          <th className="px-3 py-2 whitespace-nowrap">이메일</th>
+          <th className="px-3 py-2 whitespace-nowrap">탈퇴여부</th>
+          <th className="px-3 py-2 whitespace-nowrap">가입일</th>
+          <th className="px-3 py-2 whitespace-nowrap">관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.length === 0 ? (
           <tr>
-            <th>번호</th>
-            <th>아이디</th>
-            <th>닉네임</th>
-            <th>이름</th>
-            <th>학교명</th>
-            <th>역할</th>
-            <th>이메일</th>
-            <th>탈퇴여부</th>
-            <th>가입일</th>
-            <th>관리</th>
+            <td colSpan="10" className="text-center py-6 text-gray-500">
+              사용자가 없습니다.
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {users.length === 0 ? (
-            <tr>
-              <td colSpan="10" style={{ textAlign: 'center' }}>사용자가 없습니다.</td>
+        ) : (
+          users.map((user) => (
+            <tr key={user.userno} className="border-b hover:bg-gray-50">
+              <td className="px-3 py-2">{user.userno}</td>
+              <td className="px-3 py-2">{user.userId}</td>
+              <td className="px-3 py-2">{user.username}</td>
+              <td className="px-3 py-2">{user.name}</td>
+              <td className="px-3 py-2">
+                {user.schoolname || <span className="text-gray-400">학교 없음</span>}
+              </td>
+              <td className="px-3 py-2">{user.role}</td>
+              <td className="px-3 py-2">{user.email}</td>
+              <td className="px-3 py-2">
+                <span className={user.isDeleted ? "text-red-500 font-semibold" : "text-green-600 font-medium"}>
+                  {user.isDeleted ? "탈퇴" : "정상"}
+                </span>
+              </td>
+              <td className="px-3 py-2 whitespace-nowrap">
+                {user.createdAt?.substring(0, 10)}
+              </td>
+              <td className="px-3 py-2 space-x-2">
+                <button
+                  onClick={() => handleDetail(user.userno)}
+                  className="text-blue-600 hover:underline"
+                >
+                  상세
+                </button>
+                <button
+                  onClick={() => handleDelete(user.userno)}
+                  className="text-red-500 hover:underline"
+                >
+                  삭제
+                </button>
+              </td>
             </tr>
-          ) : (
-            users.map(user => (
-              <tr key={user.userno}>
-                <td>{user.userno}</td>
-                <td>{user.userId}</td>
-                <td>{user.username}</td>
-                <td>{user.name}</td>
-                <td>{user.schoolname ? user.schoolname : '학교 없음'}</td>
-                <td>{user.role}</td>
-                <td>{user.email}</td>
-                <th>{user.isDeleted ? "탈퇴" : "정상"}</th>
-                <td style={{ whiteSpace: 'nowrap'}}>{user.createdAt?.substring(0, 10)}</td>
-                <td >
-                  {/* <button onClick={() => handleEdit(user)}>수정</button> */}
-                  <button onClick={() => handleDetail(user.userno)}>상세</button>
-                  <button onClick={() => handleDelete(user.userno)}>삭제</button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-
+          ))
+        )}
+      </tbody>
+    </table>
+    </div>
       {/* 페이지네이션 */}
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
         {[...Array(totalPages)].map((_, idx) => (
@@ -239,7 +251,7 @@ const handleDelete = (userno) => {
           </button>
         ))}
       </div>
-    </div>
+    
     </>
   );
 }

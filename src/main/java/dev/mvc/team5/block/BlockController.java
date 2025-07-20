@@ -1,7 +1,10 @@
 package dev.mvc.team5.block;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import dev.mvc.team5.block.BlockDTO.BlockedUserDTO;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,7 +23,7 @@ public class BlockController {
     }
 
     @GetMapping("/{id}")
-    public BlockDTO get(@PathVariable Long id) {
+    public BlockDTO get(@PathVariable(name="id") Long id) {
         return toDTO(service.findById(id).orElseThrow());
     }
 
@@ -30,13 +33,25 @@ public class BlockController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable(name="id") Long id) {
         service.delete(id);
     }
     
-    @GetMapping("/me/{userno}")
-    public List<BlockDTO> getMyBlocks(@PathVariable Long userno) {
-        return service.findByBlocker(userno).stream().map(this::toDTO).collect(Collectors.toList());
+    @GetMapping("/list/{userno}")
+    public List<BlockedUserDTO> getMyBlockList(@PathVariable(name="userno") Long userno) {
+    	return service.getBlockedUsers(userno);
+    }
+    @DeleteMapping("/unblock")
+    public ResponseEntity<?> unblockUser(
+            @RequestParam(name = "blockerUserno") Long blockerUserno,
+            @RequestParam(name = "blockedUserno") Long blockedUserno) {
+    	service.unblockUser(blockerUserno, blockedUserno);
+        return ResponseEntity.ok().build();
+    }
+    
+    @PutMapping("/unblock/{blockno}")
+    public void unblock(@PathVariable(name="blockno") Long blockno) {
+        service.unblock(blockno);
     }
     
     @GetMapping("/isBlocked")

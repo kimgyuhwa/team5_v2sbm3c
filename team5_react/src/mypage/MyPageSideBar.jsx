@@ -151,7 +151,21 @@ const MyPageSideBar = ({ currentPage }) => {
         설문조사
       </div>
     </div>
-
+    <div style={{ marginBottom: '20px' }}>
+      <div
+        style={{
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          fontSize: '18px',
+          borderBottom: currentPage === 'block' ? '2px solid black' : 'none',
+          display: 'inline-block',
+          paddingBottom: '5px'
+        }}
+        onClick={() => handleTabClick('block')}
+      >
+        차단 목록
+      </div>
+    </div>
 
     </aside>
   );
