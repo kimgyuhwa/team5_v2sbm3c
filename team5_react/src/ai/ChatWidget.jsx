@@ -71,7 +71,6 @@ function ChatWidget() {
 안녕하세요! 👋 무엇을 도와드릴까요?
 
 📅 예약: "8월 5일 오후 3시에 공학101호 예약해줘"
-🤖 도우미: "엑셀에서 VLOOKUP 함수는 어떻게 써?"
 💬 질문이 있으신가요? 상단의 자주 묻는 질문을 확인해보세요!
       `.trim();
       setMessages([{ from: 'bot', text: welcomeMessage }]);

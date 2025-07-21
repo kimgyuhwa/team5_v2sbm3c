@@ -19,7 +19,6 @@ def summarize_reviews(review_texts: list) -> str:
     """
     주어진 리뷰 텍스트 리스트를 종합하여 핵심 내용을 간결하게 요약합니다.
     """
-    # ⭐⭐⭐ 이 부분을 수정해야 합니다. ⭐⭐⭐
     # 각 리뷰 텍스트의 앞뒤 공백을 제거하고, 빈 문자열이 된 리뷰는 제외합니다.
     cleaned_review_texts = [text.strip() for text in review_texts if text and text.strip()]
     
@@ -28,6 +27,11 @@ def summarize_reviews(review_texts: list) -> str:
     if not cleaned_review_texts: # 전처리 후 리스트가 비어있는지 확인
         print("summarize_reviews: 전처리 후 요약할 리뷰가 없습니다.") # ⭐ 디버그 로그 추가 ⭐
         return "요약할 리뷰가 없습니다."
+    
+    if len(cleaned_review_texts) <= 2:
+        print("summarize_reviews: 리뷰 내용이 부족합니다.") # ⭐ 디버그 로그 추가 ⭐
+        return "리뷰 내용이 부족해 구체적인 요약을 할 수 없습니다."
+
 
     # 모든 리뷰 텍스트를 하나의 큰 문자열로 결합
     combined_reviews = "\n\n".join(cleaned_review_texts)
@@ -79,4 +83,4 @@ if __name__ == '__main__':
     # Flask 앱 실행
     # 기본적으로 5000번 포트에서 실행됩니다.
     # debug=True는 개발 중에는 유용하지만, 실제 운영 환경에서는 False로 설정해야 합니다.
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)
