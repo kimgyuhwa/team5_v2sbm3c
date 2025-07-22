@@ -1,6 +1,8 @@
 package dev.mvc.team5.tool;
 
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -14,11 +16,14 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class MailService {
+  @Autowired
+  private UniversityEmailService universityEmailService;
     /**
      * 텍스트 메일 전송
      * @param receiver 메일 받을 이메일 주소
@@ -55,6 +60,20 @@ public class MailService {
           e.printStackTrace();
       }    
   }
+    //인증번호 생성 및 저장
+    private final Map<String, String> codeStore = new ConcurrentHashMap<>();
+
+    public String generateAndSendAuthCode(String receiverEmail) {
+        String code = String.valueOf((int)(Math.random() * 900000) + 100000); // 6자리 숫자
+        codeStore.put(receiverEmail, code);
+        sendAuthCode(receiverEmail, code); // 이미 구현된 메서드 활용
+        return code;
+    }
+    // 인증번호 검증
+    public boolean verifyCode(String email, String inputCode) {
+      String savedCode = codeStore.get(email);
+      return savedCode != null && savedCode.equals(inputCode);
+  }
  // 인증번호 전송 메서드
     public boolean sendAuthCode(String receiverEmail, String authCode) {
         Properties props = new Properties();
@@ -88,6 +107,13 @@ public class MailService {
             return false;
         }
     }
+    //도메인으로 대학 이메일 여부 확인
+    public boolean isUniversityEmail(String email) {
+//      String domain = email.substring(email.indexOf("@") + 1).toLowerCase();
+//      return domain.endsWith(".ac.kr"); // 단순히 .ac.kr 포함 여부만으로 판단
+      return universityEmailService.isValidUniversityEmail(email);
+      // 혹은 도메인 리스트 관리
+  }
     /**
      * 파일 첨부 메일 전송
      * @param receiver 메일 받을 이메일 주소
