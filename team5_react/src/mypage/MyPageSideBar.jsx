@@ -92,7 +92,7 @@ const MyPageSideBar = ({ currentPage }) => {
         </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
+      {/* <div style={{ marginBottom: '20px' }}>
         <div
           style={{
             fontSize: '18px',
@@ -106,7 +106,7 @@ const MyPageSideBar = ({ currentPage }) => {
         >
           설정
         </div>
-      </div>
+      </div> */}
 
       <div style={{ marginBottom: '20px' }}>
         <div
@@ -134,23 +134,6 @@ const MyPageSideBar = ({ currentPage }) => {
       }}></div>
 
 
-
-    <div style={{ marginBottom: '20px' }}>
-      <div
-        style={{
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          fontSize: '18px',
-          borderBottom: currentPage === 'history' ? '2px solid black' : 'none',
-          display: 'inline-block',
-          paddingBottom: '5px'
-
-        }}
-        onClick={() => handleTabClick('history')}
-      >
-        설문조사
-      </div>
-    </div>
     <div style={{ marginBottom: '20px' }}>
       <div
         style={{

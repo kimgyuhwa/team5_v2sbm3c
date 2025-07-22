@@ -29,6 +29,17 @@ function PlaceSideBar({ setSelectedCategory, selectedCategory }) {
     setSelectedCategory({ categoryId }); // 메인 카테고리 ID 설정
   };
 
+  const VerticalLineIcon = ({ height = 16, color = '#999' }) => (
+    <svg
+      width="2"
+      height={height}
+      viewBox={`0 0 2 ${height}`}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="0" y="0" width="2" height={height} fill={color} rx="1" />
+    </svg>
+  );
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -41,7 +52,7 @@ function PlaceSideBar({ setSelectedCategory, selectedCategory }) {
         const categoryResult = gwanList.map(gwan => ({
             id: gwan.schoolgwanno,
             name: gwan.schoolgwanname,
-            icon: '🏫',
+            icon: <VerticalLineIcon height={16} color="#999" />,
         }));
 
         const uniqueCategories = Array.from(new Map(categoryResult.map(item => [item.id, item])).values());
@@ -131,7 +142,6 @@ function PlaceSideBar({ setSelectedCategory, selectedCategory }) {
             <div
               key={category.id}
               style={{ position: 'relative' }}
-              
             >
               <div
                 onClick={() => handleCategoryClick(category.id)}

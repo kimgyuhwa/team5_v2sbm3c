@@ -41,8 +41,8 @@ public class Reservations {
      */
     private LocalDateTime end_time;
 
-    @Column(name = "placesinfo", length = 100)
-    private String placesinfo;
+    @Column(name = "purpose", length = 100)
+    private String purpose;
 
     /**
      * 예약 상태 (예: 예약됨, 취소됨, 승인대기 등)
@@ -58,12 +58,12 @@ public class Reservations {
     /**
      * 생성자: DTO → Entity 변환 시 사용
      */
-    public Reservations(User user, Places place, LocalDateTime start_time, LocalDateTime end_time, String placesinfo, String status) {
+    public Reservations(User user, Places place, LocalDateTime start_time, LocalDateTime end_time, String purpose, String status) {
         this.user = user;
         this.place = place;
         this.start_time = start_time;
         this.end_time = end_time;
-        this.placesinfo = placesinfo;
+        this.purpose = purpose;
         this.status = status;
     }
 }

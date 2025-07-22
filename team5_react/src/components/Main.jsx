@@ -74,7 +74,7 @@ export default function MainPage() {
             style={{
               backgroundColor: 'white',
               borderRadius: '20px',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
               padding: '20px',
               boxSizing: 'border-box',
             }}

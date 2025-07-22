@@ -43,7 +43,7 @@ function App() {
     <GlobalProvider>
       <div className="App">
         <BrowserRouter>
-          <Menu />
+          {/* <Menu /> */}
           {/* Header에 로그인 모달 열기 함수 전달 */}
           <Header openLoginModal={() => setIsModalOpen(true)} />
           <hr />

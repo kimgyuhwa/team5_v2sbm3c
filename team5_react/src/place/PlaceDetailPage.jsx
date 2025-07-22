@@ -12,12 +12,14 @@ function PlaceDetailPage() {
   const [reservations, setReservations] = useState([]); // For other user reservations
   const [activeTab, setActiveTab] = useState('timetable');
   const [showReservationPopup, setShowReservationPopup] = useState(false);
+
   const [reservationDetails, setReservationDetails] = useState({
     date: new Date().toISOString().split('T')[0],
     startTime: '09:00',
     endTime: '10:00',
     purpose: ''
   });
+  
   const navigate = useNavigate();
 
   const { loginUser } = useContext(GlobalContext);
@@ -36,8 +38,10 @@ function PlaceDetailPage() {
       .then(res => setSchedules(res.data))
       .catch(err => console.error('스케줄 로딩 실패', err));
 
-    // Mock fetching other reservations - replace with actual API call
-    // setReservations([...]); 
+    axios.get(`/reservations/by-place/${placeno}`)
+      .then(res => setReservations(res.data))
+      .catch(err => console.error('예약 로딩 실패', err));
+
   }, [placeno]);
 
   const getStatus = (day, hour) => {
@@ -57,6 +61,20 @@ function PlaceDetailPage() {
       if ((scheduleStart > slotStart && scheduleStart < slotEnd + 30) || (scheduleEnd > slotStart - 30 && scheduleEnd < slotEnd)) {
          if(scheduleStart-slotEnd < 30 && scheduleStart-slotEnd > 0) return { status: 'blocked' };
          if(slotStart-scheduleEnd < 30 && slotStart-scheduleEnd > 0) return { status: 'blocked' };
+      }
+    }
+
+    // 예약 정보 체크
+    for (const reservation of reservations) {
+      const resDate = new Date(reservation.start_time);
+      const resDay = ['일', '월', '화', '수', '목', '금', '토'][resDate.getDay()];
+      if (resDay !== day) continue;
+
+      const reservationStart = timeToMinutes(reservation.start_time.split('T')[1].slice(0, 5));
+      const reservationEnd = timeToMinutes(reservation.end_time.split('T')[1].slice(0, 5));
+
+      if (Math.max(slotStart, reservationStart) < Math.min(slotEnd, reservationEnd)) {
+        return { status: 'reserved', reservation };
       }
     }
 
@@ -99,9 +117,11 @@ function PlaceDetailPage() {
     setReservationDetails(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleReservation = () => {
+  const handleReservation = async () => {
     const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
-    const selectedDay = dayMap[new Date(reservationDetails.date).getDay()];
+    const selectedDate = new Date(reservationDetails.date);
+    const selectedDay = dayMap[selectedDate.getDay()];
+
     const reservationStart = timeToMinutes(reservationDetails.startTime);
     const reservationEnd = timeToMinutes(reservationDetails.endTime);
 
@@ -115,7 +135,7 @@ function PlaceDetailPage() {
       return;
     }
 
-    // Check against class schedules with buffer
+    // 수업 스케줄과 30분 간격 확인
     const scheduleConflict = schedules.find(schedule => {
       if (schedule.day !== selectedDay) return false;
       const scheduleStart = timeToMinutes(schedule.startTime) - 30;
@@ -128,7 +148,7 @@ function PlaceDetailPage() {
       return;
     }
 
-    // Check against other reservations without buffer
+    // 기존 예약과 겹침 확인
     const reservationConflict = reservations.find(r => {
         if (r.date !== reservationDetails.date) return false;
         const existingStart = timeToMinutes(r.startTime);
@@ -140,11 +160,38 @@ function PlaceDetailPage() {
         alert('선택하신 시간에 이미 다른 예약이 있습니다.');
         return;
     }
+    
+ // 5. 예약 요청 서버에 보내기
+  try {
+    // 백엔드가 LocalDateTime 형식으로 받으려면 ISO 포맷 문자열로 맞춰서 보내야 함
+    const startTimeISO = `${reservationDetails.date}T${reservationDetails.startTime}:00`;
+    const endTimeISO = `${reservationDetails.date}T${reservationDetails.endTime}:00`;
 
-    console.log("Reservation confirmed:", reservationDetails);
+    const requestData = {
+      userno: loginUser.userno, // 로그인한 사용자 번호를 state 등에서 가져오기
+      placeno: place.placeno, // 선택한 장소 번호
+      placename: place.placename, // 선택한 장소 이름
+      start_time: startTimeISO,
+      end_time: endTimeISO,
+      purpose: reservationDetails.purpose,
+      status: '예약됨' // 예약 상태 초기값
+    };
+
+    const res = await axios.post('/reservations', requestData);
+    console.log('예약 성공:', res.data);
+
+    alert('예약이 완료되었습니다.');
     setShowReservationPopup(false);
+    window.location.reload();
+    
+  } catch (err) {
+    console.error('예약 실패:', err);
+    const errorMsg = err.response?.data?.message || err.message || '예약 중 오류가 발생했습니다.';
+    alert(errorMsg);
+  }
   };
 
+  
   const timeOptions = Array.from({ length: (22 - 9) * 2 + 1 }, (_, i) => {
     const totalMinutes = 9 * 60 + i * 30;
     const hour = Math.floor(totalMinutes / 60);
@@ -214,7 +261,7 @@ function PlaceDetailPage() {
                     {`${hour.toString().padStart(2, '0')}:00`}
                   </td>
                   {['월', '화', '수', '목', '금'].map(day => {
-                    const { status, schedule } = getStatus(day, hour);
+                    const { status, schedule, reservation } = getStatus(day, hour);
 
                     const getCellStyle = () => {
                       let style = {
@@ -228,9 +275,11 @@ function PlaceDetailPage() {
                       };
                       switch (status) {
                         case 'existing':
-                          return { ...style, backgroundColor: '#007bff', color: 'white' };
+                          return { ...style, backgroundColor: '#9e9e9e', color: 'white' };
                         case 'blocked':
                           return { ...style, backgroundColor: '#e9ecef', color: '#adb5bd' };
+                        case 'reserved':
+                          return { ...style, backgroundColor: '#B8D0FA', color: '#212529' }; // 예약
                         default: // available
                           return { ...style, backgroundColor: '#fff' };
                       }
@@ -241,15 +290,12 @@ function PlaceDetailPage() {
                         {status === 'existing' && schedule && (
                           <div>
                             <div style={{ fontSize: '11px', fontWeight: '600' }}>{schedule.subject}</div>
-                            <div style={{ fontSize: '9px', opacity: 0.9 }}>{place.hosu}</div>
+                            <div style={{ fontSize: '9px', opacity: 0.9 }}></div>
                           </div>
                         )}
-                        {status === 'blocked' && (
-                           <X size={14} />
-                        )}
-                        {status === 'available' && (
-                          <>
-                          </>
+                        {status === 'blocked' && <X size={14} />}
+                        {status === 'reserved' && reservation && (
+                          <div style={{ fontSize: '11px', fontWeight: '600' }}></div>
                         )}
                       </td>
                     );
@@ -276,12 +322,16 @@ function PlaceDetailPage() {
           alignItems: 'center'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: '12px', height: '12px', backgroundColor: '#007bff', borderRadius: '3px' }}></div>
+            <div style={{ width: '12px', height: '12px', backgroundColor: '#9e9e9e', borderRadius: '3px' }}></div>
             <span style={{ fontSize: '11px', color: '#666' }}>기존 수업</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
              <div style={{ width: '12px', height: '12px', backgroundColor: '#e9ecef', borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><X size={10} color="#6c757d" /></div>
             <span style={{ fontSize: '11px', color: '#666' }}>예약 불가</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '12px', height: '12px', backgroundColor: '#B8D0FA', borderRadius: '3px' }}></div>
+            <span style={{ fontSize: '11px', color: '#666' }}>예약됨</span>
           </div>
         </div>
       </div>
@@ -381,9 +431,11 @@ function PlaceDetailPage() {
           
           {/* 그림 */}
           <div style={{
-            height: '400px', 
-            backgroundColor:'#f0f0f0', 
-            borderRadius: '12px'
+            width:'700px',
+            height: '350px',
+            borderRadius: '12px',
+            backgroundImage: `url("/gangDetail.png")`,
+
           }}>
           </div>
           
@@ -445,8 +497,7 @@ function PlaceDetailPage() {
             justifyContent: 'center',
             padding: '20px'
           }}>
-            <h3 style={{ marginTop: 0, fontSize: '18px', fontWeight: 600 }}>{place.placename}</h3>
-            <p style={{ fontSize: '14px', color: '#495057', marginBottom: '24px' }}>{place.hosu}</p>
+            <h3 style={{ marginTop: 0, marginBottom: 20, fontSize: '18px', fontWeight: 600 }}>{place.placename}</h3>
             <button style={buttonStyle} onClick={() => navigate('/place/PlacesPage')}>돌아가기</button>
             <button style={{...buttonStyle, marginTop: '10px'}} onClick={() => setShowReservationPopup(true)}>예약하기</button>
           </div>

@@ -53,6 +53,16 @@ function MainSideBar() {
     setOpenCategory(null);
   };
   
+    const VerticalLineIcon = ({ height = 16, color = '#999' }) => (
+    <svg
+      width="2"
+      height={height}
+      viewBox={`0 0 2 ${height}`}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="0" y="0" width="2" height={height} fill={color} rx="1" />
+    </svg>
+  );
 useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -64,7 +74,7 @@ useEffect(() => {
           return {
             id: grp.cateGrpno,
             name: grp.name,
-            icon: '📁', // 임시 아이콘
+            icon: <VerticalLineIcon height={16} color="#999" />,
             subcategories: cateRes.data.map(c => ({
               id: c.categoryno,
               

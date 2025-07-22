@@ -276,7 +276,7 @@ function TalentDetailPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-lg">
+    <div className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-md my-20 ">
       {editMode ? (
         <>
           <h2 className="text-2xl font-bold mb-6 text-blue-600">재능 수정</h2>
@@ -442,18 +442,18 @@ function TalentDetailPage() {
             )}
             {isOwner && (
               <>
-                <button
-                  className="px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700 shadow"
+                <div
+                  className="px-3 py-1 bg-gray-100 text-black rounded hover:bg-gray-150 shadow"
                   onClick={startEdit}
                 >
                   수정
-                </button>
-                <button
-                  className="px-5 py-2 bg-red-600 text-white rounded hover:bg-red-700 shadow"
+                </div>
+                <div
+                  className="px-3 py-1 bg-gray-100 text-black rounded hover:bg-gray-150 shadow"
                   onClick={deleteTalent}
                 >
                   삭제
-                </button>
+                </div>
               </>
             )}
              
