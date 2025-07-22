@@ -3,6 +3,7 @@ package dev.mvc.team5.request;
 import dev.mvc.team5.request.requestdto.RequestCreateDTO;
 import dev.mvc.team5.request.requestdto.RequestListDTO;
 import dev.mvc.team5.request.requestdto.RequestResponseDTO;
+import dev.mvc.team5.tool.RequestStatus;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
 public class RequestController {
 
     private final RequestService service;
+    private final RequestRepository requestRepository;
 
     /**
      * 요청 생성
      */
     @PostMapping(path="save")
     public ResponseEntity<RequestResponseDTO> createRequest(@RequestBody RequestCreateDTO dto) {
+        System.out.println("받은 요청 DTO: " + dto);
         RequestResponseDTO savedDto = service.save(dto);
         return ResponseEntity.ok(savedDto);
     }
@@ -80,6 +83,36 @@ public class RequestController {
         service.updateStatus(requestno, status);
         return ResponseEntity.ok("상태가 변경되었습니다.");
     }
+    
+    @PatchMapping("/{requestno}/accept")
+    public ResponseEntity<Void> acceptRequest(@PathVariable(name="requestno") Long requestno) {
+        service.updateStatus(requestno, RequestStatus.ACCEPTED);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{requestno}/reject")
+    public ResponseEntity<Void> rejectRequest(@PathVariable(name="requestno") Long requestno) {
+        service.updateStatus(requestno, RequestStatus.REJECTED);
+        return ResponseEntity.ok().build();
+    }
+    
+//    // 채팅방 번호로 요청 조회
+//    @GetMapping("/chatroom/{chatRoomno}")
+//    public ResponseEntity<RequestResponseDTO> getRequestByChatRoom(@PathVariable(name="chatRoomno") Long chatRoomno) {
+//        Request request = requestRepository.findByChatRoom_ChatRoomno(chatRoomno)
+//            .orElseThrow(() -> new RuntimeException("해당 채팅방에 요청 없음"));
+//        return ResponseEntity.ok(new RequestResponseDTO(request));
+//    }
+    
+    @GetMapping("/chatroom/{chatRoomno}")
+    public ResponseEntity<RequestResponseDTO> getLatestRequestByChatRoom(@PathVariable(name="chatRoomno") Long chatRoomno) {
+        Request request = requestRepository.findTopByChatRoom_ChatRoomnoOrderByCreatedAtDesc(chatRoomno)
+            .orElseThrow(() -> new RuntimeException("요청이 존재하지 않습니다."));
+        
+        return ResponseEntity.ok(new RequestResponseDTO(request));
+    }
+
+
 
 
 }

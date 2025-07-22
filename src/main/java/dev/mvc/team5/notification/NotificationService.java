@@ -87,7 +87,7 @@ public class NotificationService {
         // 1) DTO 생성 (재활용 가능)
         NotificationDTO dto = new NotificationDTO();
         dto.setUserno(userno);       // 알림 받을 사용자
-        dto.setType(type);           // 예: "chat", "info", "meeting" …
+        dto.setType(type);           // 예: "chat", "info", "reservation" …
         dto.setMessage(message);     // 알림 내용
 
         // 2) 기존 save(dto) 메서드 재사용 → DB 저장 & 엔티티 반환

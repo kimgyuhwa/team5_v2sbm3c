@@ -21,6 +21,7 @@ import dev.mvc.team5.school.SchoolDTO;
 import dev.mvc.team5.school.SchoolService;
 import dev.mvc.team5.school.SchoolServiceImpl;
 import dev.mvc.team5.tool.MailService;
+import dev.mvc.team5.tool.UniversityEmailService;
 import dev.mvc.team5.user.UserDTO.MailRequestDto;
 import dev.mvc.team5.user.UserDTO.UserDetailDTO;
 import dev.mvc.team5.user.UserDTO.UserReviewInfoDTO;
@@ -46,48 +47,73 @@ public class UserController {
     
     @Autowired
     private MailService mailService;
-    
+    @Autowired
+    private UniversityEmailService universityEmailService;
     @Autowired
     private ActivityLogService activityLogService; // 로그 기록용
     
-    /** 대학 인증 보내기 */
+//    /** 대학 인증 보내기 */
+//    @PostMapping("/univ/sendCode")
+//    public ResponseEntity<String> sendUnivCertMail(@RequestBody MailRequestDto dto) throws IOException {
+//      String UNIV_KEY = "5d57fdce-3a2d-43ad-9aed-fc23369462e2";
+//      // 기존 인증 제거
+//      UnivCert.clear(UNIV_KEY, dto.getEmail());
+//      // 학교 유효성 확인
+//      boolean univ_check = false;
+//      Map<String,Object> check = UnivCert.check(dto.getSchoolName());
+//      boolean success = (boolean) check.get("success");
+//      if(success) univ_check = true;
+//      // 인증 코드 발송 요청
+//      Map<String, Object> result = UnivCert.certify(UNIV_KEY, dto.getEmail(), dto.getSchoolName(), univ_check);
+//
+//      if ((boolean) result.get("success")) {
+//        userService.updateSchool(dto.getSchoolName());
+//        return ResponseEntity.ok("이메일이 성공적으로 보내졌습니다.");
+//    } else {
+//        return ResponseEntity
+//            .status(HttpStatus.BAD_REQUEST)
+//            .body("이메일 인증 실패 ");
+//    }
+//    }
+//    
+//    @PostMapping("/univ/verifyCode")
+//    public ResponseEntity verifyCode(@RequestBody VerifyCodeDto dto) throws IOException {
+//        String UNIV_KEY = "5d57fdce-3a2d-43ad-9aed-fc23369462e2";
+//        
+//        Map<String, Object> result = UnivCert.certifyCode(UNIV_KEY, dto.getEmail(), dto.getSchoolName(), dto.getCode());
+//        
+//        if ((boolean) result.get("success")) {
+//            return ResponseEntity.ok(" 인증에 성공했습니다.");
+//        } else {
+//            return ResponseEntity
+//                .status(HttpStatus.BAD_REQUEST)
+//                .body("인증 실패: " + result.get("message"));
+//        }
+//    }
+    // 회원가입전  대학교 이메일 인증
     @PostMapping("/univ/sendCode")
-    public ResponseEntity<String> sendUnivCertMail(@RequestBody MailRequestDto dto) throws IOException {
-      String UNIV_KEY = "5d57fdce-3a2d-43ad-9aed-fc23369462e2";
-      // 기존 인증 제거
-      UnivCert.clear(UNIV_KEY, dto.getEmail());
-      // 학교 유효성 확인
-      boolean univ_check = false;
-      Map<String,Object> check = UnivCert.check(dto.getSchoolName());
-      boolean success = (boolean) check.get("success");
-      if(success) univ_check = true;
-      // 인증 코드 발송 요청
-      Map<String, Object> result = UnivCert.certify(UNIV_KEY, dto.getEmail(), dto.getSchoolName(), univ_check);
+    public ResponseEntity<String> sendCode(@RequestBody Map<String, String> request) {
+      String email = request.get("email");
+      String schoolName = request.get("schoolName");
 
-      if ((boolean) result.get("success")) {
-        userService.updateSchool(dto.getSchoolName());
-        return ResponseEntity.ok("이메일이 성공적으로 보내졌습니다.");
-    } else {
-        return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body("이메일 인증 실패 ");
-    }
-    }
-    
-    @PostMapping("/univ/verifyCode")
-    public ResponseEntity verifyCode(@RequestBody VerifyCodeDto dto) throws IOException {
-        String UNIV_KEY = "5d57fdce-3a2d-43ad-9aed-fc23369462e2";
-        
-        Map<String, Object> result = UnivCert.certifyCode(UNIV_KEY, dto.getEmail(), dto.getSchoolName(), dto.getCode());
-        
-        if ((boolean) result.get("success")) {
-            return ResponseEntity.ok(" 인증에 성공했습니다.");
-        } else {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body("인증 실패: " + result.get("message"));
-        }
-    }
+      if (email == null || schoolName == null) {
+          return ResponseEntity.badRequest().body("이메일과 학교 이름을 모두 입력해주세요.");
+      }
+
+      // 학교 이름과 이메일 도메인 매치 확인
+      String universityByEmail = universityEmailService.getUniversityByEmail(email);
+      if (!schoolName.equals(universityByEmail)) {
+          return ResponseEntity.badRequest().body("학교 이름과 이메일 도메인이 일치하지 않습니다.");
+      }
+
+      // 이메일이 대학교 이메일인지 추가로 확인 (필요시)
+      if (!mailService.isUniversityEmail(email)) {
+          return ResponseEntity.badRequest().body("대학교 이메일만 가능합니다.");
+      }
+
+      mailService.generateAndSendAuthCode(email);
+      return ResponseEntity.ok("인증번호를 전송했습니다.");
+  }
 
     /** 회원가입 */
     @PostMapping("/register")

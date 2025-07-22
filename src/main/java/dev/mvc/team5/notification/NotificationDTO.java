@@ -13,4 +13,6 @@ public class NotificationDTO {
     private Boolean read;
 
     private String createdAt;
+    
+    private String title;
 }

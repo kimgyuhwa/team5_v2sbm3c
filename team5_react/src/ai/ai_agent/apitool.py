@@ -28,7 +28,7 @@ def translate_tool(input: str) -> str:
     try:
         sentence, lang, age = input.strip().rsplit(' ', 2)
     except:
-        return "형식이 잘못되었습니다. 예: 안녕하세요 영어 10살"
+        return "형식이 잘못되었습니다. 예: 안녕하세요 10살 영어"
     prompt = PromptTemplate.from_template("다음 문장을 {age}살 수준의 {lang}로 번역해줘:\n\n{sentence}")
     chain = prompt | llm | StrOutputParser()
     return chain.invoke({"sentence": sentence, "lang": lang, "age": age})

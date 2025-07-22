@@ -46,9 +46,10 @@ public class MessageController {
         MessageResponseDTO response = new MessageResponseDTO(
             saved.getMessageno(),                       // 메시지 고유 번호
             saved.getChatRoom().getChatRoomno(),        // 채팅방 번호
-            saved.getSender().getUserno(),              // 보낸 사용자 번호
-            saved.getSender().getUsername(),
-            saved.getContent(),                         // 메시지 내용
+            saved.getSender() != null ? saved.getSender().getUserno() : null,
+            saved.getSender() != null ? saved.getSender().getUsername() : "system",
+            saved.getContent(), 
+            saved.getType(),// 메시지 내용
             saved.getSentAt()                           // 보낸 시간
         );
 

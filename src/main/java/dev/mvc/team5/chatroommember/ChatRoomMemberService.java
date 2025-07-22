@@ -11,7 +11,7 @@ import dev.mvc.team5.chatroom.chatroomdto.ChatRoomResponseDTO;
 import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.chatroommember.ChatRoomMemberRepository;
 import dev.mvc.team5.user.User;
-
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -37,10 +37,38 @@ public class ChatRoomMemberService {
       return members.stream()
           .map(member -> {
               ChatRoom room = member.getChatRoom();
-              return new ChatRoomResponseDTO(room.getChatRoomno(), room.getRoomName(), room.getCreatedAt());
+
+              // 현재 유저를 제외한 상대방 찾기
+              List<ChatRoomMember> allMembers = chatRoomMemberRepository.findByChatRoomChatRoomno(room.getChatRoomno());
+              ChatRoomMember other = allMembers.stream()
+                  .filter(m -> !m.getUser().getUserno().equals(userno))
+                  .findFirst()
+                  .orElseThrow(() -> new IllegalStateException("상대방이 존재하지 않습니다."));
+
+              return new ChatRoomResponseDTO(
+                  room.getChatRoomno(),
+                  room.getRoomName(),
+                  room.getCreatedAt(),
+                  room.getTalent().getTalentno(),
+                  room.getTalent().getTitle(),
+                  other.getUser().getUserno(),     // receiverno
+                  other.getUser().getUsername()    // receiverName
+              );
           })
           .collect(Collectors.toList());
+
+
   }
+    
+    // 삭제 메서드
+    @Transactional
+    public void deleteByChatRoom(ChatRoom chatRoom) {
+        chatRoomMemberRepository.deleteByChatRoom(chatRoom);
+    }
+
 
     // 멤버 조회 등 필요하면 추가
+    public List<ChatRoomMember> findByChatRoomno(Long chatRoomno) {
+      return chatRoomMemberRepository.findByChatRoomChatRoomno(chatRoomno);
+   }
 }

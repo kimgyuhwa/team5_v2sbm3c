@@ -22,6 +22,11 @@ function Header( { openLoginModal } ) {
   const eventSrcRef = useRef(null);  // 알림 SSE연결 객체 보관용
   const [openChatId, setOpenChatId] = useState(null); //  현재 열려 있는 채팅방
 
+    // 드롭다운 각각에 ref 만들기
+  const profileDropdownRef = useRef(null);
+  const chatDropdownRef = useRef(null);
+  const notificationDropdownRef = useRef(null);
+
   const navigate = useNavigate();
   const { LoginUser, setSw, loginUser, setLoginUser } = useContext(GlobalContext);
 
@@ -37,6 +42,12 @@ function Header( { openLoginModal } ) {
     setIsDropdownOpen(false);
   };
 
+  const handleChatList = () => {
+  navigate('/chatlist');
+  setIsDropdownOpen(false);
+};
+
+
   const handleReservation = () => {
     navigate('/mypage/Mypage?tab=reservation');
     setIsDropdownOpen(false);
@@ -47,7 +58,26 @@ function Header( { openLoginModal } ) {
     setIsDropdownOpen(false);
   };
 
+ useEffect(() => {
+    function handleClickOutside(event) {
+      // 클릭한 위치가 각 드롭다운 영역 내부가 아니면 닫기
+      if (
+        (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) &&
+        (chatDropdownRef.current && !chatDropdownRef.current.contains(event.target)) &&
+        (notificationDropdownRef.current && !notificationDropdownRef.current.contains(event.target))
+      ) {
+        setIsDropdownOpen(false);
+        setIsChatDropdownOpen(false);
+        setIsNotificationDropdownOpen(false);
+      }
+    }
 
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const userno = loginUser?.userno;
   const size = 3;  // 한번에 보여줄 알림 개수
@@ -313,7 +343,7 @@ function Header( { openLoginModal } ) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 
             {/* 채팅 아이콘 */}
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative' }} ref={chatDropdownRef}>
               <button
                 onClick={handleChatClick}
                 style={{
@@ -387,7 +417,7 @@ function Header( { openLoginModal } ) {
             </div>
 
             {/* 알림 아이콘 */}
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative' }} ref={notificationDropdownRef}>
               <button
                 onClick={handleNotificationClick}
                 style={{
@@ -503,7 +533,7 @@ function Header( { openLoginModal } ) {
             </div>
 
             {/* 프로필 드롭다운 */}
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative' }} ref={profileDropdownRef}>
               <button onClick={toggleDropdown} style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 backgroundColor: '#007bff', color: 'white',
@@ -567,6 +597,28 @@ function Header( { openLoginModal } ) {
                       <Settings size={16} style={{ marginRight: '12px' }} />
                       설정
                     </button> */}
+
+                    <button 
+                    onClick={handleChatList}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <MessageCircle size={16} style={{ marginRight: '12px' }} />
+                    채팅 목록
+                  </button>
+
 
                     <button
                     onClick={handleReservation}
@@ -640,7 +692,7 @@ function Header( { openLoginModal } ) {
     {openChatId && ReactDOM.createPortal(
       <div style={{
         position: 'fixed', bottom: 20, right: 20,
-        width: 400, height: 600, backgroundColor: 'white',
+        width: 400, maxHeight: 'calc(100vh - 40px)', backgroundColor: 'white',
         border: '1px solid #ccc', borderRadius: 10,
         boxShadow: '0 8px 24px rgba(0,0,0,.2)',
         zIndex: 9999, display: 'flex', flexDirection: 'column'

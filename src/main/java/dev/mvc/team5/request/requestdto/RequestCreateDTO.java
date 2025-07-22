@@ -14,5 +14,6 @@ public class RequestCreateDTO {
     private Long receiverno;
     private String status = RequestStatus.PENDING;
     private String message;
+    private Long chatRoomno;
 }
 
