@@ -18,7 +18,10 @@ public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> 
 
   //최신순으로 페이지네이션 (Pageable로 개수 제한)
   Page<ActivityLog> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
+  
+//✅ 특정 action으로 필터링하고 최신순으로 페이징 처리하여 조회
+  Page<ActivityLog> findByActionOrderByCreatedAtDesc(String action, Pageable pageable);
+  
   //특정 유저의 로그를 최신순으로 페이지네이션
   Page<ActivityLog> findByUserUsernoOrderByCreatedAtDesc(Long userno, Pageable pageable);
   

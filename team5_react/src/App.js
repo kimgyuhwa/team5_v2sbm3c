@@ -35,7 +35,7 @@ import PlaceDetailPage from './place/PlaceDetailPage';
 import AdminReportList from './admin/AdminReportList';
 import ReportCreate from './components/report/ReportCreate';
 import ChatListPage from './chat/ChatListPage';
-
+import AdminActivityList from './admin/AdminActivityList';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,6 +53,7 @@ function App() {
             {/* 관리자 페이지 */}
             <Route path="/admin/user" element={<AdminUserList />} />
             <Route path="/admin/report" element={<AdminReportList />} />
+            <Route path="/admin/activity" element={<AdminActivityList />} />
             {/* 회원 */}
             <Route path="/mypage/MyPage" element={<MyPage />} />
             <Route path="/mypage/MyPageSetting" element={<MyPageSetting />} />

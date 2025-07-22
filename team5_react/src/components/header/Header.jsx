@@ -82,56 +82,6 @@ function Header( { openLoginModal } ) {
 
   const userno = loginUser?.userno;
   const size = 3;  // 한번에 보여줄 알림 개수
-  // ⭐ 개별 알림 클릭 핸들러 ⭐
-  const handleNotificationItemClick = async (notification) => {
-    try {
-      // 1. 알림을 읽음으로 표시하는 API 호출
-      await axios.put(`/notifications/read/${notification.notificationno}`);
-
-      // 2. 프론트엔드 상태 업데이트
-      setUnreadCount(prevCount => Math.max(0, prevCount - 1)); // 읽지 않은 알림 개수 감소
-      setNotificationList(prevList =>
-        prevList.map(n =>
-          n.notificationno === notification.notificationno ? { ...n, read: true } : n
-        )
-      ); // 읽음 상태만 true로 변경 (목록에서 제거하는 대신)
-
-      // 3. 알림 드롭다운 닫기
-      setIsNotificationDropdownOpen(false);
-
-      // 4. 관련 페이지로 이동 (type과 targetId 기반)
-      let path = '';
-      switch (notification.type) {
-        case 'chat':
-          path = `/chat/room/${notification.targetId}`; // 예: /chat/room/123
-          break;
-        case 'reservation':
-          path = `/mypage/Mypage?tab=reservation&reservationNo=${notification.targetId}`; // 예: /mypage/Mypage?tab=reservation&reservationNo=456
-          break;
-        case 'review':
-          path = `/talents/${notification.targetId}/reviews`; // 예: /talents/789/reviews (리뷰 대상 재능 또는 구매/판매 기록으로 이동)
-          break;
-        case 'talent': // 새로운 재능 등록, 재능 승인/거절 등
-          path = `/talents/${notification.targetId}`; // 예: /talents/101
-          break;
-        case 'system': // 시스템 공지 등
-          path = '/notices'; // 또는 특정 공지사항 ID로 이동: `/notices/${notification.targetId}`
-          break;
-      }
-
-      if (path) {
-        navigate(path);
-      }
-    } catch (error) {
-      console.error('알림 처리 중 오류 발생:', error);
-      // 오류 발생 시에도 사용자 경험을 위해 페이지 이동은 시도할 수 있습니다.
-      if (notification.type && notification.targetId) {
-        let path = '';
-        switch (notification.type) { /* 위와 동일한 switch 문 */ }
-        if (path) navigate(path);
-      }
-    }
-  };
  const loadMore = () => {
   fetch(`/notifications/user/${userno}?page=${page}&size=${size}`)
     .then(res => res.json())
@@ -149,7 +99,8 @@ function Header( { openLoginModal } ) {
 
         setHasMore(!noMore);
         if (!noMore) return merged;      // 마지막 페이지라면 page++ 안 함
-
+        
+        console.log("data",data);
         return merged;
       });
 
@@ -158,6 +109,58 @@ function Header( { openLoginModal } ) {
     })
     .catch(console.error);
 };
+    
+ // ⭐ 개별 알림 클릭 핸들러 ⭐
+  const handleNotificationItemClick = async (notification) => {
+    try {
+      // 1. 알림을 읽음으로 표시하는 API 호출
+      await axios.put(`/notifications/read/${notification.notificationno}`);
+
+      // 2. 프론트엔드 상태 업데이트
+      setUnreadCount(prevCount => Math.max(0, prevCount - 1)); // 읽지 않은 알림 개수 감소
+      setNotificationList(prevList =>
+        prevList.map(n =>
+          n.notificationno === notification.notificationno ? { ...n, read: true } : n
+        )
+      ); // 읽음 상태만 true로 변경 (목록에서 제거하는 대신)
+
+      // 3. 알림 드롭다운 닫기
+      setIsNotificationDropdownOpen(false);
+      console.log(notification)
+      // 4. 관련 페이지로 이동 (type과 targetId 기반)
+      let path = '';
+      switch (notification.type) {
+        case 'chat':
+          path = `/chat/${notification.targetId}`; // 예: /chat/room/123
+          break;
+        case 'reservation':
+          path = `/mypage/Mypage?tab=reservation&reservationNo=${notification.targetId}`; // 예: /mypage/Mypage?tab=reservation&reservationNo=456
+          break;
+        case 'request':
+          path = `/talents/${notification.targetId}/reviews`; // 예: /talents/789/reviews (리뷰 대상 재능 또는 구매/판매 기록으로 이동)
+          break;
+        case 'talent': // 새로운 재능 등록, 재능 승인/거절 등
+          path = `/talents/${notification.targetId}`; // 예: /talents/101
+          break;
+        case 'system': // 시스템 공지 등
+          path = '/notices'; // 또는 특정 공지사항 ID로 이동: `/notices/${notification.targetId}`
+          break;
+      }
+      console.log(notificationList[0].targetId)
+
+      if (path) {
+        navigate(path);
+      }
+    } catch (error) {
+      console.error('알림 처리 중 오류 발생:', error);
+      // 오류 발생 시에도 사용자 경험을 위해 페이지 이동은 시도할 수 있습니다.
+      if (notification.type && notification.targetId) {
+        let path = '';
+        switch (notification.type) { /* 위와 동일한 switch 문 */ }
+        if (path) navigate(path);
+      }
+    }
+  };
 
     useEffect(() => {
   if (isNotificationDropdownOpen && page === 0) {
@@ -331,7 +334,7 @@ function Header( { openLoginModal } ) {
       navigate('/components/main'); // 로그인 된 경우 메인으로 이동
     }
   };
-
+console.log("알리리링",notificationList)
   return (
     <div style={{
       backgroundColor: 'white',
@@ -527,61 +530,67 @@ function Header( { openLoginModal } ) {
                         fontSize: 14, userSelect: 'none'
                       }}>알림이 없습니다.</div>
                     ) : (
-                      notificationList.map(n => (
-                        <div key={n.notificationno} style={{
-                          padding: '12px 20px', borderBottom: '1px solid #f1f3f4',
-                          cursor: 'pointer', transition: 'background-color .2s'
-                        }}
-                          onMouseOver={e => e.currentTarget.style.backgroundColor = '#f8f9fa'}
-                          onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                          <div style={{
-                            display: 'flex', justifyContent: 'space-between',
-                            alignItems: 'flex-start', marginBottom: 6
-                          }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <div style={{
-                                width: 8, height: 8, borderRadius: '50%',
-                                backgroundColor:
-                                  n.type === 'message' ? '#17a2b8' :
-                                  n.type === 'update'  ? '#28a745' :
-                                  n.type === 'meeting' ? '#ffc107' :
-                                  n.type === 'system'  ? '#dc3545' : '#6c757d'
-                              }} />
-                              <span style={{ fontWeight: 600, color: '#333', fontSize: 14 }}>
-                                {n.type}
-                              </span>
-                            </div>
-                            <span style={{ fontSize: 12, color: '#666' }}>
-                              {new Date(n.createdAt)
-                                .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
-                            </span>
-                          </div>
-                          <p style={{
-                            margin: 0, fontSize: 13, color: '#666',
-                            lineHeight: 1.4, paddingLeft: 16
-                          }}>{n.message}</p>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  {notificationList.length > 0 && hasMore && (
-                    <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
-                      <button onClick={loadMore} style={{
-                        width: '100%', padding: 8, backgroundColor: '#ffc107',
-                        color: 'white', border: 'none', borderRadius: 6,
-                        fontSize: 14, cursor: 'pointer',
-                        transition: 'background-color .2s'
-                      }}
-                        onMouseOver={e => e.target.style.backgroundColor = '#e0a800'}
-                        onMouseOut={e => e.target.style.backgroundColor = '#ffc107'}>
-                        더보기
-                      </button>
+              notificationList.map(n => (
+                <div
+                  key={n.notificationno}
+                  // ⭐ 알림 항목 클릭 이벤트 핸들러 연결 ⭐
+                  onClick={() => handleNotificationItemClick(n)}
+                  style={{
+                    padding: '12px 20px', borderBottom: '1px solid #f1f3f4',
+                    cursor: 'pointer', transition: 'background-color .2s',
+                    // ⭐ 읽지 않은 알림 시각화: read 필드 사용 ⭐
+                    backgroundColor: n.read === false ? '#fffde7' : 'transparent'
+                  }}
+                  onMouseOver={e => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                  onMouseOut={e => e.currentTarget.style.backgroundColor = n.read === false ? '#fffde7' : 'transparent'}>
+                  <div style={{
+                    display: 'flex', justifyContent: 'space-between',
+                    alignItems: 'flex-start', marginBottom: 6
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {/* ⭐ 읽지 않은 알림 시각화: 작은 점 추가 (뱃지 아님) ⭐ */}
+                      {n.read === false && (
+                        <div style={{
+                          width: 8, height: 8, borderRadius: '50%',
+                          backgroundColor: '#dc3545', // 붉은색 점
+                        }} />
+                      )}
+                      <span style={{ fontWeight: 600, color: '#333', fontSize: 14 }}>
+                        {n.type}
+                      </span>
                     </div>
-                  )}
+                    <span style={{ fontSize: 12, color: '#666' }}>
+                      {new Date(n.createdAt)
+                        .toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}
+                    </span>
+                  </div>
+                  <p style={{
+                    margin: 0, fontSize: 13, color: '#666',
+                    lineHeight: 1.4,
+                    paddingLeft: n.read === false ? 16 : 0 // 읽지 않은 알림 점이 있으면 들여쓰기
+                  }}>{n.message}</p>
                 </div>
-              )}
+              ))
+            )}
+          </div>
+       
+          {notificationList.length > 0 && hasMore && (
+            <div style={{ padding: '12px 20px', borderTop: '1px solid #e1e5e9' }}>
+              <button onClick={loadMore} style={{
+                width: '100%', padding: 8, backgroundColor: '#ffc107',
+                color: 'white', border: 'none', borderRadius: 6,
+                fontSize: 14, cursor: 'pointer',
+                transition: 'background-color .2s'
+              }}
+                onMouseOver={e => e.target.style.backgroundColor = '#e0a800'}
+                onMouseOut={e => e.target.style.backgroundColor = '#ffc107'}>
+                더보기
+              </button>
             </div>
+          )}
+        </div>
+      )}
+    </div>
 
             {/* 프로필 드롭다운 */}
             <div style={{ position: 'relative' }} ref={profileDropdownRef}>

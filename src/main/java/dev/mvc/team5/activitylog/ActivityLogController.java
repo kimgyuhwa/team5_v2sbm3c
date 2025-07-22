@@ -1,6 +1,9 @@
 package dev.mvc.team5.activitylog;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import net.bytebuddy.implementation.bytecode.constant.DefaultValue;
@@ -28,7 +31,7 @@ public class ActivityLogController {
      * GET /activityLog/user/{userno}
      */
     @GetMapping("/user/{userno}")
-    public List<ActivityLogDTO> getByUser(@PathVariable Long userno) {
+    public List<ActivityLogDTO> getByUser(@PathVariable(name="userno") Long userno) {
         return activityLogService.getByUser(userno);
     }
 
@@ -37,7 +40,7 @@ public class ActivityLogController {
      * GET /activityLog/action/{action}
      */
     @GetMapping("/action/{action}")
-    public List<ActivityLogDTO> getByAction(@PathVariable String action) {
+    public List<ActivityLogDTO> getByAction(@PathVariable(name="action") String action) {
         return activityLogService.getByAction(action);
     }
 
@@ -62,12 +65,26 @@ public class ActivityLogController {
     }
 
     /**
+     * ✅ 관리자용: 모든 활동 로그를 페이징 처리하여 조회
+     * GET /activityLog/admin/all?page=0&size=10&sort=createdAt,desc&action=LOGIN
+     * @param action 필터링할 액션 타입 (선택 사항)
+     * @param pageable 페이징 정보 (페이지 번호, 크기, 정렬 등)
+     * @return 페이징 처리된 ActivityLogDTO 목록
+     */
+    @GetMapping("/admin/all")
+    public Page<ActivityLogDTO> getAllActivityLogsForAdmin(
+            @RequestParam(name = "action", required = false) String action, //파라미터 null허용
+            @PageableDefault(size = 10, sort = {"createdAt"}) Pageable pageable) {
+        return activityLogService.getAllActivityLogsPaged(action, pageable);
+    }
+    
+    /**
      * 특정 사용자 최신 로그 N개 조회
      * GET /activityLog/user/{userno}/latest?limit=10
      */
     @GetMapping("/user/{userno}/latest")
     public List<ActivityLog> getLatestByUser(
-            @PathVariable Long userno,
+            @PathVariable(name="userno") Long userno,
             @RequestParam(name="limit", defaultValue = "10") int limit) {
         return activityLogService.findLatestByUser(userno, limit);
     }
@@ -87,7 +104,8 @@ public class ActivityLogController {
      * DELETE /activityLog/{id}
      */
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
+    public void deleteById(@PathVariable(name="id") Long id) {
+     
         activityLogService.deleteById(id);
     }
 }

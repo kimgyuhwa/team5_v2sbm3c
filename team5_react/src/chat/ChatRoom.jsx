@@ -5,7 +5,7 @@ import { Client } from "@stomp/stompjs";
 import axios from "axios";
 import { GlobalContext } from "../components/GlobalContext";
 
-const SOCKET_URL = "/ws-chat";
+const SOCKET_URL = "http://localhost:9093/ws-chat";
 
 export default function ChatRoom({ chatRoomno: propChatRoomno }) {
   const { chatRoomno: paramChatRoomno } = useParams();
@@ -17,146 +17,31 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
   const [isConnected, setIsConnected] = useState(false);
   const stompClient = useRef(null);
   const scrollRef = useRef(null);
-  const [talentTitle, setTalentTitle] = useState("");
-  const [roomName, setRoomName] = useState("");
-  const [pendingRequest, setPendingRequest] = useState(null);
 
   useEffect(() => {
-    if (!chatRoomno) return;
-
-    axios.get(`/chatroom/${chatRoomno}`, { withCredentials: true })
-      .then(res => {
-        const room = res.data;
-        setRoomName(room.roomName);
-        if (room.talentno) {
-          axios.get(`/talent/${room.talentno}`)
-            .then(talentRes => setTalentTitle(talentRes.data.title))
-            .catch(console.error);
-        }
-      })
-      .catch(console.error);
-  }, [chatRoomno]);
-
-  // WebSocket 연결 및 메시지 구독
-  useEffect(() => {
-    if (!chatRoomno || !loginUser?.userno) return;
-
     const socket = new SockJS(SOCKET_URL);
     stompClient.current = new Client({
       webSocketFactory: () => socket,
-      reconnectDelay: 5000,
       onConnect: () => {
-        console.log("✅ WebSocket 연결됨");
+        console.log("✅ 연결");
         setIsConnected(true);
-
         stompClient.current.subscribe(`/topic/chatroom/${chatRoomno}`, msg => {
-        const message = JSON.parse(msg.body);
-
-        if (message?.type === "REQUEST" && message?.status === "pending") {
-          if (Number(message.receiverno) === Number(loginUser.userno)) {
-            setPendingRequest(message); // ✅ 버튼 띄우기
-          }
-        } else if (message?.type === "SYSTEM") {
-          console.log("📢 시스템 메시지 도착:", message);
-          setMessages(prev => [...prev, {
-            userName: message.userName,
-            content: message.content,
-            senderno: null,
-            type: "SYSTEM"
-          }]);
-        } else {
+          const message = JSON.parse(msg.body);
           setMessages(prev => [...prev, message]);
-        }
-      });
-      }
+        });
+      },
     });
 
     stompClient.current.activate();
 
-    axios.get(`/message/chatroom/${chatRoomno}`, { withCredentials: true })
-      .then(res => {setMessages(res.data)
-        console.log("🎯 메시지 목록 확인:", res.data);
-      })
-      .catch(console.error);
-
-    return () => {
-      stompClient.current?.deactivate();
-      console.log("❌ WebSocket 연결 해제");
-    };
-  }, [chatRoomno, loginUser?.userno]);
-
-  // 요청 상태 불러오기
-  useEffect(() => {
-    if (!chatRoomno || !loginUser?.userno) return;
-
-    axios.get(`/request/chatroom/${chatRoomno}`)
-      .then(res => {
-        const req = res.data;
-        if (req?.status === "pending" && req.receiverno === loginUser.userno) {
-          setPendingRequest(req);
-        }
-      })
-      .catch(console.error);
-  }, [chatRoomno, loginUser?.userno]);
-
-  const handleAccept = async () => {
-    try {
-      await axios.patch(`/request/${pendingRequest.requestno}/accept`);
-      alert("요청을 수락했습니다!");
-      setPendingRequest(null);
-    } catch (err) {
-      alert("요청 수락 실패");
+    if (loginUser) {
+      axios.get(`/message/chatroom/${chatRoomno}`, { withCredentials: true })
+        .then(res => setMessages(res.data))
+        .catch(console.error);
     }
-  };
 
-  const handleReject = async () => {
-    try {
-      await axios.patch(`/request/${pendingRequest.requestno}/reject`);
-      alert("요청을 거절했습니다.");
-      setPendingRequest(null);
-    } catch (err) {
-      alert("요청 거절 실패");
-    }
-  };
-
-  const handleRequest = async () => {
-    if (!loginUser?.userno || !chatRoomno) return;
-
-    let dto = {};
-
-    try {
-      const res = await axios.get(`/chatroom/${chatRoomno}?loginUserno=${loginUser.userno}`, { withCredentials: true });
-      const room = res.data;
-
-      if (!room.talentno) {
-        alert("요청 가능한 게시물이 없습니다.");
-        return;
-      }
-
-      dto = {
-        talentno: room.talentno,
-        giverno: loginUser.userno,
-        receiverno: room.receiverno,
-        message: `${talentTitle} 요청을 보냅니다.`,
-        chatRoomno: room.chatRoomno,
-      };
-
-      const saveRes = await axios.post('/request/save', dto);
-      alert('요청이 전송되었습니다!');
-      console.log('요청 결과:', saveRes.data);
-
-    } catch (error) {
-      console.error("요청 전송 실패", error);
-      alert('요청 전송 실패');
-    }
-  };
-
-  // 스크롤 자동 이동
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    return () => stompClient.current?.deactivate();
+  }, [chatRoomno, loginUser]);
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -176,52 +61,34 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
     setInput("");
   };
 
+  useEffect(() => {
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages]);
+
   return (
-    <div className="max-w-md mx-auto flex flex-col max-h-[800px] border shadow-lg rounded-lg">
-      <div className="bg-blue-600 text-white p-4 font-bold flex flex-col gap-1">
-        <div className="flex justify-between items-center">
-          <div>💬 채팅방 #{chatRoomno}</div>
-          <div>{loginUser?.username}</div>
-          <button
-            onClick={handleRequest}
-            className="ml-auto text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-          >요청하기</button>
-        </div>
-        {talentTitle && (
-          <div className="text-sm font-normal text-white/90">
-            📌 게시물: <span className="font-semibold">{talentTitle}</span>
-          </div>
-        )}
+    <div className="max-w-md mx-auto flex flex-col max-h-[560px] border shadow-lg rounded-lg">
+      {/* 상단 */}
+      <div className="bg-blue-600 text-white p-4 font-bold flex justify-between items-center">
+        <div>💬 채팅방 #{chatRoomno}</div>
+        <div>{loginUser?.username}</div>
       </div>
 
+      {/* 메시지 리스트 */}
       <div ref={scrollRef} className="overflow-y-auto bg-gray-50 p-4 h-[560px]">
-        {messages.length === 0 ? (
-          <div className="text-center text-gray-400 mt-20">
-            아직 메시지가 없습니다. 대화를 시작해보세요!
-          </div>
-        ) : (
-          messages.map((msg, idx) => {
-            if (msg.type?.toUpperCase() === "SYSTEM") {
-              return (
-                <div key={idx} className="text-center text-xs text-gray-500 my-2">
-                  📢 {msg.content}
-                </div>
-              );
-            }
-
-            const isMine = msg.senderno === loginUser?.userno;
-            return (
-              <div key={idx} className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2`}>
-                <div className={`max-w-xs px-4 py-2 rounded-lg ${isMine ? "bg-blue-500 text-white" : "bg-white border"}`}>
-                  <span className="block text-sm font-semibold">{msg.userName}</span>
-                  <span>{msg.content}</span>
-                </div>
+        {messages.map((msg, idx) => {
+          const isMine = msg.senderno === loginUser?.userno;
+          return (
+            <div key={idx} className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2`}>
+              <div className={`max-w-xs px-4 py-2 rounded-lg ${isMine ? "bg-blue-500 text-white" : "bg-white border"}`}>
+                <span className="block text-sm font-semibold">{msg.userName}</span>
+                <span>{msg.content}</span>
               </div>
-            );
-          })
-        )}
+            </div>
+          );
+        })}
       </div>
 
+      {/* 입력창 */}
       <div className="p-4 border-t flex gap-2">
         <input
           className="flex-1 border rounded px-3 py-2"
@@ -233,19 +100,10 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
         <button
           onClick={sendMessage}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >전송</button>
+        >
+          전송
+        </button>
       </div>
-
-      {pendingRequest && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative my-2 mx-4">
-          <strong className="font-bold">📩 요청 알림: </strong>
-          <span className="block sm:inline">{pendingRequest.message}</span>
-          <div className="mt-2 flex gap-2">
-            <button onClick={handleAccept} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">수락</button>
-            <button onClick={handleReject} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">거절</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

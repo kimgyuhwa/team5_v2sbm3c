@@ -38,6 +38,6 @@ public class Notification {
     private Boolean read;
 
     private LocalDateTime createdAt;
-   
+    @Column(name = "TARGET_ID")
     private Long targetId;
 }

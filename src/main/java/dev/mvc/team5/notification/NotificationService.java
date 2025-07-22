@@ -76,7 +76,8 @@ public class NotificationService {
 
         // 3) DTO 변환 후 SSE 전송
         sseService.send(user.getUserno(), toDTO(saved));
-
+        System.out.println(">>> targetId from DTO: " + dto.getTargetId());
+        System.out.println(">>> targetId set to Entity: " + n.getTargetId());
         return saved;
     }
     //알림 헬퍼  다른 곳에서 이거쓰면돼
@@ -92,6 +93,7 @@ public class NotificationService {
         dto.setType(type);           // 예: "chat", "info", "reservation" …
         dto.setMessage(message);     // 알림 내용
         dto.setTargetId(targetId); 
+
         // 2) 기존 save(dto) 메서드 재사용 → DB 저장 & 엔티티 반환
         return save(dto);
     }
@@ -112,7 +114,7 @@ public class NotificationService {
       return repo.findByUser_UsernoAndReadFalseOrderByCreatedAtDesc(userno, pageable);
   }
     
-    private NotificationDTO toDTO(Notification n) {
+    public NotificationDTO toDTO(Notification n) {
       NotificationDTO dto = new NotificationDTO();
       dto.setNotificationno(n.getNotificationno());
       dto.setUserno(n.getUser().getUserno());
