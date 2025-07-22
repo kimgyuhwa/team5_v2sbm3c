@@ -1,4 +1,4 @@
-import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, CalendarCheck } from 'lucide-react';
+import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, CalendarCheck, FileText } from 'lucide-react';
 import React, { useState, useContext,useEffect,useRef } from 'react';
 import ReactDOM from 'react-dom';
 import UserLogout from '../../user/UserLogout';
@@ -14,6 +14,7 @@ function Header( { openLoginModal } ) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [chatList, setChatList] = useState([]);
+  const [requestList, setRequestList] = useState([]);
 
   const [page, setPage] = useState(0);    //페이지
   const [notificationList, setNotificationList] = useState([]);  // 알림 목록
@@ -44,6 +45,11 @@ function Header( { openLoginModal } ) {
 
   const handleChatList = () => {
   navigate('/chatlist');
+  setIsDropdownOpen(false);
+};
+
+const handleRequestList = () => {
+  navigate('/talent/request/list');
   setIsDropdownOpen(false);
 };
 
@@ -617,6 +623,27 @@ function Header( { openLoginModal } ) {
                   >
                     <MessageCircle size={16} style={{ marginRight: '12px' }} />
                     채팅 목록
+                  </button>
+
+                  <button 
+                    onClick={handleRequestList}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <FileText size={16} style={{ marginRight: '12px' }} />
+                    요청 목록
                   </button>
 
 

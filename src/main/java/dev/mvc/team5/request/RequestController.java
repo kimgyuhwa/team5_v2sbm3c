@@ -55,12 +55,12 @@ public class RequestController {
      */
     @GetMapping("/list")
     public ResponseEntity<Page<RequestListDTO>> listRequests(
-            @RequestParam(required = false) String searchType,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "requestno") String sort,   // requestno 내림차순 기본
-            @RequestParam(defaultValue = "DESC") String direction) {
+            @RequestParam(name="searchType", required = false) String searchType,
+            @RequestParam(name="keyword", required = false) String keyword,
+            @RequestParam(name="page", defaultValue = "0") int page,
+            @RequestParam(name="size", defaultValue = "10") int size,
+            @RequestParam(name="sort", defaultValue = "requestno") String sort,   // requestno 내림차순 기본
+            @RequestParam(name="direction", defaultValue = "DESC") String direction) {
 
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
@@ -77,8 +77,8 @@ public class RequestController {
      */
     @PatchMapping("/status/{requestno}")
     public ResponseEntity<String> updateStatus(
-            @PathVariable Long requestno,
-            @RequestParam String status) {
+            @PathVariable(name="reqeustno") Long requestno,
+            @RequestParam(name="status") String status) {
 
         service.updateStatus(requestno, status);
         return ResponseEntity.ok("상태가 변경되었습니다.");
