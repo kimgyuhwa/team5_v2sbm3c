@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import dev.mvc.team5.chatroom.ChatRoom;
 import dev.mvc.team5.match.Match;
 import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.user.User;
@@ -67,6 +68,10 @@ public class Request {
     @ManyToOne
     @JoinColumn(name = "receiverno")
     private User receiver;
+    
+    @ManyToOne
+    @JoinColumn(name = "chatroomno")  
+    private ChatRoom chatRoom;
 
     /**
 

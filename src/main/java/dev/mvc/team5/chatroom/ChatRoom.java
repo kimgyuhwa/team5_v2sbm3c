@@ -10,11 +10,14 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.message.Message;
+import dev.mvc.team5.talents.Talent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -39,7 +42,10 @@ public class ChatRoom {
     private LocalDateTime createdAt;
 
     // === 연관 관계 ===
-
+    @ManyToOne
+    @JoinColumn(name = "talentno")
+    private Talent talent; // 채팅방이 어떤 게시물과 관련돼 있는지
+    
     @OneToMany(mappedBy = "chatRoom")
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 

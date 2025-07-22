@@ -32,7 +32,6 @@ def is_reservation_query(message: str) -> bool:
     return any(k in message for k in keywords)
 
 
-# ✅ 메인 엔드포인트
 @app.route("/chat", methods=["POST"])
 def chat_proc():
     if not request.is_json:
@@ -41,32 +40,42 @@ def chat_proc():
     data = request.json
     message = data.get("message", "")
     userno = data.get("userno")
-    source = data.get("source", "user")  # ✅ 'faq'일 경우 RAG 무조건 사용
+    source = data.get("source", "user")
+    mode = data.get("mode")  # ✅ 여기에 추가
 
     print("-> 사용자 질문:", message)
 
-    # 0️⃣ 예약 관련이면 예약 에이전트로 분기
-    if is_reservation_query(message):
-        import agent_reservation.context  # 초기화 지연
-        agent_reservation.context.CURRENT_USERNO = userno
+    # ✅ 0. 번역 모드인 경우 강제 translate_tool 실행
+    if mode == "translate":
+        from ai_agent.apitool import translate_tool
+        sentence = message
+        lang = data.get("lang", "영어")
+        age = data.get("age", 20)
+        final_input = f"{sentence} {lang} {age}"
+        translated = translate_tool(final_input)
+        return jsonify({"res": translated, "source": "translate"})
 
+    # 1. 예약 관련이면 예약 에이전트로 분기
+    if is_reservation_query(message):
+        import agent_reservation.context
+        agent_reservation.context.CURRENT_USERNO = userno
         print("🏢 예약 Agent 사용")
         result = reservation_agent.invoke({"input": message})
         return jsonify({"res": result["output"], "source": "reservation"})
 
-    # ✅ FAQ 버튼에서 온 요청은 RAG로 강제 처리
+    # 2. FAQ 버튼에서 온 요청은 RAG로 강제 처리
     if source == "faq":
         rag_answer = query_engine.query(message).response
         print("📚 [FAQ] RAG 응답:", rag_answer)
         return jsonify({"res": rag_answer, "source": "rag"})
 
-    # 1️⃣ 일반 입력: RAG → 신뢰도 체크
+    # 3. 일반 입력: RAG → 신뢰도 체크
     rag_answer = query_engine.query(message).response
     if is_confident(rag_answer, message):
         print("📚 RAG 응답 사용")
         return jsonify({"res": rag_answer, "source": "rag"})
 
-    # 2️⃣ LangChain Agent fallback
+    # 4. LangChain Agent fallback
     apitool.CURRENT_USERNO = userno
     result = apitool.agent.invoke({"input": message, "userno": userno})
     agent_answer = result["output"]
@@ -76,6 +85,7 @@ def chat_proc():
 
     print("🤖 Agent 응답 사용")
     return jsonify({"res": agent_answer, "source": "agent"})
+
 
 
 

@@ -37,6 +37,12 @@ function Header( { openLoginModal } ) {
     setIsDropdownOpen(false);
   };
 
+  const handleChatList = () => {
+  navigate('/chatlist');
+  setIsDropdownOpen(false);
+};
+
+
   const handleReservation = () => {
     navigate('/mypage/Mypage?tab=history');
     setIsDropdownOpen(false);
@@ -537,6 +543,28 @@ function Header( { openLoginModal } ) {
                       설정
                     </button>
 
+                    <button 
+                    onClick={handleChatList}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <MessageCircle size={16} style={{ marginRight: '12px' }} />
+                    채팅 목록
+                  </button>
+
+
                     <button
                     onClick={handleReservation}
                     style={{
@@ -609,7 +637,7 @@ function Header( { openLoginModal } ) {
     {openChatId && ReactDOM.createPortal(
       <div style={{
         position: 'fixed', bottom: 20, right: 20,
-        width: 400, height: 600, backgroundColor: 'white',
+        width: 400, maxHeight: 'calc(100vh - 40px)', backgroundColor: 'white',
         border: '1px solid #ccc', borderRadius: 10,
         boxShadow: '0 8px 24px rgba(0,0,0,.2)',
         zIndex: 9999, display: 'flex', flexDirection: 'column'

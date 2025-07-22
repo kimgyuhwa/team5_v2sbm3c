@@ -42,6 +42,9 @@ public class Message {
     private User sender;
 
     private String content;
+    
+    @Column(name = "type")
+    private String type; // "SYSTEM" or "CHAT"
 
     @CreationTimestamp
     @Column(name="sent_at")

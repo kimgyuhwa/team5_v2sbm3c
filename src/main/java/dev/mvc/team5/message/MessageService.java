@@ -32,9 +32,10 @@ public class MessageService {
                      .map(m -> new MessageResponseDTO(
                          m.getMessageno(),
                          m.getChatRoom().getChatRoomno(),
-                         m.getSender().getUserno(),
-                         m.getSender().getUsername(),
+                         m.getSender() != null ? m.getSender().getUserno() : null,
+                         m.getSender() != null ? m.getSender().getUsername() : "system",
                          m.getContent(),
+                         m.getType(),
                          m.getSentAt()))
                      .collect(Collectors.toList());
   }
@@ -43,8 +44,14 @@ public class MessageService {
       Message m = messageRepository
               .findTopByChatRoom_ChatRoomnoOrderBySentAtDesc(chatRoomno);
 
-      return m == null
-             ? new LastMessageDTO("","", null)
-             : new LastMessageDTO(m.getSender().getUsername(),m.getContent(), m.getSentAt());
+      if (m == null) {
+          return new LastMessageDTO("", "", null);
+      }
+
+      User sender = m.getSender();
+      String senderName = (sender != null) ? sender.getUsername() : "system";
+
+      return new LastMessageDTO(senderName, m.getContent(), m.getSentAt());
   }
+
 }

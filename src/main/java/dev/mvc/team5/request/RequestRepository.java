@@ -1,6 +1,7 @@
 package dev.mvc.team5.request;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,11 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     
     // 요청 내용으로 검색
     Page<Request> findByMessageContaining(String keyword, Pageable pageable);
+    
+    Optional<Request> findByChatRoom_ChatRoomno(Long chatRoomno);
+    
+    Optional<Request> findTopByChatRoom_ChatRoomnoOrderByCreatedAtDesc(Long chatRoomno);
+
     
 }
 

@@ -1,7 +1,7 @@
 // src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { GlobalProvider,GlobalContext } from './components/GlobalContext';
+import { GlobalProvider } from './components/GlobalContext';
 import Menu from './components/Menu';
 import Home from './components/Home';
 import UserLogin from './user/UserLogin';
@@ -34,6 +34,7 @@ import Header from './components/header/Header'
 import PlaceDetailPage from './place/PlaceDetailPage';
 import AdminReportList from './admin/AdminReportList';
 import ReportCreate from './components/report/ReportCreate';
+import ChatListPage from './chat/ChatListPage';
 
 
 function App() {
@@ -81,7 +82,8 @@ function App() {
             <Route path="/reservation/Reservation" element={<ReservationsManager />} />
             {/* 채팅 */}
             <Route path="/chat" element={<ChatRoom />} />
-            <Route path="/chatroom/:chatRoomno" element={<ChatRoom />} />
+            <Route path="/chat/:chatRoomno" element={<ChatRoom />} />
+            <Route path="/chatlist" element={<ChatListPage />} />
             {/* 챗봇 */}
             <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
             <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />
