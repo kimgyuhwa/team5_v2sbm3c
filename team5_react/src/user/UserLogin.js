@@ -178,11 +178,10 @@ function UserLogin({ isModalOpen = true, closeModal = () => {} }) {
               </p>
             </div>
             <button
-              onClick={() => {
-                closeModal();
-                navigate('/components/Main');
-                
-              }}
+                onClick={() => {
+                  closeModal(); // 모달 닫기
+                  navigate('/components/Main'); // 페이지 이동
+                }}
               className="w-full bg-blue-600 text-white p-4 rounded-xl font-semibold hover:shadow-lg hover:bg-blue-700 transition-all duration-300"
             >
               확인

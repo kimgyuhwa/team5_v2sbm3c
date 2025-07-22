@@ -60,7 +60,7 @@ public class ReservationsChatBotController {
             return ResponseEntity.badRequest().body(Map.of("error", "시작 시간은 종료 시간보다 빨라야 합니다."));
         }
 
-        List<Reservations> conflicts = reservationsService.findConflict(placeno, start, end);
+        List<Reservations> conflicts = reservationsService.findChatConflict(placeno, start, end);
         boolean hasConflict = !conflicts.isEmpty();
 
         return ResponseEntity.ok(Map.of(

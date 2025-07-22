@@ -287,12 +287,13 @@ const PlacePage = ({place}) => {
                     height: '200px',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    position: 'relative'
+                    position: 'relative',
+                    backgroundImage: `url("/gang.jpg")`,
                     
                     
                   }}
                   >
-                    
+
                     <div style={{
                       position: 'absolute',
                       top: '12px',

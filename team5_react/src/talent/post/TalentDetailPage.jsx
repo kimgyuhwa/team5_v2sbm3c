@@ -41,7 +41,10 @@ function TalentDetailPage() {
         if (!res.ok) throw new Error("서버 오류");
         return res.json();
       })
-      .then((data) => setTalent(data))
+      .then((data) => {
+      console.log("🎯 talent 데이터:", data); // ✅ 추가
+      setTalent(data);
+    })
       .catch((e) => setError(e.message));
   }, [talentno]);
 
@@ -151,28 +154,55 @@ function TalentDetailPage() {
   /* 채팅, 삭제, 요청                                                     */
   /* ------------------------------------------------------------------ */
   const startChat = async () => {
-    if (!loginUser) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
+  if (!loginUser) {
+    alert("로그인이 필요합니다.");
+    return;
+  }
 
-    try {
-      const res = await fetch(
-        `/chatroom/findOrCreate?senderId=${loginUser?.userno}&receiverId=${talent?.userno}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+  if (!talent?.userno) {
+    alert("상대방 정보가 없습니다.");
+    return;
+  }
 
-      if (!res.ok) throw new Error("채팅방 생성 실패");
-      const data = await res.json();
+  try {
+    const res = await axios.post("/chatroom/findOrCreate", null, {
+      params: {
+        senderId: loginUser.userno,
+        receiverId: talent.userno, 
+        talentno: talent.talentno,
+        title: talent.title
+      },
+      withCredentials: true,
+    });
 
-      navigate(`/chatroom/${data.chatRoomno}`);
-    } catch (e) {
-      alert("채팅방 오류: " + e.message);
-    }
-  };
+    const chatRoomno = res.data.chatRoomno;
+    navigate(`/chat/${chatRoomno}`);
+  } catch (err) {
+    console.error("❗ 채팅방 생성 오류:", err);
+    alert("채팅방 오류: " + err.message);
+  }
+};
+
+
+
+
+  //   try {
+  //     const res = await fetch(
+  //       `/chatroom/findOrCreate?senderId=${loginUser?.userno}&receiverId=${talent?.userno}`,
+  //       {
+  //         method: "POST",
+  //         credentials: "include",
+  //       }
+  //     );
+
+  //     if (!res.ok) throw new Error("채팅방 생성 실패");
+  //     const data = await res.json();
+
+  //     navigate(`/chatroom/${data.chatRoomno}`);
+  //   } catch (e) {
+  //     alert("채팅방 오류: " + e.message);
+  //   }
+  // };
 
   const deleteTalent = async () => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
@@ -276,7 +306,7 @@ function TalentDetailPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-lg">
+    <div className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-md my-20 ">
       {editMode ? (
         <>
           <h2 className="text-2xl font-bold mb-6 text-blue-600">재능 수정</h2>
@@ -442,18 +472,18 @@ function TalentDetailPage() {
             )}
             {isOwner && (
               <>
-                <button
-                  className="px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700 shadow"
+                <div
+                  className="px-3 py-1 bg-gray-100 text-black rounded hover:bg-gray-150 shadow"
                   onClick={startEdit}
                 >
                   수정
-                </button>
-                <button
-                  className="px-5 py-2 bg-red-600 text-white rounded hover:bg-red-700 shadow"
+                </div>
+                <div
+                  className="px-3 py-1 bg-gray-100 text-black rounded hover:bg-gray-150 shadow"
                   onClick={deleteTalent}
                 >
                   삭제
-                </button>
+                </div>
               </>
             )}
              

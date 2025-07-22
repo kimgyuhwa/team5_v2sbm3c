@@ -24,8 +24,8 @@ export default function MyPage() {
     switch (currentPage) {
       case 'profile':
         return <MyPageProfile />;
-      case 'security':
-        return <SecuritySettings />;
+      // case 'security':
+      //   return <SecuritySettings />;
       case 'history':
         return <MyPageSurvey />;
       case 'block':
@@ -57,6 +57,7 @@ export default function MyPage() {
 
         {/* 사이드바 컴포넌트 */}
         <MyPageSideBar currentPage={currentPage} />
+      
       
         {/* 메인 콘텐츠 */}
         <main style={{

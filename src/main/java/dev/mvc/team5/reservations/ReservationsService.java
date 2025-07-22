@@ -3,6 +3,8 @@ package dev.mvc.team5.reservations;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import dev.mvc.team5.places.Places;
+
 public interface ReservationsService {
 	
     ReservationsResponseDTO create(ReservationsRequestDTO dto);
@@ -13,10 +15,19 @@ public interface ReservationsService {
     
     ReservationsResponseDTO update(Long reservationno, ReservationsRequestDTO dto);
     
-    void delete(Long reservationno);
+    void cancelReservation(Long reservationno);
 
     // chatbot 예약
-    List<Reservations> findConflict(Long placeno, LocalDateTime start, LocalDateTime end);
+    List<Reservations> findChatConflict(Long placeno, LocalDateTime start, LocalDateTime end);
+
+		List<Reservations> findConflict(Places placeno, LocalDateTime start, LocalDateTime end);
+
+		List<Reservations> findByPlace(Long placeno);
+
+		List<ReservationsResponseDTO> findByUser(Long userno);
+
+
+	
 
 
 

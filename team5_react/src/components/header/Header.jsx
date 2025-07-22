@@ -1,4 +1,4 @@
-import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, Star } from 'lucide-react';
+import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, CalendarCheck } from 'lucide-react';
 import React, { useState, useContext,useEffect,useRef } from 'react';
 import ReactDOM from 'react-dom';
 import UserLogout from '../../user/UserLogout';
@@ -42,6 +42,12 @@ function Header( { openLoginModal } ) {
     navigate('/mypage/Mypage?tab=security')
     setIsDropdownOpen(false);
   };
+
+  const handleChatList = () => {
+  navigate('/chatlist');
+  setIsDropdownOpen(false);
+};
+
 
   const handleReservation = () => {
     navigate('/mypage/Mypage?tab=reservation');
@@ -343,28 +349,44 @@ function Header( { openLoginModal } ) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          height: '50px'
+          height: '70px'
         }}>
-          {/* 로고 */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <a 
-              href="/components/main" 
-              onClick={handleLogoClick} 
-              style={{ cursor: isLoggedIn ? 'pointer' : 'default' }}
-              aria-disabled={!isLoggedIn}
-            >
-              <h1
-                style={{
-                  fontSize: '24px',
-                  fontWeight: '700',
-                  color: isLoggedIn ? '#333' : '#aaa',
-                  margin: 0
-                }}
-              >
-                메인
-              </h1>
-            </a>
-          </div>
+        {/* 로고 */}
+        <div style={{ display: 'block', alignItems: 'center' }}>
+          <a 
+            href="/components/main" 
+            onClick={handleLogoClick} 
+            style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              cursor: isLoggedIn ? 'pointer' : 'default',
+            }}
+            aria-disabled={!isLoggedIn}
+          >
+            <span style={{ 
+              fontSize: '22px', 
+              fontWeight: 'bold', 
+              color: '#0050b3'
+            }}>
+              AbilLink
+            </span>
+            <img 
+              src="/logo.png"
+              alt="AbilLink 로고" 
+              style={{ 
+                width:'45px',
+                height: '80px',
+                objectFit: 'cover', // 내부 공백을 잘라냄
+                verticalAlign: 'middle',
+                margin:'0px'
+              }} 
+            />
+          </a>
+        </div>
+
+
+
 
           {/* 오른쪽 메뉴 영역 */}
            {isLoggedIn ? (
@@ -588,10 +610,25 @@ function Header( { openLoginModal } ) {
                   border: '1px solid #e1e5e9', zIndex: 50, overflow: 'hidden'
                 }}>
                   <div style={{ padding: '4px 0' }}>
-                    <button onClick={handleMyPage} style={dropdownBtn}>
+                    <button onClick={handleMyPage} 
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}>
+
                       <User size={16} style={{ marginRight: 12 }} /> 프로필 보기
                     </button>
-                    <button 
+                    {/* <button 
                     onClick={handleSetting}
                     style={{
                       display: 'flex',
@@ -610,7 +647,29 @@ function Header( { openLoginModal } ) {
                     >
                       <Settings size={16} style={{ marginRight: '12px' }} />
                       설정
-                    </button>
+                    </button> */}
+
+                    <button 
+                    onClick={handleChatList}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <MessageCircle size={16} style={{ marginRight: '12px' }} />
+                    채팅 목록
+                  </button>
+
 
                     <button
                     onClick={handleReservation}
@@ -629,11 +688,11 @@ function Header( { openLoginModal } ) {
                     onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
-                      <Star size={16} style={{ marginRight: '12px' }} />
+                      <CalendarCheck size={16} style={{ marginRight: '12px' }} />
                       예약 확인
 
                     </button>
-                    <button 
+                    {/* <button 
                     onClick={handleResearch}
                     style={{
                       display: 'flex',
@@ -652,7 +711,7 @@ function Header( { openLoginModal } ) {
                     >
                       <Star size={16} style={{ marginRight: '12px' }} />
                       설문조사
-                    </button>
+                    </button> */}
                     <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
                     <button onClick={handleLogout} style={{ ...dropdownBtn, color: '#dc3545' }}>
                       <LogOut size={16} style={{ marginRight: 12 }} /> 로그아웃
@@ -684,7 +743,7 @@ function Header( { openLoginModal } ) {
     {openChatId && ReactDOM.createPortal(
       <div style={{
         position: 'fixed', bottom: 20, right: 20,
-        width: 400, height: 600, backgroundColor: 'white',
+        width: 400, maxHeight: 'calc(100vh - 40px)', backgroundColor: 'white',
         border: '1px solid #ccc', borderRadius: 10,
         boxShadow: '0 8px 24px rgba(0,0,0,.2)',
         zIndex: 9999, display: 'flex', flexDirection: 'column'
@@ -725,4 +784,5 @@ const guestBtnStyle = {
   border: '1px solid #007bff', backgroundColor: 'white',
   color: '#007bff', fontWeight: 600, cursor: 'pointer'
 };
+
 export default Header;

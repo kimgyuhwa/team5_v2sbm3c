@@ -14,11 +14,20 @@ import dev.mvc.team5.places.Places;
 @Repository
 public interface ReservationsRepository extends JpaRepository<Reservations, Long> {
 
-	@Query("SELECT r FROM Reservations r WHERE r.place.placeno = :placeno " +
-      "AND :start < r.end_time AND :end > r.start_time")
-	List<Reservations> findConflict(@Param("placeno") Long placeno,
-                                @Param("start") LocalDateTime start,
-                                @Param("end") LocalDateTime end);
+  @Query("SELECT r FROM Reservations r WHERE r.place = :placeno " +
+      "AND r.start_time < :endTime AND r.end_time > :startTime")
+List<Reservations> findChatConflicts(@Param("placeno") Long placeno,
+                                @Param("startTime") LocalDateTime startTime,
+                                @Param("endTime") LocalDateTime endTime);
 
-	
+	@Query("SELECT r FROM Reservations r WHERE r.place = :place " +
+      "AND r.start_time < :endTime AND r.end_time > :startTime")
+List<Reservations> findConflicts(@Param("place") Places place,
+                                @Param("startTime") LocalDateTime startTime,
+                                @Param("endTime") LocalDateTime endTime);
+
+	List<Reservations> findByPlace_Placeno(Long placeno);
+
+	List<Reservations> findByUser_Userno(Long userno);
+  
 }
