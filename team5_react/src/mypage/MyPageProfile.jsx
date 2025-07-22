@@ -7,7 +7,7 @@ import { GlobalContext } from '../components/GlobalContext';
 /* ▶ 공통 스타일 */
 const fieldWrap = { marginBottom: 10 };
 const labelStyle = { display:'block', fontWeight:'bold' };
-const inputStyle = { width:'100%', padding:6 };
+const inputStyle = { width:'100%', padding:6 , textAlign: 'center'};
 const btn = { padding:'8px 16px', cursor:'pointer' };
 
 export default function MyPageProfile() {

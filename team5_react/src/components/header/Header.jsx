@@ -5,6 +5,7 @@ import UserLogout from '../../user/UserLogout';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../GlobalContext';
 import ChatRoom from '../../chat/ChatRoom';
+import axios from 'axios';
 
 function Header( { openLoginModal } ) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,12 +44,12 @@ function Header( { openLoginModal } ) {
   };
 
   const handleReservation = () => {
-    navigate('/mypage/Mypage?tab=history');
+    navigate('/mypage/Mypage?tab=reservation');
     setIsDropdownOpen(false);
   };
 
   const handleResearch = () => {
-    navigate('/mypage/Mypage?tab=reservation');
+    navigate('/mypage/Mypage?tab=history');
     setIsDropdownOpen(false);
   };
 
@@ -75,6 +76,56 @@ function Header( { openLoginModal } ) {
 
   const userno = loginUser?.userno;
   const size = 3;  // 한번에 보여줄 알림 개수
+  // ⭐ 개별 알림 클릭 핸들러 ⭐
+  const handleNotificationItemClick = async (notification) => {
+    try {
+      // 1. 알림을 읽음으로 표시하는 API 호출
+      await axios.put(`/notifications/read/${notification.notificationno}`);
+
+      // 2. 프론트엔드 상태 업데이트
+      setUnreadCount(prevCount => Math.max(0, prevCount - 1)); // 읽지 않은 알림 개수 감소
+      setNotificationList(prevList =>
+        prevList.map(n =>
+          n.notificationno === notification.notificationno ? { ...n, read: true } : n
+        )
+      ); // 읽음 상태만 true로 변경 (목록에서 제거하는 대신)
+
+      // 3. 알림 드롭다운 닫기
+      setIsNotificationDropdownOpen(false);
+
+      // 4. 관련 페이지로 이동 (type과 targetId 기반)
+      let path = '';
+      switch (notification.type) {
+        case 'chat':
+          path = `/chat/room/${notification.targetId}`; // 예: /chat/room/123
+          break;
+        case 'reservation':
+          path = `/mypage/Mypage?tab=reservation&reservationNo=${notification.targetId}`; // 예: /mypage/Mypage?tab=reservation&reservationNo=456
+          break;
+        case 'review':
+          path = `/talents/${notification.targetId}/reviews`; // 예: /talents/789/reviews (리뷰 대상 재능 또는 구매/판매 기록으로 이동)
+          break;
+        case 'talent': // 새로운 재능 등록, 재능 승인/거절 등
+          path = `/talents/${notification.targetId}`; // 예: /talents/101
+          break;
+        case 'system': // 시스템 공지 등
+          path = '/notices'; // 또는 특정 공지사항 ID로 이동: `/notices/${notification.targetId}`
+          break;
+      }
+
+      if (path) {
+        navigate(path);
+      }
+    } catch (error) {
+      console.error('알림 처리 중 오류 발생:', error);
+      // 오류 발생 시에도 사용자 경험을 위해 페이지 이동은 시도할 수 있습니다.
+      if (notification.type && notification.targetId) {
+        let path = '';
+        switch (notification.type) { /* 위와 동일한 switch 문 */ }
+        if (path) navigate(path);
+      }
+    }
+  };
  const loadMore = () => {
   fetch(`/notifications/user/${userno}?page=${page}&size=${size}`)
     .then(res => res.json())

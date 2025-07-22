@@ -79,7 +79,8 @@ public class ChatRoomService {
         notificationService.createNotification(
             receiverId,   //보낼 대상
             "chat",                              // 타입 chat, info 등등
-            sender.getUsername() + "님이 새 채팅을 시작했습니다." // 메시지
+            sender.getUsername() + "님이 새 채팅을 시작했습니다.",  // 메시지
+            chatRoom.getChatRoomno()     //targetId  알림눌렀을떄 사용할거
         );
 
         return chatRoom;

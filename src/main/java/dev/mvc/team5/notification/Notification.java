@@ -38,4 +38,6 @@ public class Notification {
     private Boolean read;
 
     private LocalDateTime createdAt;
+   
+    private Long targetId;
 }
