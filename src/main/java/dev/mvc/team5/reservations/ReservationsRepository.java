@@ -29,5 +29,12 @@ List<Reservations> findConflicts(@Param("place") Places place,
 	List<Reservations> findByPlace_Placeno(Long placeno);
 
 	List<Reservations> findByUser_Userno(Long userno);
+	
+	// 예약시간 1시간남앗을때 알림
+	 @Query("SELECT r FROM Reservations r " +
+       "WHERE r.start_time BETWEEN :start AND :end")
+List<Reservations> findReservationsStartingBetween(
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end);
   
 }

@@ -340,7 +340,7 @@ const handleRequestList = () => {
       navigate('/components/main'); // 로그인 된 경우 메인으로 이동
     }
   };
-console.log("알리리링",notificationList)
+//console.log("알리리링",notificationList)
   return (
     <div style={{
       backgroundColor: 'white',

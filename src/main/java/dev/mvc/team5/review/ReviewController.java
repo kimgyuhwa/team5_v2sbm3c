@@ -1,6 +1,7 @@
 package dev.mvc.team5.review;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,24 @@ public class ReviewController {
     @GetMapping
     public List<ReviewDTO> getAll() {
         return service.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
+ //특정 재능(talentno)에 대한 리뷰 목록 조회 (페이징)
+    @GetMapping("/talent/{talentno}")
+    public Page<ReviewDTO> getReviewsForTalent(@PathVariable("talentno") Long talentno,
+                                                    @PageableDefault(size = 5, sort = {"createdAt", "reviewno"}) Pageable pageable) {
+        return service.getReviewsByTalentno(talentno, pageable);
+    }
+    // 재능 게시물에 대한 리뷰 작성
+    //리뷰를 생성할 때 `talentno`를 필수로 전달.
+    @PostMapping("/talent")
+    public ResponseEntity<ReviewDTO> createTalentReview(@RequestBody ReviewDTO reviewDTO) {
+        // ReviewDTO에 talentno가 포함되어야 합니다.
+        if (reviewDTO.getTalentno() == null) {
+            return ResponseEntity.badRequest().build(); // talentno가 없으면 오류 반환
+        }
+        Review savedReview = service.saveTalentReview(reviewDTO); // saveTalentReview를 호출해도 됨
+        return ResponseEntity.ok(service.convertToDTO(savedReview));
     }
 
     // 특정 리뷰 ID 조회
@@ -86,7 +105,7 @@ public class ReviewController {
         return dto;
     }
  // ⭐ 기존 review_ai_server.py의 엔드포인트에 맞게 URL 업데이트 ⭐
-    @PostMapping("/summary")
+    @PostMapping("/summary/receiver")
     public ResponseEntity<Map<String, String>> getReviewSummary(@RequestBody Map<String, Object> requestBody) {
         // receiverNo를 Map에서 추출 (프런트에서 함께 보내줘야 함)
         // Integer 타입으로 캐스팅
@@ -138,6 +157,59 @@ public class ReviewController {
             e.printStackTrace();
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "AI 서버와 통신 중 오류가 발생했습니다: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @PostMapping("/summary/talent") // 새로운 엔드포인트 경로
+    public ResponseEntity<Map<String, String>> getReviewSummaryByTalent(@RequestBody Map<String, Object> requestBody) {
+        Long talentNo = null;
+        Object talentNoObj = requestBody.get("talentNo");
+        if (talentNoObj instanceof Integer) {
+            talentNo = ((Integer) talentNoObj).longValue();
+        } else if (talentNoObj instanceof Long) {
+            talentNo = (Long) talentNoObj;
+        }
+
+        @SuppressWarnings("unchecked")
+        List<String> reviewComments = (List<String>) requestBody.get("reviewComments");
+
+        System.out.println("Spring Boot - [By Talent] 받은 talentNo: " + talentNo);
+        System.out.println("Spring Boot - [By Talent] 받은 reviewComments: " + reviewComments);
+
+        if (talentNo == null || reviewComments == null || reviewComments.isEmpty()) {
+            System.out.println("Spring Boot - [By Talent] talentNo 또는 reviewComments가 유효하지 않습니다.");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "유효한 요청 데이터(talentNo, reviewComments)가 필요합니다.");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        String pythonApiUrl = "http://localhost:5001/summarize-reviews"; // AI 서버 URL
+
+        try {
+            Map<String, Object> requestToPython = new HashMap<>();
+            requestToPython.put("reviewComments", reviewComments);
+            requestToPython.put("talentNo", talentNo); // AI 서버로 talentNo 전달
+
+            System.out.println("Spring Boot - [By Talent] Python으로 전송할 데이터: " + requestToPython);
+
+            ResponseEntity<Map> pythonResponse = restTemplate.postForEntity(pythonApiUrl, requestToPython, Map.class);
+
+            if (pythonResponse.getStatusCode() == HttpStatus.OK && pythonResponse.getBody() != null) {
+                String summary = (String) pythonResponse.getBody().get("summary");
+                Map<String, String> successResponse = new HashMap<>();
+                successResponse.put("summary", summary);
+                return new ResponseEntity<>(successResponse, HttpStatus.OK);
+            } else {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "[By Talent] AI 서버에서 요약을 가져오는 데 실패했습니다.");
+                return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            System.err.println("[By Talent] AI 서버 호출 중 오류 발생: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "[By Talent] AI 서버와 통신 중 오류가 발생했습니다: " + e.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

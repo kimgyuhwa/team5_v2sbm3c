@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,8 +45,14 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver", nullable = false)
     private User receiver;
+    
+ // 리뷰 대상 재능 게시물
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "talentno", nullable = true) // JoinColumn 이름은 실제 Talent 엔티티의 PK 컬럼명에 맞게
+    private Talent talent; // 또는 talentPost, reviewedTalent 등으로 변경 가능
 
-    private Float rating;
+
+    private Long rating;
     
     @Column
     private String comments;
