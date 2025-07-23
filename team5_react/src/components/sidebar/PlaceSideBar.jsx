@@ -150,7 +150,7 @@ function PlaceSideBar({ setSelectedCategory, selectedCategory }) {
                   alignItems: 'center',
                   width: '100%',
                   padding: '12px 16px',
-                  fontSize: '14px',
+                  fontSize: '15px',
                   color: '#333',
                   cursor: 'pointer',
                   transition: 'background-color 0.2s, border-radius 0.2s',
