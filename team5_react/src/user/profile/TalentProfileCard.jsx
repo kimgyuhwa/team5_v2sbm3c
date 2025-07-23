@@ -24,8 +24,9 @@ function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
   }, [userno]);
 
   return (
-    <div className="hidden lg:block fixed right-20 top-32 w-72 p-4 border border-gray-200 rounded-xl shadow-md bg-white z-40">
+    <div className="hidden lg:block fixed right-8 top-32 w-72 p-4 border border-gray-200 rounded-xl shadow-md bg-white z-40">
       <div className="flex flex-col items-center">
+        <div className="cursor-pointer py-4 px-10 transition-transform duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 rounded-lg bg-white p-4"  onClick={() => navigate(`/profile/${userData.userno}`)}> {/* 클릭시 프로필 상세페이지로 이동 */}
         <img
           src={userData?.profileImage
             ? `/uploads/user/${userData.profileImage}`
@@ -34,17 +35,16 @@ function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
           className="w-24 h-24 rounded-full object-cover mb-3"
         />
         
-        {/* ✅ 사용자 이름 클릭 시 프로필로 이동 */}
         <h2
-          className="text-lg font-semibold cursor-pointer hover:text-blue-600"
-          onClick={() => navigate(`/profile/${userData.userno}`)}
+          className="text-lg font-semibold"
+          
         >
           {userData?.userName}
         </h2>
 
         <p className="text-sm text-gray-500">{userData?.name}</p>
         <p className="text-sm text-gray-500">{userData?.email}</p>
-
+        </div>
         {/* ⭐ 리뷰 컴포넌트 삽입 */}
         <ReviewPage 
             receiverno={userno}

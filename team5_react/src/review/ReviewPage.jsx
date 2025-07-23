@@ -43,6 +43,7 @@ const ReviewPage = ({ talentno, receiverno }) => {
             const res = await axios.get(`/reviews/talent/${talentno}`, {
                 params: { page, size: 3 }, // 한 페이지에 3개씩
             });
+            console.log
             setTalentReviews(res.data.content); // Page 객체에서 실제 리뷰 목록은 .content에 있습니다.
             setTalentReviewTotalPages(res.data.totalPages);
             setTalentReviewPage(res.data.number);
