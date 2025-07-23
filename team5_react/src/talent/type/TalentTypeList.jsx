@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import TalentUpdate from './TalentUpdate';
+import TalentTypeUpdate from './TalentTypeUpdate';
 import TalentDelete from './TalentDelete';
 
 export default function TalentTypeList() {
@@ -29,7 +29,7 @@ export default function TalentTypeList() {
           <div className="talentcate-item" key={item.typeno}>
             <span className="item-name">{item.name}</span>
             <div className="item-actions">
-              <TalentUpdate typeno={item.typeno} currentName={item.name} />
+              <TalentTypeUpdate typeno={item.typeno} currentName={item.name} />
               <TalentDelete typeno={item.typeno} />
             </div>
           </div>

@@ -529,5 +529,13 @@ public class UserController {
         return reviewService.getReviewsByGiverUserno(userno, pageable);
     }
     
+ // 공개 사용자 프로필 조회 (비로그인도 접근 가능)
+    @GetMapping("/public/detail/{userno}")
+    public ResponseEntity<UserDetailDTO> getPublicUserDetail(@PathVariable(name = "userno") Long userno) {
+        UserDetailDTO detail = userService.getUserDetail(userno);
+        return ResponseEntity.ok(detail);
+    }
+
+    
     
 }

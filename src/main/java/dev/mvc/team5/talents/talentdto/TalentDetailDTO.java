@@ -16,13 +16,19 @@ import lombok.Setter;
 public class TalentDetailDTO {
     private Long talentno;
     private Long userno;
+    private Long typeno;
     private String typeName;
+    private Long cateGrpno;
     private String cateGrpName;
+    private Long categoryno;
     private String categoryName;    
     private String title;
     private String description;
     private int viewCount;
-    private String userName; // 게시물 작성자
+    private String userName; // 게시물 작성자 닉네임
+    private String name; // 게시물 작성자 이름 
+    private String email; // 작성자 이메일 
+    private String profileImage; // 작성자 프로필 사진
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm")

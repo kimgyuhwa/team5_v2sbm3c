@@ -8,6 +8,7 @@ import MyPageProfile from './MyPageProfile';
 import MyPageSurvey from './MyPageSurvey';
 import MyPageReservation from './MyPageReservation';
 import MyPageBlockList from './MyPageBlockList';
+import MyTalentList from '../talent/post/MyTalentList';
 
 
 
@@ -32,6 +33,8 @@ export default function MyPage() {
         return <MyPageBlockList />;
       case 'reservation':
         return <MyPageReservation />;  
+        case 'mytalent':  // 내 게시물
+      return <MyTalentList />;
     }
   };
 

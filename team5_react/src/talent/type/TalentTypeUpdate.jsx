@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-export default function TalentUpdate({ typeno, currentName }) {
+export default function TalentTypeUpdate({ typeno, currentName }) {
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(currentName);
 

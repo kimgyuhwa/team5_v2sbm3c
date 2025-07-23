@@ -92,6 +92,23 @@ const MyPageSideBar = ({ currentPage }) => {
         </div>
       </div>
 
+      <div style={{ marginBottom: '20px' }}>
+      <div
+        style={{
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          fontSize: '18px',
+          borderBottom: currentPage === 'mytalent' ? '2px solid black' : 'none',
+          display: 'inline-block',
+          paddingBottom: '5px'
+        }}
+        onClick={() => handleTabClick('mytalent')}
+      >
+        내 게시물
+      </div>
+    </div>
+
+
       {/* <div style={{ marginBottom: '20px' }}>
         <div
           style={{
