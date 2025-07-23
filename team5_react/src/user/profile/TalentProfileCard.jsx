@@ -38,7 +38,7 @@ function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
   
 
   return (
-  <div className="hidden lg:block fixed right-8 top-32 w-72 p-4 border border-gray-200 rounded-xl shadow-md bg-white z-40">
+  <div className="hidden lg:block fixed right-20 top-32 w-72 p-4 border border-gray-200 rounded-xl shadow-md bg-white z-40">
     <div className="flex flex-col items-center">
       <div
         className="cursor-pointer py-4 px-10 transition-transform duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 rounded-lg bg-white p-4"
@@ -63,7 +63,7 @@ function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
       </div>
 
       {/* ⭐ 리뷰 컴포넌트 */}
-      <div className="-mt-9">
+      <div className="-mt-9"> 
       <ReviewPage 
         receiverno={userno}
         showForm={false}

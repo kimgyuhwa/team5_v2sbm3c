@@ -148,7 +148,7 @@ function TalentDetailPage() {
   if (!talent) return <div className="text-center text-gray-500">불러오는 중...</div>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-10">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-10">
       <div className="grid md:grid-cols-2 gap-10">
         {/* 왼쪽 2칸 */}
         <div className="md:col-span-2">
@@ -199,6 +199,7 @@ function TalentDetailPage() {
                 <>
                   <button className="px-4 py-2 bg-gray-300 text-black rounded shadow hover:bg-gray-400" onClick={() => navigate(`/talent/update/${talent.talentno}`)}>✏️ 수정</button>
                   <button className="px-4 py-2 bg-gray-300 text-black rounded shadow hover:bg-gray-400" onClick={deleteTalent}>🗑️ 삭제</button>
+                  
                 </>
               )}
             </div>
