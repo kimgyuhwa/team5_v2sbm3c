@@ -70,25 +70,29 @@ public class NotificationService {
         n.setMessage(dto.getMessage());
         n.setRead(false);
         n.setCreatedAt(LocalDateTime.now());
+        n.setTargetId(dto.getTargetId());
         // 2) DB 저장
         Notification saved = repo.save(n);
 
         // 3) DTO 변환 후 SSE 전송
         sseService.send(user.getUserno(), toDTO(saved));
-
+        System.out.println(">>> targetId from DTO: " + dto.getTargetId());
+        System.out.println(">>> targetId set to Entity: " + n.getTargetId());
         return saved;
     }
     //알림 헬퍼  다른 곳에서 이거쓰면돼
     @Transactional
     public Notification createNotification(Long userno,
                                            String type,
-                                           String message) {
+                                           String message,
+                                           Long targetId) {
 
         // 1) DTO 생성 (재활용 가능)
         NotificationDTO dto = new NotificationDTO();
         dto.setUserno(userno);       // 알림 받을 사용자
         dto.setType(type);           // 예: "chat", "info", "reservation" …
         dto.setMessage(message);     // 알림 내용
+        dto.setTargetId(targetId); 
 
         // 2) 기존 save(dto) 메서드 재사용 → DB 저장 & 엔티티 반환
         return save(dto);
@@ -110,7 +114,7 @@ public class NotificationService {
       return repo.findByUser_UsernoAndReadFalseOrderByCreatedAtDesc(userno, pageable);
   }
     
-    private NotificationDTO toDTO(Notification n) {
+    public NotificationDTO toDTO(Notification n) {
       NotificationDTO dto = new NotificationDTO();
       dto.setNotificationno(n.getNotificationno());
       dto.setUserno(n.getUser().getUserno());
@@ -118,6 +122,7 @@ public class NotificationService {
       dto.setMessage(n.getMessage());
       dto.setRead(n.getRead());
       dto.setCreatedAt(n.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+      dto.setTargetId(n.getTargetId()); // ⭐ 추가: 엔티티의 targetId를 DTO에 설정 ⭐
       return dto;
 
   }

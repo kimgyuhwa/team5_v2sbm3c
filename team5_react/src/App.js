@@ -35,7 +35,8 @@ import PlaceDetailPage from './place/PlaceDetailPage';
 import AdminReportList from './admin/AdminReportList';
 import ReportCreate from './components/report/ReportCreate';
 import ChatListPage from './chat/ChatListPage';
-
+import AdminActivityList from './admin/AdminActivityList';
+import RequestList from './talent/request/RequestList'
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,6 +54,7 @@ function App() {
             {/* 관리자 페이지 */}
             <Route path="/admin/user" element={<AdminUserList />} />
             <Route path="/admin/report" element={<AdminReportList />} />
+            <Route path="/admin/activity" element={<AdminActivityList />} />
             {/* 회원 */}
             <Route path="/mypage/MyPage" element={<MyPage />} />
             <Route path="/mypage/MyPageSetting" element={<MyPageSetting />} />
@@ -76,6 +78,7 @@ function App() {
             <Route path="/talent/type" element={<TalentType />} />
             <Route path="/talent/categrp" element={<TalentCateGrp />} />
             <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
+            <Route path="/talent/request/list" element={<RequestList />} />
             {/* 장소 */}
             <Route path="/place/PlacesPage" element={<PlacesPage />} />
             <Route path="/place/detail/:placeno" element={<PlaceDetailPage />} />

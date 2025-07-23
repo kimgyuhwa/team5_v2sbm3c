@@ -19,19 +19,22 @@ public class NotificationController {
 
     @GetMapping
     public List<NotificationDTO> getAll() {
-        return service.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+      return service.findAll().stream().map(service::toDTO).collect(Collectors.toList());
     }
     
     @PostMapping
     public NotificationDTO create(@RequestBody NotificationDTO dto) {
-        return toDTO(service.save(dto));
+      return service.toDTO(service.save(dto));
     }
     // 사용자는 본인의 안읽은 알림만 볼수잇음 
     @GetMapping("/user/{userno}")
     public List<NotificationDTO> getByUser(
         @PathVariable(name="userno") Long userno,
         @PageableDefault(size = 3, sort ={"createdAt", "notificationno"}) Pageable pageable) {
-        return service.findUnreadByUserPaged(userno, pageable).stream().map(this::toDTO).collect(Collectors.toList());
+      return service.findUnreadByUserPaged(userno, pageable)
+          .stream()
+          .map(service::toDTO) // ⭐⭐ service.toDTO를 명시적으로 호출! ⭐⭐
+          .collect(Collectors.toList());
     }
     // 사용자가 알림을 클릭하면 read = true로 업데이트
     @PutMapping("/read/{id}")
@@ -54,15 +57,15 @@ public class NotificationController {
         service.delete(id);
     }
 
-    private NotificationDTO toDTO(Notification n) {
-      NotificationDTO dto = new NotificationDTO();
-      dto.setNotificationno(n.getNotificationno());
-      dto.setUserno(n.getUser().getUserno());
-      dto.setType(n.getType());
-      dto.setMessage(n.getMessage());
-      dto.setRead(n.getRead());
-      dto.setCreatedAt(n.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-      return dto;
-
-  }
+//    private NotificationDTO toDTO(Notification n) {
+//      NotificationDTO dto = new NotificationDTO();
+//      dto.setNotificationno(n.getNotificationno());
+//      dto.setUserno(n.getUser().getUserno());
+//      dto.setType(n.getType());
+//      dto.setMessage(n.getMessage());
+//      dto.setRead(n.getRead());
+//      dto.setCreatedAt(n.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+//      return dto;
+//
+//  }
 }

@@ -220,7 +220,8 @@ public class RequestService {
       notificationService.createNotification(
           giverUserno,
           "request",
-          "[" + talentTitle + "] 요청이 " + (status.equals("accepted") ? "수락" : "거절") + "되었습니다."
+          "[" + talentTitle + "] 요청이 " + (status.equals("accepted") ? "수락" : "거절") + "되었습니다.",
+          chatRoomno
       );
   }
 

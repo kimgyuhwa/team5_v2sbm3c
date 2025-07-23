@@ -73,13 +73,16 @@ public class ChatRoomService {
         // 2. 채팅방 새로 생성
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.setRoomName("1:1 Chat");
-
+        
+        
         Talent talent = new Talent();
         talent.setTalentno(talentno); // 영속성 필요 시 talentService.findById() 사용 
         talent.setTitle(title);
         chatRoom.setTalent(talent);   // 관계 설정
 
-        chatRoomRepository.save(chatRoom);
+        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+        System.out.println(savedChatRoom);
+        System.out.println(savedChatRoom.getChatRoomno());
 
         // 3. 유저 정보 로딩
         User sender = userService.findById(senderId);
@@ -87,11 +90,11 @@ public class ChatRoomService {
 
         // 4. 채팅 멤버 등록
         ChatRoomMember m1 = new ChatRoomMember();
-        m1.setChatRoom(chatRoom);
+        m1.setChatRoom(savedChatRoom);
         m1.setUser(sender);
 
         ChatRoomMember m2 = new ChatRoomMember();
-        m2.setChatRoom(chatRoom);
+        m2.setChatRoom(savedChatRoom);
         m2.setUser(receiver);
 
         chatRoomMemberRepository.save(m1);
@@ -101,10 +104,11 @@ public class ChatRoomService {
         notificationService.createNotification(
             receiverId,
             "chat",
-            sender.getUsername() + "님이 [" + talent.getTitle() + "] 게시물에 대해 새 채팅을 시작했습니다."
+            sender.getUsername() + "님이 [" + talent.getTitle() + "] 게시물에 대해 새 채팅을 시작했습니다.",
+            savedChatRoom.getChatRoomno()     //targetId  알림눌렀을떄 사용할거
         );
 
-        return chatRoom;
+        return savedChatRoom;
     }
     
 

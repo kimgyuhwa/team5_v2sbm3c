@@ -4,7 +4,9 @@ import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserDTO;
 import dev.mvc.team5.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -63,6 +65,25 @@ public class ActivityLogService {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+    
+    /**
+     * ✅ 관리자용: 모든 활동 로그를 페이징 처리하여 조회 (DTO 변환 포함)
+     * @param action 필터링할 액션 타입 (null 또는 "ALL"이면 전체)
+     * @param pageable 페이징 정보 (페이지 번호, 크기, 정렬 등)
+     * @return 페이징 처리된 ActivityLogDTO 목록
+     */
+    public Page<ActivityLogDTO> getAllActivityLogsPaged(String action, Pageable pageable) {
+        Page<ActivityLog> activityLogPage;
+        
+        // ✅ action 파라미터에 따라 다른 Repository 메서드 호출
+        if (action != null && !action.equalsIgnoreCase("ALL")) {
+            activityLogPage = activityLogRepository.findByActionOrderByCreatedAtDesc(action, pageable);
+        } else {
+            activityLogPage = activityLogRepository.findAllByOrderByCreatedAtDesc(pageable);
+        }
+        
+        return activityLogPage.map(this::toDTO);
     }
 
     /**
