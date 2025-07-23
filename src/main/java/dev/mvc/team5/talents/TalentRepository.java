@@ -57,8 +57,7 @@ public interface TalentRepository extends JpaRepository<Talent, Long> {
         Pageable pageable
     );
 
-
-  
+    long countByUser_Userno(Long userno);  
   
 
   

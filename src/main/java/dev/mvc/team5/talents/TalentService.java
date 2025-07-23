@@ -413,6 +413,11 @@ public class TalentService {
 
         return talentPage.map(this::toListDTO); // 마이페이지용은 block 여부 처리할 필요 없음
     }
+    
+    public long countTalentsByUserno(Long userno) {
+      return talentRepository.countByUser_Userno(userno);
+  }
+
 
 
 

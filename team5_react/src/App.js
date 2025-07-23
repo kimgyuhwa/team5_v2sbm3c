@@ -22,7 +22,7 @@ import TalentUpdate from './talent/post/TalentUpdate'
 import ReservationsManager from './reservation/Reservation';
 import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
-import ReviewPage from './review/ProfileReviewPage';
+import ProfileReviewPage from './review/ProfileReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
 import MyPageSetting from './mypage/MyPageSetting';
@@ -73,7 +73,7 @@ function App() {
             <Route path="/user/findId" element={<FindUserId />} />
             <Route path="/user/findPwd" element={<FindUserPwd />} />
             <Route path="/user/univCert" element={<UnivCertPage />} />
-            <Route path="/review/review" element={<ReviewPage />} />
+            <Route path="/review/profilereview" element={<ProfileReviewPage />} />
             <Route path="/profile/:userno" element={<UserProfilePage />} />
             {/* 재능 */}
             <Route path="/talent/post" element={<Talent />} />

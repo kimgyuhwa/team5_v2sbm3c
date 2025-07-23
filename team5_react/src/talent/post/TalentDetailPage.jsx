@@ -259,7 +259,7 @@ function TalentDetailPage() {
       )}
 
       <div className="mt-10">
-        <ReviewPage talentno={Number(talentno)} receiverno={talent?.userno} />
+        <ReviewPage receiverno={talent?.userno} />
       </div>
     </div>
   );
