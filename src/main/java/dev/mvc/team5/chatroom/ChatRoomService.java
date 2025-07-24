@@ -127,7 +127,10 @@ public class ChatRoomService {
       chatRoomRepository.delete(chatRoom);
   }
     
-  //ChatRoomMemberService.java
+  public List<ChatRoom> getAllPublicChatRooms() {
+    return chatRoomRepository.findByPublicRoomTrueOrderByCreatedAtDesc();
+  }
+
   
   
 

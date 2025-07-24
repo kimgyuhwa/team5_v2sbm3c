@@ -8,24 +8,25 @@ const ChatListPage = () => {
 
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 채팅방 삭제 함수
+  const handleRoomCreated = (newRoom) => {
+    setChatRooms((prev) => [...prev, newRoom]);
+  };
+
   const handleDeleteRoom = async (chatRoomno) => {
     if (!window.confirm('정말 이 채팅방을 삭제하시겠습니까?')) return;
-
     try {
       await axios.delete(`/chatroom/${chatRoomno}`);
-      // 삭제 성공 시, 목록에서 제거
-      setChatRooms(prev => prev.filter(room => room.chatRoomno !== chatRoomno));
+      setChatRooms((prev) => prev.filter((room) => room.chatRoomno !== chatRoomno));
     } catch (err) {
       console.error('채팅방 삭제 실패:', err);
-      alert('삭제에 실패했습니다. 관련 메시지가 남아있을 수 있습니다.');
+      alert('삭제에 실패했습니다.');
     }
   };
 
   useEffect(() => {
     if (!userId) return;
-
     axios.get(`/chatroom/user/${userId}/chatlist`)
       .then(res => setChatRooms(res.data))
       .catch(err => {
@@ -36,10 +37,11 @@ const ChatListPage = () => {
   }, [userId]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="p-6 min-h-[700px] bg-gray-100 p-6">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">내 채팅방</h1>
-
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">내 채팅방</h1>
+        </div>
         {loading ? (
           <div className="text-gray-600">로딩 중...</div>
         ) : chatRooms.length === 0 ? (

@@ -13,5 +13,6 @@ public class ChatRoomMemberResponseDTO {
     private Long chatRoomMemberno;
     private Long chatRoomno;
     private Long userno;
+    private String username;
     private LocalDateTime joinedAt;
 }

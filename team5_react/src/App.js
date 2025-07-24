@@ -35,7 +35,11 @@ import Header from './components/header/Header'
 import PlaceDetailPage from './place/PlaceDetailPage';
 import AdminReportList from './admin/AdminReportList';
 import ReportCreate from './components/report/ReportCreate';
-import ChatListPage from './chat/ChatListPage';
+// ----채팅
+import ChatLayout from './chat/ChatLayout'; // ← 레이아웃
+import ChatListPage from './chat/ChatListPage'; // 내 채팅방 목록
+import OpenChatListPage from './chat/OpenChatListPage'; // 공개 채팅방 목록
+//--------
 import AdminActivityList from './admin/AdminActivityList';
 import SellList from './mypage/SellList'
 import UserProfilePage from './user/profile/UserProfilePage';
@@ -88,9 +92,11 @@ function App() {
             <Route path="/place/detail/:placeno" element={<PlaceDetailPage />} />
             <Route path="/reservation/Reservation" element={<ReservationsManager />} />
             {/* 채팅 */}
-            <Route path="/chat" element={<ChatRoom />} />
-            <Route path="/chat/:chatRoomno" element={<ChatRoom />} />
-            <Route path="/chatlist" element={<ChatListPage />} />
+            <Route path="/chat" element={<ChatLayout />}>
+              <Route path="my" element={<ChatListPage />} />
+              <Route path="public" element={<OpenChatListPage />} />
+              <Route path=":chatRoomno" element={<ChatRoom />} />
+            </Route>
             {/* 챗봇 */}
             <Route path="/mypage/chatbot-list" element={<MyChatBotListPage />} />
             <Route path="/talent/detail/:talentno" element={<TalentDetailPage />} />

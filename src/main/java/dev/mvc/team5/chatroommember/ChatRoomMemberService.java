@@ -71,4 +71,30 @@ public class ChatRoomMemberService {
     public List<ChatRoomMember> findByChatRoomno(Long chatRoomno) {
       return chatRoomMemberRepository.findByChatRoomChatRoomno(chatRoomno);
    }
+    
+    public boolean isAlreadyMember(ChatRoom chatRoom, User user) {
+      return chatRoomMemberRepository.existsByChatRoomAndUser(chatRoom, user);
+  }
+    
+    public ChatRoomMember save(ChatRoomMember member) {
+      return chatRoomMemberRepository.save(member);
+  }
+
+    
+    @Transactional
+    public ChatRoomMember enterChatRoomIfNotExists(ChatRoom chatRoom, User user) {
+        if (isAlreadyMember(chatRoom, user)) {
+            // 이미 멤버일 경우 기존 객체 반환
+            return chatRoomMemberRepository.findByChatRoomAndUser(chatRoom, user)
+                .orElseThrow(() -> new IllegalStateException("이미 참여 중인데 멤버가 없습니다."));
+        }
+
+        // 새 멤버 등록
+        ChatRoomMember member = new ChatRoomMember();
+        member.setChatRoom(chatRoom);
+        member.setUser(user);
+        return chatRoomMemberRepository.save(member);
+    }
+
+
 }
