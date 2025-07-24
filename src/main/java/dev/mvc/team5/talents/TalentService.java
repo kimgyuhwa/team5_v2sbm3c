@@ -262,6 +262,7 @@ public class TalentService {
                 t.getCategory() != null ? t.getCategory().getName() : "없음",
                 t.getType() != null ? t.getType().getName() : "없음",
                 t.getUser().getUserno(),
+                t.getUser().getUsername(),
                 fileDTOs,
                 false
         );

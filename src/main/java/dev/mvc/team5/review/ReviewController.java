@@ -270,4 +270,11 @@ public class ReviewController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    // 리뷰 평점만 가져오기
+    @GetMapping("/average-rating/{talentno}")
+    public double getAverageRating(@PathVariable(name="talentno") Long talentno) {
+        return service.getAverageRatingForTalent(talentno);
+    }
+
 }

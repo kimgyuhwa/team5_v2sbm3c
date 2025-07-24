@@ -18,6 +18,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
   const [typeList, setTypeList] = useState([]);
   const [cateGrpList, setCateGrpList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+  const [avgRatings, setAvgRatings] = useState({});
 
   const { loginUser } = useContext(GlobalContext);
   const schoolno = loginUser?.schoolno;
@@ -76,6 +77,25 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
       setCategoryList([]);
     }
   }, [editForm.cateGrpno]);
+
+  useEffect(() => {
+  const fetchAvgRatings = async () => {
+    const ratingMap = {};
+    await Promise.all(talents.map(async (t) => {
+      try {
+        const res = await axios.get(`/reviews/average-rating/${t.talentno}`);
+        ratingMap[t.talentno] = parseFloat(res.data).toFixed(1);
+      } catch (e) {
+        console.error(`평점 가져오기 실패: talentno=${t.talentno}`, e);
+        ratingMap[t.talentno] = null;
+      }
+    }));
+    setAvgRatings(ratingMap);
+  };
+
+  if (talents.length > 0) fetchAvgRatings();
+}, [talents]);
+
 
   const startEdit = (talent) => {
     setEditId(talent.talentno);
@@ -235,13 +255,20 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
                   {t.cateGrpName} &gt; {t.categoryName}
                 </div>
               <div className="flex-1 text-left px-4">                
-                <h3 className="font-semibold text-lg">{t.title}</h3>
-                <p className="text-gray-500">{t.description || '[설명 없음]'}</p>
-                {/* 조회수 */}
-                <div className="text-right text-xs text-gray-400 mt-2">
-                  조회수 : {t.viewCount}
-                </div>
-              </div>
+  <h3 className="font-semibold text-lg">{t.title}</h3>
+  <p className="text-sm text-gray-500 mt-1">작성자: {t.userName}</p>
+
+  {/* 평균 평점 표시 */}
+  {avgRatings[t.talentno] !== null && avgRatings[t.talentno] !== undefined && (
+    <p className="text-sm text-yellow-600 mt-1">⭐ {avgRatings[t.talentno]} / 5</p>
+  )}
+
+  <div className="text-right text-xs text-gray-400 mt-2">
+    조회수 : {t.viewCount}
+  </div>
+</div>
+
+
             </article>
           )
         )
