@@ -60,23 +60,26 @@ function TalentDetailPage() {
   };
 
   const startChat = async () => {
-    if (!loginUser) return alert("로그인이 필요합니다.");
-    if (!talent?.userno) return alert("상대방 정보가 없습니다.");
-    try {
-      const res = await axios.post("/chatroom/findOrCreate", null, {
-        params: {
-          senderId: loginUser.userno,
-          receiverId: talent.userno,
-          talentno: talent.talentno,
-          title: talent.title,
-        },
-        withCredentials: true,
-      });
-      navigate(`/chat/${res.data.chatRoomno}`);
-    } catch (err) {
-      alert("채팅방 오류: " + err.message);
-    }
-  };
+  if (!loginUser) return alert("로그인이 필요합니다.");
+  if (!talent?.userno) return alert("상대방 정보가 없습니다.");
+
+  try {
+    const res = await axios.post("/chatroom/findOrCreate", null, {
+      params: {
+        senderId: loginUser.userno,
+        receiverId: talent.userno,
+        talentno: talent.talentno,
+        title: talent.title,
+      },
+      withCredentials: true,
+    });
+    const roomId = res.data.chatRoomno;
+    await axios.post(`/chatroom/${roomId}/enter/${loginUser.userno}`);
+    navigate(`/chat/${roomId}`);
+  } catch (err) {
+    alert("채팅방 오류: " + err.message);
+  }
+};
   useEffect(() => {
   console.log("🔥 talent 객체 확인:", talent);
 }, [talent]);

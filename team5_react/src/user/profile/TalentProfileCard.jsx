@@ -10,6 +10,7 @@ function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [talentCount, setTalentCount] = useState(0);
+  
 
   const userData = isOwner ? loginUser : talent; // ⭐ 내가 작성자면 최신 loginUser 사용
   const userno = userData?.userno; 
