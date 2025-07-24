@@ -41,7 +41,7 @@ function Home() {
           <div className="inline-flex items-center gap-2 bg-white/20 px-5 py-3 rounded-full mb-10 font-medium animate-fade-in-up">
             <span>대학생 전용 플랫폼</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black mb-6 text-shadow animate-fade-in-up animation-delay-200 tracking-tight" style={{ fontFamily: " 'Noto Sans KR'"}}>
+          <h1 className="text-5xl md:text-6xl font-black mb-6 text-shadow animate-fade-in-up animation-delay-200 tracking-tight" style={{ fontFamily: " 'Noto Sans KR' "}}>
             재능을 잇는 링크<br/>
             <span className="text-cyan-200 font-black drop-shadow-sm">Abil Link</span>
           </h1>

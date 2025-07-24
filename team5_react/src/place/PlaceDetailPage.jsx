@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { X, Menu } from 'lucide-react';
+import { X, Menu, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../components/GlobalContext';
 
@@ -12,6 +12,10 @@ function PlaceDetailPage() {
   const [reservations, setReservations] = useState([]); // For other user reservations
   const [activeTab, setActiveTab] = useState('timetable');
   const [showReservationPopup, setShowReservationPopup] = useState(false);
+  
+  // 주차 관련 상태
+  const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [weekDates, setWeekDates] = useState([]);
 
   const [reservationDetails, setReservationDetails] = useState({
     date: new Date().toISOString().split('T')[0],
@@ -21,8 +25,62 @@ function PlaceDetailPage() {
   });
   
   const navigate = useNavigate();
-
   const { loginUser } = useContext(GlobalContext);
+
+  // 주차 시작일(월요일) 계산
+  const getWeekStart = (date) => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // 월요일로 조정
+    return new Date(d.setDate(diff));
+  };
+
+  // 현재 시간이 지났는지 확인하는 함수
+  const isPastTime = (date, time) => {
+    const now = new Date();
+    const selectedDateTime = new Date(`${date}T${time}:00`);
+    return selectedDateTime < now;
+  };
+
+  // 해당 주의 날짜들 생성 (월-금)
+  const generateWeekDates = (weekStart) => {
+    const dates = [];
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  };
+
+  // 주차 변경 시 날짜 업데이트
+  useEffect(() => {
+    const weekStart = getWeekStart(currentWeek);
+    setWeekDates(generateWeekDates(weekStart));
+  }, [currentWeek]);
+
+  // 이전/다음 주로 이동
+  const navigateWeek = (direction) => {
+    const newWeek = new Date(currentWeek);
+    newWeek.setDate(currentWeek.getDate() + (direction * 7));
+    setCurrentWeek(newWeek);
+  };
+
+  // 오늘로 이동
+  const goToToday = () => {
+    setCurrentWeek(new Date());
+  };
+
+  // 날짜 포맷팅
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const formatDateDisplay = (date) => {
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${month}/${day}`;
+  };
 
   const timeToMinutes = (timeStr) => {
     const [h, m] = timeStr.split(':').map(Number);
@@ -44,12 +102,26 @@ function PlaceDetailPage() {
 
   }, [placeno]);
 
-  const getStatus = (day, hour) => {
+  const getStatus = (dayIndex, hour) => {
+    const currentDate = weekDates[dayIndex];
+    if (!currentDate) return { status: 'available' };
+
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    const dayName = dayNames[currentDate.getDay()];
+    const dateString = formatDate(currentDate);
+
     const slotStart = hour * 60;
     const slotEnd = (hour + 1) * 60;
 
+    // 지난 시간인지 체크 (새로 추가)
+    const timeString = `${hour.toString().padStart(2, '0')}:00`;
+    if (isPastTime(dateString, timeString)) {
+      return { status: 'past' };
+    }
+
+    // 수업 스케줄 체크
     for (const schedule of schedules) {
-      if (schedule.day !== day) continue;
+      if (schedule.day !== dayName) continue;
 
       const scheduleStart = timeToMinutes(schedule.startTime);
       const scheduleEnd = timeToMinutes(schedule.endTime);
@@ -64,11 +136,14 @@ function PlaceDetailPage() {
       }
     }
 
-    // 예약 정보 체크
+    // 예약 정보 체크 (날짜별로)
     for (const reservation of reservations) {
+      if (reservation.status === '취소됨') continue;
+
       const resDate = new Date(reservation.start_time);
-      const resDay = ['일', '월', '화', '수', '목', '금', '토'][resDate.getDay()];
-      if (resDay !== day) continue;
+      const resDateString = formatDate(resDate);
+      
+      if (resDateString !== dateString) continue;
 
       const reservationStart = timeToMinutes(reservation.start_time.split('T')[1].slice(0, 5));
       const reservationEnd = timeToMinutes(reservation.end_time.split('T')[1].slice(0, 5));
@@ -81,7 +156,13 @@ function PlaceDetailPage() {
     return { status: 'available' };
   };
 
+    // 3. isTimeSlotBlocked 함수에도 지난 시간 체크 추가
   const isTimeSlotBlocked = (date, time) => {
+    // 지난 시간인지 체크 (새로 추가)
+    if (isPastTime(date, time)) {
+      return true;
+    }
+
     const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
     const selectedDay = dayMap[new Date(date).getDay()];
     const slotStart = timeToMinutes(time);
@@ -99,9 +180,10 @@ function PlaceDetailPage() {
 
     // Check against other reservations without a buffer
     for (const reservation of reservations) {
-        if (reservation.date !== date) continue;
-        const reservationStart = timeToMinutes(reservation.startTime);
-        const reservationEnd = timeToMinutes(reservation.endTime);
+        const resDate = formatDate(new Date(reservation.start_time));
+        if (resDate !== date) continue;
+        const reservationStart = timeToMinutes(reservation.start_time.split('T')[1].slice(0, 5));
+        const reservationEnd = timeToMinutes(reservation.end_time.split('T')[1].slice(0, 5));
         if (Math.max(slotStart, reservationStart) < Math.min(slotEnd, reservationEnd)) {
             return true;
         }
@@ -150,9 +232,10 @@ function PlaceDetailPage() {
 
     // 기존 예약과 겹침 확인
     const reservationConflict = reservations.find(r => {
-        if (r.date !== reservationDetails.date) return false;
-        const existingStart = timeToMinutes(r.startTime);
-        const existingEnd = timeToMinutes(r.endTime);
+        const resDate = formatDate(new Date(r.start_time));
+        if (resDate !== reservationDetails.date) return false;
+        const existingStart = timeToMinutes(r.start_time.split('T')[1].slice(0, 5));
+        const existingEnd = timeToMinutes(r.end_time.split('T')[1].slice(0, 5));
         return Math.max(reservationStart, existingStart) < Math.min(reservationEnd, existingEnd);
     });
 
@@ -161,37 +244,35 @@ function PlaceDetailPage() {
         return;
     }
     
- // 5. 예약 요청 서버에 보내기
-  try {
-    // 백엔드가 LocalDateTime 형식으로 받으려면 ISO 포맷 문자열로 맞춰서 보내야 함
-    const startTimeISO = `${reservationDetails.date}T${reservationDetails.startTime}:00`;
-    const endTimeISO = `${reservationDetails.date}T${reservationDetails.endTime}:00`;
+    // 예약 요청 서버에 보내기
+    try {
+      const startTimeISO = `${reservationDetails.date}T${reservationDetails.startTime}:00`;
+      const endTimeISO = `${reservationDetails.date}T${reservationDetails.endTime}:00`;
 
-    const requestData = {
-      userno: loginUser.userno, // 로그인한 사용자 번호를 state 등에서 가져오기
-      placeno: place.placeno, // 선택한 장소 번호
-      placename: place.placename, // 선택한 장소 이름
-      start_time: startTimeISO,
-      end_time: endTimeISO,
-      purpose: reservationDetails.purpose,
-      status: '예약됨' // 예약 상태 초기값
-    };
+      const requestData = {
+        userno: loginUser.userno,
+        placeno: place.placeno,
+        placename: place.placename,
+        start_time: startTimeISO,
+        end_time: endTimeISO,
+        purpose: reservationDetails.purpose,
+        status: '예약됨'
+      };
 
-    const res = await axios.post('/reservations', requestData);
-    console.log('예약 성공:', res.data);
+      const res = await axios.post('/reservations', requestData);
+      console.log('예약 성공:', res.data);
 
-    alert('예약이 완료되었습니다.');
-    setShowReservationPopup(false);
-    window.location.reload();
-    
-  } catch (err) {
-    console.error('예약 실패:', err);
-    const errorMsg = err.response?.data?.message || err.message || '예약 중 오류가 발생했습니다.';
-    alert(errorMsg);
-  }
+      alert('예약이 완료되었습니다.');
+      setShowReservationPopup(false);
+      window.location.reload();
+      
+    } catch (err) {
+      console.error('예약 실패:', err);
+      const errorMsg = err.response?.data?.message || err.message || '예약 중 오류가 발생했습니다.';
+      alert(errorMsg);
+    }
   };
 
-  
   const timeOptions = Array.from({ length: (22 - 9) * 2 + 1 }, (_, i) => {
     const totalMinutes = 9 * 60 + i * 30;
     const hour = Math.floor(totalMinutes / 60);
@@ -204,6 +285,82 @@ function PlaceDetailPage() {
 
   const renderTimetable = () => (
     <>
+      {/* 주차 네비게이션 */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '16px',
+        marginBottom: '16px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+        border: '1px solid #e9ecef'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <button
+            onClick={() => navigateWeek(-1)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: 'transparent',
+              border: '1px solid #dee2e6',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              color: '#495057'
+            }}
+          >
+            <ChevronLeft size={16} />
+            이전 주
+          </button>
+          
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '4px' }}>
+              {weekDates.length > 0 && (
+                `${weekDates[0].getFullYear()}년 ${weekDates[0].getMonth() + 1}월`
+              )}
+            </div>
+            <button
+              onClick={goToToday}
+              style={{
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '4px 12px',
+                fontSize: '12px',
+                cursor: 'pointer'
+              }}
+            >
+              오늘
+            </button>
+          </div>
+          
+          <button
+            onClick={() => navigateWeek(1)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: 'transparent',
+              border: '1px solid #dee2e6',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              color: '#495057'
+            }}
+          >
+            다음 주
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+
       {/* 시간표 그리드 */}
       <div style={{
         backgroundColor: 'white',
@@ -227,23 +384,31 @@ function PlaceDetailPage() {
                 }}>
                   시간
                 </th>
-                {['월', '화', '수', '목', '금'].map(day => (
-                  <th 
-                    key={day}
-                    style={{
-                      backgroundColor: '#f8f9fa',
-                      color: '#495057',
-                      padding: '8px 4px',
-                      fontWeight: '600',
-                      fontSize: '11px',
-                      minWidth: '80px',
-                      textAlign: 'center',
-                      borderLeft: '1px solid #e9ecef'
-                    }}
-                  >
-                    {day}요일
-                  </th>
-                ))}
+                {weekDates.map((date, index) => {
+                  const dayNames = ['월', '화', '수', '목', '금'];
+                  const isToday = formatDate(date) === formatDate(new Date());
+                  
+                  return (
+                    <th 
+                      key={index}
+                      style={{
+                        backgroundColor: isToday ? '#e3f2fd' : '#f8f9fa',
+                        color: isToday ? '#1976d2' : '#495057',
+                        padding: '8px 4px',
+                        fontWeight: '600',
+                        fontSize: '11px',
+                        minWidth: '80px',
+                        textAlign: 'center',
+                        borderLeft: '1px solid #e9ecef'
+                      }}
+                    >
+                      <div>{dayNames[index]}요일</div>
+                      <div style={{ fontSize: '10px', marginTop: '2px' }}>
+                        {formatDateDisplay(date)}
+                      </div>
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
@@ -260,8 +425,9 @@ function PlaceDetailPage() {
                   }}>
                     {`${hour.toString().padStart(2, '0')}:00`}
                   </td>
-                  {['월', '화', '수', '목', '금'].map(day => {
-                    const { status, schedule, reservation } = getStatus(day, hour);
+                  {weekDates.map((date, dayIndex) => {
+                    const { status, schedule, reservation } = getStatus(dayIndex, hour);
+                    const isToday = formatDate(date) === formatDate(new Date());
 
                     const getCellStyle = () => {
                       let style = {
@@ -273,20 +439,27 @@ function PlaceDetailPage() {
                         position: 'relative',
                         height: '36px'
                       };
+                      
+                      if (isToday) {
+                        style.borderLeft = '2px solid #1976d2';
+                      }
+                      
                       switch (status) {
                         case 'existing':
                           return { ...style, backgroundColor: '#9e9e9e', color: 'white' };
                         case 'blocked':
                           return { ...style, backgroundColor: '#e9ecef', color: '#adb5bd' };
                         case 'reserved':
-                          return { ...style, backgroundColor: '#B8D0FA', color: '#212529' }; // 예약
+                          return { ...style, backgroundColor: '#B8D0FA', color: '#212529' };
+                        case 'past':
+                          return { ...style, backgroundColor: '#f8f9fa', color: '#adb5bd', textDecoration: 'line-through' };
                         default: // available
-                          return { ...style, backgroundColor: '#fff' };
+                          return { ...style, backgroundColor: isToday ? '#f3f9ff' : '#fff' };
                       }
                     };
 
                     return (
-                      <td key={`${day}-${hour}`} style={getCellStyle()}>
+                      <td key={`${dayIndex}-${hour}`} style={getCellStyle()}>
                         {status === 'existing' && schedule && (
                           <div>
                             <div style={{ fontSize: '11px', fontWeight: '600' }}>{schedule.subject}</div>
@@ -296,6 +469,9 @@ function PlaceDetailPage() {
                         {status === 'blocked' && <X size={14} />}
                         {status === 'reserved' && reservation && (
                           <div style={{ fontSize: '11px', fontWeight: '600' }}></div>
+                        )}
+                        {status === 'past' && ( // 새로 추가
+                          <div style={{ fontSize: '10px', color: '#adb5bd' }}></div>
                         )}
                       </td>
                     );
@@ -332,6 +508,17 @@ function PlaceDetailPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div style={{ width: '12px', height: '12px', backgroundColor: '#B8D0FA', borderRadius: '3px' }}></div>
             <span style={{ fontSize: '11px', color: '#666' }}>예약됨</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '12px', height: '12px', backgroundColor: '#e3f2fd', borderRadius: '3px', border: '1px solid #1976d2' }}></div>
+            <span style={{ fontSize: '11px', color: '#666' }}>오늘</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ width: '12px', height: '12px', backgroundColor: '#f8f9fa', borderRadius: '3px',
+            textDecoration: 'line-through',
+            border: '1px solid #adb5bd'
+          }}></div>
+          <span style={{ fontSize: '11px', color: '#666' }}>지난 시간</span>
           </div>
         </div>
       </div>
@@ -509,6 +696,7 @@ function PlaceDetailPage() {
 }
 
 export default PlaceDetailPage;
+
 
 const buttonStyle = {
   display: 'flex',

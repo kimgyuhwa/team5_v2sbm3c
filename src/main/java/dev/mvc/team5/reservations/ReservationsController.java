@@ -66,6 +66,18 @@ public class ReservationsController {
         return ResponseEntity.ok(response);
     }
     
+    @GetMapping("/reservations/active")
+    public List<ReservationsResponseDTO> listActive() {
+        return reservationsService.getActiveReservations();
+    }
+
+    @GetMapping("/reservations/canceled")
+    public List<ReservationsResponseDTO> listCanceled() {
+        return reservationsService.getCanceledReservations();
+    }
+
+    
+    
     // 엔티티 -> DTO 변환
     private ReservationsResponseDTO convertToDTO(Reservations reservation) {
         ReservationsResponseDTO dto = new ReservationsResponseDTO();
@@ -77,7 +89,8 @@ public class ReservationsController {
         dto.setStart_time(reservation.getStart_time());
         dto.setEnd_time(reservation.getEnd_time());
         dto.setPurpose(reservation.getPurpose());
-        dto.setStatus(reservation.getStatus());
+        dto.setStatus(reservation.getStatus().name());
+        dto.setCreatedAt(reservation.getCreatedAt());
         return dto;
     }
     

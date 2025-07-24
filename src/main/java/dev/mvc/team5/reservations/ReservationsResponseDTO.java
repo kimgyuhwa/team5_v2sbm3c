@@ -21,4 +21,5 @@ public class ReservationsResponseDTO {
     private LocalDateTime end_time;
     private String purpose;
     private String status;
+    private LocalDateTime createdAt;
 }

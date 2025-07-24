@@ -2,6 +2,7 @@ package dev.mvc.team5.reservations;
 
 import dev.mvc.team5.places.Places;
 import dev.mvc.team5.places.PlacesRepository;
+import dev.mvc.team5.tool.ReservationStatus;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -43,7 +44,8 @@ public class ReservationsServiceImpl implements ReservationsService {
                 dto.getStart_time(),
                 dto.getEnd_time(),
                 dto.getPurpose(),
-                dto.getStatus()
+                ReservationStatus.valueOf(dto.getStatus())
+                
         );
 
         Reservations saved = reservationsRepository.save(reservation);
@@ -83,7 +85,7 @@ public class ReservationsServiceImpl implements ReservationsService {
         reservation.setStart_time(dto.getStart_time());
         reservation.setEnd_time(dto.getEnd_time());
         reservation.setPurpose(dto.getPurpose());
-        reservation.setStatus(dto.getStatus());
+        reservation.setStatus(ReservationStatus.valueOf(dto.getStatus()));
 
         return toResponseDTO(reservationsRepository.save(reservation));
     }
@@ -94,7 +96,7 @@ public class ReservationsServiceImpl implements ReservationsService {
     public void cancelReservation(Long reservationno) {
         Reservations reservation = reservationsRepository.findById(reservationno)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약번호입니다: " + reservationno));
-        reservation.setStatus("취소됨");
+        reservation.setStatus(ReservationStatus.취소됨);
         reservationsRepository.save(reservation);
     }
     
@@ -117,7 +119,8 @@ public class ReservationsServiceImpl implements ReservationsService {
         dto.setStart_time(r.getStart_time());
         dto.setEnd_time(r.getEnd_time());
         dto.setPurpose(r.getPurpose());
-        dto.setStatus(r.getStatus());
+        dto.setStatus(r.getStatus().name());
+        dto.setCreatedAt(r.getCreatedAt());  // 추가
         return dto;
     }
 
@@ -139,14 +142,28 @@ public class ReservationsServiceImpl implements ReservationsService {
 
 
     @Override
+    @Transactional
     public List<ReservationsResponseDTO> findByUser(Long userno) {
+    	
+      LocalDateTime now = LocalDateTime.now();
+
+      List<Reservations> reservations = reservationsRepository.findByUser_Userno(userno);
+
+      for (Reservations r : reservations) {
+          if (r.getStatus() == ReservationStatus.예약됨 && r.getEnd_time().isBefore(now)) {
+          	r.setStatus(ReservationStatus.완료됨);
+              reservationsRepository.save(r);
+          }
+      }
         return reservationsRepository.findByUser_Userno(userno)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+        
     }
 
 		// 엔티티 → DTO 변환 메서드
+    // 뭔지 모르겠는데 여따가 데이터 넣으니까 됐음 (CreatedAt)
 		private ReservationsResponseDTO convertToDTO(Reservations reservation) {
 		    ReservationsResponseDTO dto = new ReservationsResponseDTO();
 		    dto.setReservationno(reservation.getReservationno());
@@ -165,9 +182,23 @@ public class ReservationsServiceImpl implements ReservationsService {
 		    dto.setStart_time(reservation.getStart_time());
 		    dto.setEnd_time(reservation.getEnd_time());
 		    dto.setPurpose(reservation.getPurpose());
-		    dto.setStatus(reservation.getStatus());
+		    dto.setStatus(reservation.getStatus().name());
+		    dto.setCreatedAt(reservation.getCreatedAt());
 		    
 		    return dto;
 		}
     
+		public List<ReservationsResponseDTO> getActiveReservations() {
+	    return reservationsRepository.findActiveReservations().stream()
+	        .map(this::toResponseDTO)
+	        .collect(Collectors.toList());
+	}
+
+	public List<ReservationsResponseDTO> getCanceledReservations() {
+	    return reservationsRepository.findByStatus(ReservationStatus.취소됨).stream()
+	        .map(this::toResponseDTO)
+	        .collect(Collectors.toList());
+	}
+	
+	
 }

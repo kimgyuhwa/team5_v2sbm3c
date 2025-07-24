@@ -2,6 +2,7 @@ package dev.mvc.team5.reservations;
 
 import dev.mvc.team5.match.Match;
 import dev.mvc.team5.places.Places;
+import dev.mvc.team5.tool.ReservationStatus;
 import dev.mvc.team5.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "reservations")
@@ -47,7 +50,9 @@ public class Reservations {
     /**
      * 예약 상태 (예: 예약됨, 취소됨, 승인대기 등)
      */
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ReservationStatus status;
 
     /**
      * 예약과 연결된 매치 리스트 (양방향)
@@ -55,10 +60,15 @@ public class Reservations {
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Match> matches = new ArrayList<>();
 
+    /** 생성일*/
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp // Hibernate 자동 생성일자 주입
+    private LocalDateTime createdAt;
+    
     /**
      * 생성자: DTO → Entity 변환 시 사용
      */
-    public Reservations(User user, Places place, LocalDateTime start_time, LocalDateTime end_time, String purpose, String status) {
+    public Reservations(User user, Places place, LocalDateTime start_time, LocalDateTime end_time, String purpose, ReservationStatus  status) {
         this.user = user;
         this.place = place;
         this.start_time = start_time;

@@ -26,9 +26,10 @@ public interface ReservationsService {
 
 		List<ReservationsResponseDTO> findByUser(Long userno);
 
-
-	
-
-
+		/** 완료됨, 확정됨만 보여줌*/
+		List<ReservationsResponseDTO> getActiveReservations();
+		
+		/** 취소된거 보여줌*/
+		List<ReservationsResponseDTO> getCanceledReservations();
 
 }
