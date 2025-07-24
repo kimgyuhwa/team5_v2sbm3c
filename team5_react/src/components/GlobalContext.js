@@ -9,6 +9,8 @@ const GlobalProvider = ({ children }) => {
   const [sw, setSw] = useState(() => sessionStorage.getItem('sw') === 'true');
   const [userno, setUserno] = useState(() => parseInt(sessionStorage.getItem('userno') || 0));
   const [selectedCategoryNo, setSelectedCategoryNo] = useState(null);
+  const [selectedCateGrpno, setSelectedCateGrpno] = useState(null); // ⭐ 대분류 선택 상태 추가 ⭐
+  const [refreshTalentList, setRefreshTalentList] = useState(false); 
   const [loginUser, setLoginUser] = useState(() => {
   const storedUser = sessionStorage.getItem('loginUser');
   
@@ -37,6 +39,10 @@ return storedUser ? JSON.parse(storedUser) : null;
   }
 }, [loginUser]);
 
+  const triggerTalentListRefresh = () => { // 정의된 함수
+        setRefreshTalentList(prev => !prev);
+    };
+
 
   // useEffect(() => {
   //   fetch('/user/session', {
@@ -62,7 +68,10 @@ return storedUser ? JSON.parse(storedUser) : null;
   // }, []);
 
   return (
-    <GlobalContext.Provider value={{ sw, setSw, userno, setUserno, loginUser, setLoginUser,selectedCategoryNo, setSelectedCategoryNo }}>
+    <GlobalContext.Provider value={{ sw, setSw, userno, setUserno, loginUser, setLoginUser,selectedCategoryNo, setSelectedCategoryNo,selectedCateGrpno, // ⭐ 추가 ⭐
+            setSelectedCateGrpno, // ⭐ 추가 ⭐
+            refreshTalentList,
+            triggerTalentListRefresh }}>
       {children}
     </GlobalContext.Provider>
   );

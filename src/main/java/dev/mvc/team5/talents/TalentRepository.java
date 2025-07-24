@@ -57,7 +57,19 @@ public interface TalentRepository extends JpaRepository<Talent, Long> {
         Pageable pageable
     );
 
+
+    @Query("SELECT t FROM Talent t " +
+        "WHERE (:keyword IS NULL OR t.title LIKE %:keyword% OR t.description LIKE %:keyword%) " +
+        "AND (:schoolno IS NULL OR t.school.schoolno = :schoolno) " +
+        "AND (COALESCE(:categorynos, NULL) IS NULL OR t.category.categoryno IN :categorynos)")
+ Page<Talent> findByCategorynosInAndFilters(@Param("categorynos") List<Long> categorynos,
+                                            @Param("keyword") String keyword,
+                                            @Param("schoolno") Long schoolno,
+                                            Pageable pageable);
+  
+
     long countByUser_Userno(Long userno);  
+
   
 
   

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { GlobalContext } from '../../components/GlobalContext';
+//import ReviewPage from '../../review/ProfileReviewPage';
+import ProfileReviewPage from '../../review/ProfileReviewPage';
 import ReviewPage from '../../review/ProfileCardReviewPage';
 
 function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
@@ -57,6 +59,13 @@ function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
         <p className="text-sm text-gray-500">{userData?.name}</p>
         <p className="text-sm text-gray-500">{userData?.email}</p>
 
+        {/* ⭐ 리뷰 컴포넌트 삽입 */}
+        <ProfileReviewPage 
+            receiverno={userno}
+            showForm ={false}  // 받은 리뷰
+            showReceived ={false}      // 리뷰 작성 폼
+            showSummary={true}    // 리뷰 요약
+        />
         {/* ✅ 게시물 수 표시 */}
         <p className="text-sm text-gray-500 mt-1">
           작성한 게시물: <span className="font-medium text-gray-700">{talentCount}</span>개

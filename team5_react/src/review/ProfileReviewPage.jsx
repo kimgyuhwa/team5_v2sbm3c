@@ -2,7 +2,7 @@ import React, { useContext,useEffect, useState } from 'react';
 import { FaStar } from "react-icons/fa";
 import axios from 'axios';
 import { GlobalContext } from '../components/GlobalContext';
-const ReviewPage = ({
+const ProfileReviewPage = ({
   receiverno,
   showForm = true,
   showReceived = true,
@@ -209,4 +209,4 @@ console.log(receivedReviews)
   );
 };
 
-export default ReviewPage;
+export default ProfileReviewPage;

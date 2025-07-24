@@ -125,9 +125,7 @@ const handleRequestList = () => {
       // 2. 프론트엔드 상태 업데이트
       setUnreadCount(prevCount => Math.max(0, prevCount - 1)); // 읽지 않은 알림 개수 감소
       setNotificationList(prevList =>
-        prevList.map(n =>
-          n.notificationno === notification.notificationno ? { ...n, read: true } : n
-        )
+        prevList.filter(n => n.notificationno !== notification.notificationno)
       ); // 읽음 상태만 true로 변경 (목록에서 제거하는 대신)
 
       // 3. 알림 드롭다운 닫기
@@ -140,16 +138,10 @@ const handleRequestList = () => {
           path = `/chat/${notification.targetId}`; // 예: /chat/room/123
           break;
         case 'reservation':
-          path = `/mypage/Mypage?tab=reservation&reservationNo=${notification.targetId}`; // 예: /mypage/Mypage?tab=reservation&reservationNo=456
+          path = `/mypage/Mypage?tab=reservation&reservationNo=${notification.targetId}`; //
           break;
-        case 'request':
-          path = `/talents/${notification.targetId}/reviews`; // 예: /talents/789/reviews (리뷰 대상 재능 또는 구매/판매 기록으로 이동)
-          break;
-        case 'talent': // 새로운 재능 등록, 재능 승인/거절 등
-          path = `/talents/${notification.targetId}`; // 예: /talents/101
-          break;
-        case 'system': // 시스템 공지 등
-          path = '/notices'; // 또는 특정 공지사항 ID로 이동: `/notices/${notification.targetId}`
+        case 'request':    //요청페이지로 가게해야함
+          path = `/talent/request/list`; // (리뷰 대상 재능 또는 구매/판매 기록으로 이동)
           break;
       }
       console.log(notificationList[0].targetId)
@@ -225,7 +217,7 @@ const handleRequestList = () => {
         rooms.map(async r => {
           const res = await fetch(`/message/${r.chatRoomno}/last-message`);
           const last = await res.json();     // {content, createdAt}
-          console.log(last)
+          //console.log(last)
           return {
             id: r.chatRoomno,
             name: r.roomName,
@@ -703,7 +695,7 @@ const handleRequestList = () => {
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                   >
                     <FileText size={16} style={{ marginRight: '12px' }} />
-                    요청 목록
+                    거래 목록
                   </button>
 
 
