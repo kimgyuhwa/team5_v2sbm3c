@@ -45,7 +45,7 @@ function Header( { openLoginModal } ) {
   };
 
   const handleChatList = () => {
-  navigate('/chatlist');
+  navigate('/chat/my');
   setIsDropdownOpen(false);
 };
 

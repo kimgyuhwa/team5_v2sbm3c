@@ -161,6 +161,63 @@ public class ReviewController {
         }
     }
     
+    // 프로필카드에서 띄울 짧은 요약
+    @PostMapping("/summary/receiver_profile")
+    public ResponseEntity<Map<String, String>> getReviewProfileSummary(@RequestBody Map<String, Object> requestBody) {
+        // receiverNo를 Map에서 추출 (프런트에서 함께 보내줘야 함)
+        // Integer 타입으로 캐스팅
+        Integer receiverNo = (Integer) requestBody.get("receiverNo"); 
+        
+        // reviewComments를 List<String> 타입으로 캐스팅
+        @SuppressWarnings("unchecked")
+        List<String> reviewComments = (List<String>) requestBody.get("reviewComments");
+        
+        // ⭐ 로그 추가: 프런트엔드에서 받은 데이터 확인 ⭐
+        System.out.println("Spring Boot - 받은 receiverNo: " + receiverNo);
+        System.out.println("Spring Boot - 받은 reviewComments: " + reviewComments);
+
+        if (receiverNo == null || reviewComments == null || reviewComments.isEmpty()) {
+            System.out.println("Spring Boot - receiverNo 또는 reviewComments가 유효하지 않습니다.");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "유효한 요청 데이터(receiverNo, reviewComments)가 필요합니다.");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        // ⭐ Python AI 서버의 요약 API URL ⭐
+        String pythonApiUrl = "http://localhost:5001/summarize-reviews-profile"; // review_ai_server.py의 엔드포인트
+
+        try {
+            // Python API에 보낼 요청 바디 생성
+            // Python 서버는 reviewComments만 필요하므로 이 필드만 보냅니다.
+            Map<String, List<String>> requestToPython = new HashMap<>();
+            requestToPython.put("reviewComments", reviewComments); 
+            
+            // ⭐ 로그 추가: Python으로 전송할 데이터 확인 ⭐
+            System.out.println("Spring Boot - Python으로 전송할 데이터: " + requestToPython);
+
+            // Python AI 서버 호출
+            // 캐싱을 사용한다면 reviewService.getAiReviewSummary(receiverNo, reviewComments, reviewsHashCode) 호출
+            ResponseEntity<Map> pythonResponse = restTemplate.postForEntity(pythonApiUrl, requestToPython, Map.class);
+
+            if (pythonResponse.getStatusCode() == HttpStatus.OK && pythonResponse.getBody() != null) {
+                String summary = (String) pythonResponse.getBody().get("summary");
+                Map<String, String> successResponse = new HashMap<>();
+                successResponse.put("summary", summary);
+                return new ResponseEntity<>(successResponse, HttpStatus.OK);
+            } else {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "AI 서버에서 요약을 가져오는 데 실패했습니다.");
+                return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            System.err.println("AI 서버 호출 중 오류 발생: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "AI 서버와 통신 중 오류가 발생했습니다: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     @PostMapping("/summary/talent") // 새로운 엔드포인트 경로
     public ResponseEntity<Map<String, String>> getReviewSummaryByTalent(@RequestBody Map<String, Object> requestBody) {
         Long talentNo = null;
@@ -213,4 +270,11 @@ public class ReviewController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    // 리뷰 평점만 가져오기
+    @GetMapping("/average-rating/{talentno}")
+    public double getAverageRating(@PathVariable(name="talentno") Long talentno) {
+        return service.getAverageRatingForTalent(talentno);
+    }
+
 }

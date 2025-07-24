@@ -1,6 +1,9 @@
 	package dev.mvc.team5.school;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,4 +58,19 @@ public class SchoolController {
         schoolService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @GetMapping("/list")
+    public ResponseEntity<List<Map<String, Object>>> getSchoolList() {
+        List<School> schools = schoolService.findAll();
+        List<Map<String, Object>> result = schools.stream()
+            .map(school -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("schoolno", school.getSchoolno());
+                map.put("schoolname", school.getSchoolname());
+                return map;
+            }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+    
 }

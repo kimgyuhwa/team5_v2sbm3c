@@ -9,7 +9,8 @@ const MyTalentList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(0);
   const [size] = useState(10);
-  const [keyword, setKeyword] = useState(''); // ✅ 검색어 상태
+  const [keyword, setKeyword] = useState(''); 
+  const [avgRatings, setAvgRatings] = useState({});
 
   const { loginUser } = useContext(GlobalContext);
   const navigate = useNavigate();
@@ -51,6 +52,24 @@ const MyTalentList = () => {
     navigate(`/talent/detail/${talentno}`);
   };
 
+  useEffect(() => {
+  const fetchAvgRatings = async () => {
+    const ratingMap = {};
+    await Promise.all(talents.map(async (t) => {
+      try {
+        const res = await axios.get(`/reviews/average-rating/${t.talentno}`);
+        ratingMap[t.talentno] = parseFloat(res.data).toFixed(1);
+      } catch (e) {
+        console.error(`평점 가져오기 실패: talentno=${t.talentno}`, e);
+        ratingMap[t.talentno] = null;
+      }
+    }));
+    setAvgRatings(ratingMap);
+  };
+
+  if (talents.length > 0) fetchAvgRatings();
+}, [talents]);
+
   return (
     <div className="w-full p-6 bg-white rounded-2xl shadow">
       <h2 className="text-xl font-bold mb-6 text-center">내 재능 게시물</h2>
@@ -80,13 +99,19 @@ const MyTalentList = () => {
             <div className="absolute top-4 right-6 text-xs text-gray-500">
               {t.cateGrpName} &gt; {t.categoryName}
             </div>
-            <div className="flex-1 text-left px-4">
-              <h3 className="font-semibold text-lg">{t.title}</h3>
-              <p className="text-gray-500">{t.description || '[설명 없음]'}</p>
-              <div className="text-right text-xs text-gray-400 mt-2">
-                조회수 : {t.viewCount}
+            <div className="flex-1 text-left px-4">                
+                <h3 className="font-semibold text-lg">{t.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">작성자: {t.userName}</p>
+
+                {/* 평균 평점 표시 */}
+                {avgRatings[t.talentno] !== null && avgRatings[t.talentno] !== undefined && (
+                  <p className="text-sm text-yellow-600 mt-1">⭐ {avgRatings[t.talentno]} / 5</p>
+                )}
+
+                <div className="text-right text-xs text-gray-400 mt-2">
+                  조회수 : {t.viewCount}
+                </div>
               </div>
-            </div>
           </article>
         ))
       )}

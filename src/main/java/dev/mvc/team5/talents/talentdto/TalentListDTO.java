@@ -19,6 +19,7 @@ public class TalentListDTO {
     private String categoryName;
     private String typeName;
     private Long userno; // 게시물 작성자
+    private String userName;
     private List<FileUploadDTO> fileInfos;
     private boolean blocked; //이 재능 글 작성자가 로그인한 사용자에게 차단되었는지 여부
 

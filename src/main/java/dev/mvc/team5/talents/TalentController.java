@@ -214,6 +214,13 @@ public class TalentController {
         Page<TalentListDTO> resultPage = service.searchMyTalents(keyword, categoryno, schoolno, page, size, loggedInUserno);
         return ResponseEntity.ok(resultPage);
     }
+    
+    // 사용자의 게시물 개수 (프로필용)
+    @GetMapping("/count-by-user")
+    public ResponseEntity<Long> getTalentCountByUser(@RequestParam("userno") Long userno) {
+        long count = service.countTalentsByUserno(userno);
+        return ResponseEntity.ok(count);
+    }
 
 
     

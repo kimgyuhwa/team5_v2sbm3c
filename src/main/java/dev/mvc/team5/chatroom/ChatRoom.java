@@ -37,6 +37,19 @@ public class ChatRoom {
 
     private String roomName;
     
+    // 공개방 여부
+    @Column(nullable = false)
+    private boolean publicRoom = false;
+    
+    // 비밀번호 (nullable)
+    private String password;
+    
+    // 방 만든 사람
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private dev.mvc.team5.user.User creator;
+
+    
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

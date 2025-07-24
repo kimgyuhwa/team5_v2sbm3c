@@ -57,6 +57,7 @@ public interface TalentRepository extends JpaRepository<Talent, Long> {
         Pageable pageable
     );
 
+
     @Query("SELECT t FROM Talent t " +
         "WHERE (:keyword IS NULL OR t.title LIKE %:keyword% OR t.description LIKE %:keyword%) " +
         "AND (:schoolno IS NULL OR t.school.schoolno = :schoolno) " +
@@ -66,6 +67,9 @@ public interface TalentRepository extends JpaRepository<Talent, Long> {
                                             @Param("schoolno") Long schoolno,
                                             Pageable pageable);
   
+
+    long countByUser_Userno(Long userno);  
+
   
 
   

@@ -3,7 +3,6 @@ import { FaStar } from "react-icons/fa";
 import axios from 'axios';
 import { GlobalContext } from '../components/GlobalContext';
 
-// ⭐ props로 receiverno 대신 talentno를 받도록 변경
 const ReviewPage = ({ talentno, receiverno }) => {
     const { userno: giverno, loginUser } = useContext(GlobalContext); // giverno는 리뷰 작성자
 
@@ -44,7 +43,7 @@ const ReviewPage = ({ talentno, receiverno }) => {
                 params: { page, size: 5 }, // 한 페이지에 5개씩
 
             });
-            console.log("gdgdgd",res.data);
+          
             setTalentReviews(res.data.content); // Page 객체에서 실제 리뷰 목록은 .content에 있습니다.
             setTalentReviewTotalPages(res.data.totalPages);
             setTalentReviewPage(res.data.number);

@@ -16,12 +16,12 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
     // selectedCategoryNo 또는 selectedCateGrpno가 변경될 때 페이지를 0으로 초기화
     useEffect(() => { setPage(0); }, [selectedCategoryNo, selectedCateGrpno]);
 
-    const [editId, setEditId] = useState(null);
-    const [editForm, setEditForm] = useState({});
-    const [typeList, setTypeList] = useState([]);
-    const [cateGrpList, setCateGrpList] = useState([]);
-    const [categoryList, setCategoryList] = useState([]);
-    // const [selectedCateGrpno, setSelectedCateGrpno] = useState(null); // 이 상태는 이제 GlobalContext에서 관리
+  const [editId, setEditId] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [typeList, setTypeList] = useState([]);
+  const [cateGrpList, setCateGrpList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [avgRatings, setAvgRatings] = useState({});
 
     const schoolno = loginUser?.schoolno;
     const navigate = useNavigate();
@@ -32,6 +32,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
         setPage(newPage);
     };
 
+   // 재능 목록을 불러오는 useEffect
     useEffect(() => {
         if (!schoolno) {
             setTalents([]);
@@ -42,17 +43,12 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
         const params = new URLSearchParams();
         if (searchQuery?.trim()) params.append('keyword', searchQuery.trim());
 
-        // ⭐ 핵심 변경: cateGrpno와 categoryno를 백엔드 로직에 맞게 보냅니다 ⭐
-        if (selectedCateGrpno !== null) { // 대분류 ID가 GlobalContext에 있다면 (대분류 선택)
+        if (selectedCateGrpno !== null) {
             params.append('cateGrpno', selectedCateGrpno);
         }
-        if (selectedCategoryNo !== null) { // 소분류 ID가 GlobalContext에 있다면 (소분류 선택)
+        if (selectedCategoryNo !== null) {
             params.append('categoryno', selectedCategoryNo);
         }
-        // else if (selectedCategoryNo !== null) { // 이 로직은 이제 위 `if (selectedCateGrpno !== null)`과 분리하여 독립적으로 처리
-        //     params.append('categoryno', selectedCategoryNo);
-        // }
-
 
         params.append('page', page);
         params.append('size', size);
@@ -68,19 +64,40 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
                 const filtered = fetchedTalents.filter(t =>
                     (loginUser && loginUser.userno === t.userno) || !t.blocked
                 );
-                setTalents(filtered);
+                setTalents(filtered); // talents 상태를 여기서 업데이트
             })
             .catch(err => {
                 console.error('목록 불러오기 실패:', err);
                 alert('목록 불러오기 실패: ' + err.message);
             });
-    }, [refresh, schoolno, searchQuery, selectedCategoryNo, selectedCateGrpno, page, size, loginUser]); // ⭐ selectedCateGrpno를 의존성 배열에 추가 ⭐
+    }, [refresh, schoolno, searchQuery, selectedCategoryNo, selectedCateGrpno, page, size, loginUser]); // 의존성 배열에 loginUser 추가
 
+    // ⭐ 재능 목록(talents)이 업데이트될 때 평균 평점을 가져오는 useEffect (분리) ⭐
+    useEffect(() => {
+        const fetchAvgRatings = async () => {
+            const ratingMap = {};
+            await Promise.all(talents.map(async (t) => {
+                try {
+                    const res = await axios.get(`/reviews/average-rating/${t.talentno}`);
+                    ratingMap[t.talentno] = parseFloat(res.data).toFixed(1);
+                } catch (e) {
+                    console.error(`평점 가져오기 실패: talentno=${t.talentno}`, e);
+                    ratingMap[t.talentno] = null;
+                }
+            }));
+            setAvgRatings(ratingMap);
+        };
+
+        if (talents.length > 0) { // talents가 비어있지 않을 때만 실행
+            fetchAvgRatings();
+        } else {
+            setAvgRatings({}); // talents가 비어있으면 평점도 초기화
+        }
+    }, [talents]); // talents가 변경될 때마다 이 훅이 실행됩니다.
+
+    // 타입, 대분류 카테고리 목록을 한 번만 가져오는 useEffect
     useEffect(() => {
         axios.get('/talent_type/list').then(res => setTypeList(res.data.content));
-        // 대분류 목록을 가져올 때, 모든 카테고리 정보도 함께 포함하여 저장합니다.
-        // 이는 MainSideBar에서 사용될 수 있는 구조이므로 TalentList에서 직접 쓸 필요는 없지만,
-        // 드롭다운 등을 위해 데이터를 미리 로드하는 차원에서 유지.
         axios.get('/talent_cate_grp/list')
             .then(async (res) => {
                 const grpList = res.data.content;
@@ -92,6 +109,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
             });
     }, []);
 
+    // editForm.cateGrpno가 변경될 때 소분류 카테고리 목록을 가져오는 useEffect
     useEffect(() => {
         if (editForm.cateGrpno) {
             axios.get(`/talent_category/list-by-categrp/${editForm.cateGrpno}`)
@@ -119,7 +137,6 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
         setEditForm({});
         setSelectedFiles([]);
     };
-
     const handleEditChange = (e) => {
         const { name, value } = e.target;
         setEditForm(prev => ({ ...prev, [name]: value }));
@@ -197,81 +214,89 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
         navigate(`/talent/detail/${talentno}`);
     };
 
-    return (
-        <div className="w-full p-6 bg-white rounded-2xl shadow">
-            <h2 className="text-xl font-bold mb-6 text-center">재능 목록</h2>
-            {talents.length === 0 ? (
-                <div className="text-center text-gray-500">목록이 없습니다.</div>
-            ) : (
-                talents.map(t =>
-                    editId === t.talentno ? (
-                        <article key={t.talentno} className="border p-4 rounded-lg mb-4">
-                            <header className="mb-4">
-                                <h3 className="text-lg font-semibold">재능 수정 - {t.talentno}</h3>
-                            </header>
-                            <div className="flex flex-col gap-2">
-                                <input name="title" value={editForm.title || ''} onChange={handleEditChange}
-                                    placeholder="제목" required
-                                    className="border p-2 rounded w-full" />
-                                <input name="description" value={editForm.description || ''} onChange={handleEditChange}
-                                    placeholder="설명" className="border p-2 rounded w-full" />
-                                <select name="typeno" value={editForm.typeno || ''} onChange={handleEditChange}
-                                    required className="border p-2 rounded w-full">
-                                    <option value="">타입 선택</option>
-                                    {typeList.map((type) => (
-                                        <option key={type.typeno} value={type.typeno}>{type.name}</option>
-                                    ))}
-                                </select>
-                                <select name="cateGrpno" value={editForm.cateGrpno || ''} onChange={handleEditChange}
-                                    required className="border p-2 rounded w-full">
-                                    <option value="">대분류 선택</option>
-                                    {cateGrpList.map((grp) => (
-                                        <option key={grp.cateGrpno} value={grp.cateGrpno}>{grp.name}</option>
-                                    ))}
-                                </select>
-                                <select name="categoryno" value={editForm.categoryno || ''} onChange={handleEditChange}
-                                    required className="border p-2 rounded w-full">
-                                    <option value="">소분류 선택</option>
-                                    {categoryList.map((cat) => (
-                                        <option key={cat.categoryno} value={cat.categoryno}>{cat.name}</option>
-                                    ))}
-                                </select>
-                                <input type="file" multiple onChange={handleFileChange}
-                                    className="border p-2 rounded w-full" />
-                            </div>
-                            <footer className="flex gap-2 mt-4">
-                                <button onClick={submitEdit}
-                                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow">저장</button>
-                                <button onClick={cancelEdit}
-                                    className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded shadow">취소</button>
-                            </footer>
-                        </article>
-                    ) : (
-                        <article key={t.talentno}
-                            onClick={() => handleGoDetail(t.talentno)}
-                            className="relative flex items-center justify-between gap-4 border px-5 py-4 rounded-lg mb-4 hover:shadow cursor-pointer">
-                            {t.fileInfos && t.fileInfos.length > 0 && (
-                                <img src={`/uploads/talent/${t.fileInfos[0].storedFileName}`}
-                                    alt={t.fileInfos[0].originalFileName}
-                                    className="w-24 h-24 object-cover rounded shadow"
-                                    onClick={(e) => e.stopPropagation()} />
-                            )}
-                            {/* 오른쪽 상단 카테고리 */}
-                            <div className="absolute top-4 right-6 text-xs text-gray-500">
-                                {t.cateGrpName} &gt; {t.categoryName}
-                            </div>
-                            <div className="flex-1 text-left px-4">
-                                <h3 className="font-semibold text-lg">{t.title}</h3>
-                                <p className="text-gray-500">{t.description || '[설명 없음]'}</p>
-                                {/* 조회수 */}
-                                <div className="text-right text-xs text-gray-400 mt-2">
-                                    조회수 : {t.viewCount}
-                                </div>
-                            </div>
-                        </article>
-                    )
-                )
-            )}
+  return (
+    <div className="w-full p-6 bg-white rounded-2xl shadow">
+      <h2 className="text-xl font-bold mb-6 text-center">재능 목록</h2>
+      {/* ⭐ filteredTalents 대신 talents를 사용합니다! ⭐ */}
+      {talents.length === 0 ? (
+        <div className="text-center text-gray-500">목록이 없습니다.</div>
+      ) : (
+        talents.map(t => // ⭐ 여기서도 talents를 사용합니다! ⭐
+          editId === t.talentno ? (
+            <article key={t.talentno} className="border p-4 rounded-lg mb-4">
+              <header className="mb-4">
+                <h3 className="text-lg font-semibold">재능 수정 - {t.talentno}</h3>
+              </header>
+              <div className="flex flex-col gap-2">
+                <input name="title" value={editForm.title || ''} onChange={handleEditChange}
+                  placeholder="제목" required
+                  className="border p-2 rounded w-full" />
+                <input name="description" value={editForm.description || ''} onChange={handleEditChange}
+                  placeholder="설명" className="border p-2 rounded w-full" />
+                <select name="typeno" value={editForm.typeno || ''} onChange={handleEditChange}
+                  required className="border p-2 rounded w-full">
+                  <option value="">타입 선택</option>
+                  {typeList.map((type) => (
+                    <option key={type.typeno} value={type.typeno}>{type.name}</option>
+                  ))}
+                </select>
+                <select name="cateGrpno" value={editForm.cateGrpno || ''} onChange={handleEditChange}
+                  required className="border p-2 rounded w-full">
+                  <option value="">대분류 선택</option>
+                  {cateGrpList.map((grp) => (
+                    <option key={grp.cateGrpno} value={grp.cateGrpno}>{grp.name}</option>
+                  ))}
+                </select>
+                <select name="categoryno" value={editForm.categoryno || ''} onChange={handleEditChange}
+                  required className="border p-2 rounded w-full">
+                  <option value="">소분류 선택</option>
+                  {categoryList.map((cat) => (
+                    <option key={cat.categoryno} value={cat.categoryno}>{cat.name}</option>
+                  ))}
+                </select>
+                <input type="file" multiple onChange={handleFileChange}
+                  className="border p-2 rounded w-full" />
+              </div>
+              <footer className="flex gap-2 mt-4">
+                <button onClick={submitEdit}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow">저장</button>
+                <button onClick={cancelEdit}
+                  className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded shadow">취소</button>
+              </footer>
+            </article>
+          ) : (
+            <article key={t.talentno}
+              onClick={() => handleGoDetail(t.talentno)}
+              className="relative flex items-center justify-between gap-4 border px-5 py-4 rounded-lg mb-4 hover:shadow cursor-pointer">
+              {t.fileInfos && t.fileInfos.length > 0 && (
+                <img src={`/uploads/talent/${t.fileInfos[0].storedFileName}`}
+                  alt={t.fileInfos[0].originalFileName}
+                  className="w-24 h-24 object-cover rounded shadow"
+                  onClick={(e) => e.stopPropagation()} />
+              )}
+              {/* 오른쪽 상단 카테고리 */}
+                <div className="absolute top-4 right-6 text-xs text-gray-500">
+                  {t.cateGrpName} &gt; {t.categoryName}
+                </div>
+              <div className="flex-1 text-left px-4">                
+                <h3 className="font-semibold text-lg">{t.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">작성자: {t.userName}</p>
+
+                {/* 평균 평점 표시 */}
+                {avgRatings[t.talentno] !== null && avgRatings[t.talentno] !== undefined && (
+                  <p className="text-sm text-yellow-600 mt-1">⭐ {avgRatings[t.talentno]} / 5</p>
+                )}
+
+                <div className="text-right text-xs text-gray-400 mt-2">
+                  조회수 : {t.viewCount}
+                </div>
+              </div>
+
+
+            </article>
+          )
+        )
+      )}
 
             <div className="flex justify-center items-center gap-4 mt-6">
                 <button onClick={() => goToPage(page - 1)} disabled={page <= 0}

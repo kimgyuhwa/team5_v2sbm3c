@@ -1,15 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { User, Mail, School, Shield, ArrowRight, Check } from "lucide-react";
+import { User, Mail, School, Shield, ArrowRight, Check, Search, X, ArrowLeft} from "lucide-react";
 
 function UnivCertPage() {
   const [email, setEmail] = useState("");
   const [schoolName, setSchoolName] = useState("");
   const [code, setCode] = useState("");
   const [step, setStep] = useState(1);
+  
+  // 학교 검색 팝업 관련 state 추가
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  
   const navigate = useNavigate();
 
+  const [schools, setSchools] = useState([]);
+
+  const goBack = () => {
+    navigate(-1);
+  };
+  
+  useEffect(() => {
+    // 컴포넌트가 처음 렌더링 될 때 학교 목록을 가져옴
+    const fetchSchools = async () => {
+      try {
+        const res = await axios.get("/schools/list");
+        // 예상 응답 예: [{schoolno:1, schoolname:"서울대학교"}, {...}, ...]
+        setSchools(res.data);
+      } catch (err) {
+        console.error("학교 목록 불러오기 실패", err);
+      }
+    };
+    fetchSchools();
+  }, []);
+
+  // 검색 필터링
+  const filteredSchools = schools.filter(school =>
+    school.schoolname.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // 학교 선택 핸들러
+  const handleSchoolSelect = (school) => {
+    setSchoolName(school.schoolname);
+    setIsPopupOpen(false);
+    setSearchTerm('');
+  };
+
+  // 팝업 열기/닫기
+  const openPopup = () => {
+    setIsPopupOpen(true);
+    setSearchTerm('');
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    setSearchTerm('');
+  };
 
   // 1. 인증 메일 보내기
   const sendEmail = async () => {
@@ -35,7 +82,6 @@ function UnivCertPage() {
       });
       if (res.data.includes("성공")) {
         alert("인증 성공!");
-        // 회원가입 페이지로 이동 + state에 이메일과 학교이름 전달
         navigate("/user/register", {
           state: {
             email,
@@ -109,24 +155,24 @@ function UnivCertPage() {
                       placeholder="example@university.ac.kr"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-colors"
                     />
                   </div>
                 </div>
 
+                {/* 기존 학교 입력 부분을 아래 코드로 교체 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     대학교 이름
                   </label>
                   <div className="relative">
                     <School className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="홍익대학교"
-                      value={schoolName}
-                      onChange={(e) => setSchoolName(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    />
+                    <div
+                      onClick={openPopup}
+                      className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-colors"
+                    >
+                      {schoolName || '대학교를 선택하세요'}
+                    </div>
                   </div>
                 </div>
 
@@ -138,6 +184,17 @@ function UnivCertPage() {
                   <span>인증 메일 보내기</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
+
+              {/* 뒤로가기 버튼 */}
+              <button
+                type="button"
+                onClick={goBack}
+                className="w-full text-gray-600 py-1 text-sm hover:text-gray-800 transition-colors flex items-center justify-center space-x-1"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>이전으로</span>
+              </button>
+                
               </div>
             ) : (
               <div className="space-y-6">
@@ -185,9 +242,59 @@ function UnivCertPage() {
             )}
           </div>
         </div>
-
-
       </div>
+
+      {/* 학교 검색 팝업 - 여기서부터 추가되는 부분 */}
+      {isPopupOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 max-h-96">
+            {/* 팝업 헤더 */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-800">학교 검색</h3>
+              <button
+                onClick={closePopup}
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* 검색 입력 */}
+            <div className="p-4 border-b">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="학교명을 입력하세요"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* 학교 목록 */}
+            <div className="max-h-64 overflow-y-auto">
+              {filteredSchools.length > 0 ? (
+                filteredSchools.map((school) => (
+                  <div
+                    key={school.schoolno}
+                    onClick={() => handleSchoolSelect(school)}
+                    className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+                  >
+                    <span className="text-gray-800">{school.schoolname}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="px-4 py-8 text-center text-gray-500">
+                  검색 결과가 없습니다
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

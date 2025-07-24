@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import dev.mvc.team5.places.Places;
+import dev.mvc.team5.tool.ReservationStatus;
 
 @Repository
 public interface ReservationsRepository extends JpaRepository<Reservations, Long> {
@@ -37,4 +38,19 @@ List<Reservations> findReservationsStartingBetween(
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end);
   
+	
+	@Query("""
+	    SELECT r FROM Reservations r
+	    WHERE r.status IN ('완료됨', '예약됨')
+	    ORDER BY
+	        CASE r.status
+	            WHEN '완료됨' THEN 0
+	            WHEN '예약됨' THEN 1
+	        END,
+	        r.createdAt DESC
+	""")
+	List<Reservations> findActiveReservations();
+	
+	List<Reservations> findByStatus(ReservationStatus status);
+	
 }
