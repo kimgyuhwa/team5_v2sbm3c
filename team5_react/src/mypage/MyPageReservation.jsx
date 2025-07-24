@@ -60,7 +60,7 @@ useEffect(() => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case '예약됨': return '확정';
+      case '예약됨': return '예약';
       case '취소됨': return '취소';
       case '완료됨': return '완료';
       default: return status;
@@ -101,8 +101,10 @@ const filteredReservations = reservations.filter((reservation) => {
     placename.toLowerCase().includes(search) ||
     purpose.toLowerCase().includes(search);
 
-  // 상태 필터링
-  const matchesStatus = statusFilter === 'all' || status === statusFilter;
+  const matchesStatus = 
+    statusFilter === 'all' || 
+    (statusFilter === '예약됨' && (status === '예약됨' || status === '완료됨')) ||
+    (statusFilter === '취소됨' && status === '취소됨');
 
   return matchesSearch && matchesStatus;
 });
@@ -171,7 +173,7 @@ const filteredReservations = reservations.filter((reservation) => {
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="all">전체 목록</option>
-              <option value="예약됨">확정</option>
+              <option value="예약됨">확정/완료</option>
               <option value="취소됨">취소</option>
             </select>
           </div>
@@ -202,29 +204,6 @@ const filteredReservations = reservations.filter((reservation) => {
                       onClick={() => toggleExpanded(reservation.reservationno)}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex-shrink-0">
-                            {reservation.status === '예약됨' ? (
-                              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                <CalendarCheck className="w-6 h-6 text-blue-600" />
-                              </div>
-                            ) : reservation.status === '완료됨' ? (
-                              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                <CalendarCheck className="w-6 h-6 text-green-600" />
-                              </div>
-                            ) : (
-                              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                                <CalendarX className="w-6 h-6 text-red-600" />
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-800">
-                              {reservation.username}
-                            </h3>
-                            <p className="text-gray-600">{reservation.placename}</p>
-                          </div>
-                        </div>
                         <div className="flex items-center space-x-4">
                           <div className="text-right">
                             <div className="flex items-center text-gray-600 mb-1">
@@ -275,7 +254,7 @@ const filteredReservations = reservations.filter((reservation) => {
                         
                         {/* 액션 버튼들 */}
                         <div className="flex justify-end space-x-2 mt-4">
-                          {reservation.status !== '취소됨' && (
+                          {reservation.status === '예약됨' && (
                             <button 
                               onClick={() => handleCancel(reservation.reservationno)}
                               className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"

@@ -43,7 +43,7 @@ import ChatListPage from './chat/ChatListPage'; // 내 채팅방 목록
 import OpenChatListPage from './chat/OpenChatListPage'; // 공개 채팅방 목록
 //--------
 import AdminActivityList from './admin/AdminActivityList';
-import RequestList from './talent/request/RequestList'
+import SellList from './mypage/SellList'
 import UserProfilePage from './user/profile/UserProfilePage';
 
 
@@ -88,7 +88,7 @@ function App() {
             <Route path="/talent/category" element={<TalentCategory />} />
             <Route path="/talent/categrp" element={<TalentCateGrp />} />
             <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
-            <Route path="/talent/request/list" element={<RequestList />} />
+            <Route path="/mypage/MyPage/list" element={<SellList />} />
             <Route path="/talent/update/:talentno" element={<TalentUpdate />} />
             {/* 장소 */}
             <Route path="/place/PlacesPage" element={<PlacesPage />} />

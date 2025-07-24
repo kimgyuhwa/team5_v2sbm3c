@@ -28,6 +28,10 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     
     Optional<Request> findTopByChatRoom_ChatRoomnoOrderByCreatedAtDesc(Long chatRoomno);
 
-    
+
+
+		List<Request> findByGiverUserno(Long userno);     // 구매 내역
+		
+		List<Request> findByReceiverUserno(Long userno);  // 판매 내역
 }
 

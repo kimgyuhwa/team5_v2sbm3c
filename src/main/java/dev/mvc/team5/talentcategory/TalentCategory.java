@@ -39,7 +39,7 @@ public class TalentCategory {
 
     /** 카테고리 그룹과 다대일 관계 (FK: cateGrp) */
     @ManyToOne
-    @JoinColumn(name = "cateGrpno")
+    @JoinColumn(name = "cate_Grpno")
     private TalentCateGrp cateGrp;
 
     /** 카테고리 이름 */

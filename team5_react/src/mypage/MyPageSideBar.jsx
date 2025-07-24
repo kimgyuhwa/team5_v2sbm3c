@@ -109,21 +109,21 @@ const MyPageSideBar = ({ currentPage }) => {
     </div>
 
 
-      {/* <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '20px' }}>
         <div
           style={{
             fontSize: '18px',
             fontWeight: 'bold',
             paddingBottom: '5px',
             display: 'inline-block',
-            borderBottom: currentPage === 'security' ? '2px solid black' : 'none',
+            borderBottom: currentPage === 'mySell' ? '2px solid black' : 'none',
             cursor: 'pointer'
           }}
-          onClick={() => handleTabClick('security')}
+          onClick={() => handleTabClick('mySell')}
         >
-          설정
+          판매내역
         </div>
-      </div> */}
+      </div>
 
       <div style={{ marginBottom: '20px' }}>
         <div

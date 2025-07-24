@@ -6,6 +6,8 @@ import dev.mvc.team5.request.requestdto.RequestResponseDTO;
 import dev.mvc.team5.tool.RequestStatus;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -112,7 +114,18 @@ public class RequestController {
         return ResponseEntity.ok(new RequestResponseDTO(request));
     }
 
+    // 구매내역
+    @GetMapping("/requests/purchases/{userno}")
+    public List<Request> getPurchases(@PathVariable Long userno) {
+        return requestRepository.findByGiverUserno(userno);
+    }
 
+    
+    //판매내역
+    @GetMapping("/requests/sales/{userno}")
+    public List<Request> getSales(@PathVariable Long userno) {
+        return requestRepository.findByReceiverUserno(userno);
+    }
 
 
 }
