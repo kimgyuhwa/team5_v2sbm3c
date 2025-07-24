@@ -22,7 +22,7 @@ import TalentUpdate from './talent/post/TalentUpdate'
 import ReservationsManager from './reservation/Reservation';
 import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
-import ReviewPage from './review/ProfileReviewPage';
+import ReviewPage from './review/ReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
 import MyPageSetting from './mypage/MyPageSetting';

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { GlobalContext } from '../../components/GlobalContext';
 import ReviewPage from '../../review/ProfileReviewPage';
+import ProfileReviewPage from '../../review/ProfileReviewPage';
 
 function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
   const { loginUser } = useContext(GlobalContext);
@@ -46,7 +47,7 @@ function TalentProfileCard({ talent, isOwner, startChat, sendRequest }) {
         <p className="text-sm text-gray-500">{userData?.email}</p>
 
         {/* ⭐ 리뷰 컴포넌트 삽입 */}
-        <ReviewPage 
+        <ProfileReviewPage 
             receiverno={userno}
             showForm ={false}  // 받은 리뷰
             showReceived ={false}      // 리뷰 작성 폼

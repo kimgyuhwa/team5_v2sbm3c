@@ -41,12 +41,12 @@ function UserProfilePage() {
     <p className="text-center text-gray-600">{user.name} | {user.email}</p>
 
     {/* ⭐ 리뷰 컴포넌트 삽입 */}
-    <ReviewPage 
+    {/* <ReviewPage 
         receiverno={user.userno}
         showForm ={false}  // 리뷰 작성 폼
         showReceived ={showReceived}      // 받은 리뷰
         showSummary={!showReceived}    // 리뷰 요약
-     />
+     /> */}
 
      {/* 🔘 버튼 토글 */}
       <div className="text-center mt-4">

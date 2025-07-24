@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Slider from "react-slick";
 import { GlobalContext } from "../../components/GlobalContext";
-import ReviewPage from "../../review/ProfileReviewPage";
+import ReviewPage from "../../review/ReviewPage";
 import TalentProfileCard from "../../user/profile/TalentProfileCard"; 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";

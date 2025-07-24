@@ -132,7 +132,7 @@ public class UserController {
 
         if (sessionCode != null && sessionCode.equals(code) && sessionEmail != null && sessionEmail.equals(email)) {
             result.put("sw", true);
-            result.put("msg", "인증 성공");
+            result.put("msg", "성공");
         } else {
             result.put("sw", false);
             result.put("msg", "인증번호 불일치 또는 만료");

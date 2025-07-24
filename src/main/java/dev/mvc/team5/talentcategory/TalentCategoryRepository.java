@@ -38,4 +38,9 @@ public interface TalentCategoryRepository extends JpaRepository<TalentCategory, 
   
   List<TalentCategory> findByCateGrpCateGrpno(Long cateGrpno);
 
+
+  @Query("SELECT c.categoryno FROM TalentCategory c WHERE c.cateGrp.cateGrpno = :cateGrpno")
+  List<Long> findCategorynosByCateGrpno(@Param("cateGrpno") Long cateGrpno);
+
+
 }

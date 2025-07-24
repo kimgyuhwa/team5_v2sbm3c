@@ -351,21 +351,40 @@ public class TalentService {
      * @param loggedInUserno 로그인한 사용자의 userno (⭐ 파라미터 추가 ⭐)
      * @return 페이징된 DTO 리스트
      */
-    public Page<TalentListDTO> searchTalents(String keyword, Long categoryno, Long schoolno, int page, int size, Long loggedInUserno) { // ⭐ loggedInUserno 파라미터 추가 ⭐
+    public Page<TalentListDTO> searchTalents(String keyword, Long cateGrpno, Long categoryno, Long schoolno, int page, int size, Long loggedInUserno) { // ⭐ loggedInUserno 파라미터 추가 ⭐
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "talentno"));
 
         Page<Talent> talentPage;
 
-        if ((keyword == null || keyword.trim().isEmpty()) && categoryno == null && schoolno == null) {
-            talentPage = talentRepository.findAll(pageable);
-        } else {
-            talentPage = talentRepository.searchWithFilters(
-                (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim(),
-                categoryno,
-                schoolno,
-                pageable
-            );
-        }
+        // --- 이 부분이 핵심 수정입니다! ---
+        if (categoryno != null) { // 1. 소분류 번호가 들어온 경우 (가장 구체적인 필터이므로 최우선)
+          // cateGrpno가 함께 왔더라도, categoryno가 있으면 이 단일 categoryno로만 필터링합니다.
+          talentPage = talentRepository.searchWithFilters( // 이 메소드가 단일 categoryno를 받도록 되어 있음
+              (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim(),
+              categoryno, // 단일 categoryno 필터를 사용
+              schoolno,
+              pageable
+          );
+      } else if (cateGrpno != null) { // 2. 소분류 번호는 없고 대분류 번호만 들어온 경우
+          // 해당 대분류에 속하는 모든 소분류를 포함하여 검색합니다.
+          talentPage = talentRepository.findByCategorynosInAndFilters(
+              cateRepository.findCategorynosByCateGrpno(cateGrpno), // 대분류에 속한 모든 소분류 ID를 가져옴
+              (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim(),
+              schoolno,
+              pageable
+          );
+      } else if ((keyword != null && !keyword.trim().isEmpty()) || schoolno != null) { // 3. 카테고리 필터 없이 다른 필터만 들어온 경우
+          // cateGrpno, categoryno 모두 없고, keyword 또는 schoolno가 있는 경우
+          // 이 경우는 talentRepository.searchWithFilters가 categoryno=null로 호출됩니다.
+          talentPage = talentRepository.searchWithFilters(
+              (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim(),
+              null, // categoryno는 없음
+              schoolno,
+              pageable
+          );
+      } else { // 4. 아무 필터도 없는 경우 (전체 조회)
+          talentPage = talentRepository.findAll(pageable);
+      }
 
         // ⭐ 핵심 수정 부분: 람다 표현식으로 DTO 변환 및 isBlocked 설정 ⭐
         return talentPage.map(talent -> {
@@ -414,7 +433,13 @@ public class TalentService {
         return talentPage.map(this::toListDTO); // 마이페이지용은 block 여부 처리할 필요 없음
     }
 
-
+    public Page<Talent> findTalentsByCateGrp(Long cateGrpno, String keyword, Long schoolno, Pageable pageable) {
+      List<Long> categorynos = cateRepository.findCategorynosByCateGrpno(cateGrpno);
+      if (categorynos.isEmpty()) {
+          return Page.empty();
+      }
+      return talentRepository.findByCategorynosInAndFilters(categorynos, keyword, schoolno, pageable);
+  }
 
 
 

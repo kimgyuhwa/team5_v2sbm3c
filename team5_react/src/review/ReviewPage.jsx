@@ -33,7 +33,7 @@ const ReviewPage = ({ talentno, receiverno }) => {
 
     console.log("현재 로그인한 사용자(giverno):", giverno);
     console.log("리뷰 대상 재능 게시물 ID(talentno):", talentno);
-    console.log("리뷰 대상자(receiverno):", receiverno); // 이 receiverno는 재능 게시물의 판매자 user ID가 됩니다.
+   
 
     // ⭐⭐ 재능 게시물에 달린 리뷰 가져오기 (기존 fetchReceived 대체)
     const fetchReviewsForTalent = async (page = 0) => {
@@ -41,8 +41,10 @@ const ReviewPage = ({ talentno, receiverno }) => {
         try {
             // 새로운 API 엔드포인트 사용: /reviews/talent/{talentno}
             const res = await axios.get(`/reviews/talent/${talentno}`, {
-                params: { page, size: 3 }, // 한 페이지에 3개씩
+                params: { page, size: 5 }, // 한 페이지에 5개씩
+
             });
+            console.log("gdgdgd",res.data);
             setTalentReviews(res.data.content); // Page 객체에서 실제 리뷰 목록은 .content에 있습니다.
             setTalentReviewTotalPages(res.data.totalPages);
             setTalentReviewPage(res.data.number);

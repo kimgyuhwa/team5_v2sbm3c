@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useContext, useEffect  } from 'react';
 import { Search, Calendar, Clock, CalendarX, GraduationCap, Filter, ChevronDown, ChevronUp, CalendarCheck } from 'lucide-react';
 import { GlobalContext } from '../components/GlobalContext';
-
+import { useLocation } from 'react-router-dom'; // url 파라미터 따오는거
 const MyPageReservation = () => {
   const { loginUser } = useContext(GlobalContext); 
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,7 +10,7 @@ const MyPageReservation = () => {
   const [expandedItem, setExpandedItem] = useState(null);
   const [reservations, setReservations] = useState([]);
   
-  
+  const location = useLocation(); 
 
 const fetchReservations = async () => {
   try {
@@ -26,6 +26,24 @@ useEffect(() => {
     fetchReservations();
   }
 }, [loginUser]);
+
+// URL 파라미터를 읽어서 expandedItem을 설정하는 useEffect 추가
+  useEffect(() => {
+    if (reservations.length > 0) { // 예약 목록이 로드된 후에만 실행
+      const queryParams = new URLSearchParams(location.search);
+      const reservationNoFromUrl = queryParams.get('reservationNo');
+      
+      if (reservationNoFromUrl) {
+        // URL에서 가져온 reservationNo와 일치하는 예약이 있는지 확인
+        const foundReservation = reservations.find(
+          (res) => res.reservationno === parseInt(reservationNoFromUrl) // 숫자로 변환하여 비교
+        );
+        if (foundReservation) {
+          setExpandedItem(foundReservation.reservationno);
+        }
+      }
+    }
+  }, [reservations, location.search]); // reservations와 location.search가 변경될 때마다 실행
 
 
   const getStatusColor = (status) => {
