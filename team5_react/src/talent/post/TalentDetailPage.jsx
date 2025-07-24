@@ -148,122 +148,113 @@ function TalentDetailPage() {
   if (!talent) return <div className="text-center text-gray-500">불러오는 중...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-10">
-      <div className="grid md:grid-cols-2 gap-10">
-        {/* 왼쪽 2칸 */}
-        <div className="md:col-span-2">
-          {uniqueFiles.length === 1 ? (
-            <img
-              src={`/uploads/talent/${uniqueFiles[0].storedFileName}`}
-              alt={uniqueFiles[0].originalFileName}
-              onClick={() =>
-                handleImageClick(`/uploads/talent/${uniqueFiles[0].storedFileName}`)
-              }
-              className="w-full h-[350px] object-cover rounded-xl cursor-pointer"
-            />
-          ) : (
-            <>
-              <Slider {...sliderSettings}>
-                {uniqueFiles.map((file) => (
-                  <img
-                    key={file.fileno || file.storedFileName}
-                    src={`/uploads/talent/${file.storedFileName}`}
-                    alt={file.originalFileName}
-                    onClick={() =>
-                      handleImageClick(`/uploads/talent/${file.storedFileName}`)
-                    }
-                    className="w-full h-[350px] object-cover rounded-xl cursor-pointer"
-                  />
-                ))}
-              </Slider>
-              <div className="text-center mt-2 text-sm text-gray-500">
-                {slideIndex + 1} / {uniqueFiles.length}
-              </div>
-            </>
-          )}
+  <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-10">
+    {/* 상단 콘텐츠: 이미지 + 내용 + 프로필 */}
+    <div className="flex gap-12">
+      
+      {/* 왼쪽 콘텐츠 영역 */}
+      <div className="flex-1">
+        {/* 상단 카테고리 & 조회수 */}
+        <div className="flex justify-between text-sm text-gray-500 mb-1">
+          <div>{talent.cateGrpName} &gt; {talent.categoryName}</div>
+          <div>조회수 {talent.viewCount}</div>
+        </div>
 
-          <div className="mt-6">
-            <h1 className="text-3xl font-bold mb-2">{talent.title}</h1>
-            <div className="text-sm text-gray-500 mb-4">
-              {talent.cateGrpName} &gt; {talent.categoryName} • 조회수 {talent.viewCount}
+        {/* 제목 */}
+        <h1 className="text-3xl font-bold mb-4">{talent.title}</h1>
+
+        {/* 이미지 + 설명+버튼 */}
+          <div className="grid grid-cols-[420px_1fr] gap-6 items-start w-full">
+            {/* 이미지 */}
+            <div className="w-[420px] aspect-[4/3]">
+              {uniqueFiles.length === 1 ? (
+                <img
+                  src={`/uploads/talent/${uniqueFiles[0].storedFileName}`}
+                  alt={uniqueFiles[0].originalFileName}
+                  onClick={() =>
+                    handleImageClick(`/uploads/talent/${uniqueFiles[0].storedFileName}`)
+                  }
+                  className="w-full h-full object-cover rounded-xl cursor-pointer"
+                />
+              ) : (
+                <Slider {...sliderSettings}>
+                  {uniqueFiles.map((file) => (
+                    <img
+                      key={file.fileno || file.storedFileName}
+                      src={`/uploads/talent/${file.storedFileName}`}
+                      alt={file.originalFileName}
+                      onClick={() =>
+                        handleImageClick(`/uploads/talent/${file.storedFileName}`)
+                      }
+                      className="w-full h-full object-cover rounded-xl cursor-pointer"
+                    />
+                  ))}
+                </Slider>
+              )}
             </div>
-            <p className="text-gray-700 mb-6 whitespace-pre-wrap">{talent.description}</p>
 
-            <div className="flex gap-3">
+            {/* 설명 + 버튼 전체를 자연스럽게 왼쪽 정렬 + 하단 배치 */}
+          {/* 설명 + 버튼 전체를 자연스럽게 왼쪽 정렬 + 하단 배치 */}
+          <div className="w-full flex flex-col h-full">
+            <p className="text-gray-800 whitespace-pre-wrap text-base leading-relaxed">
+              {talent.description}
+            </p>
+
+            <div className="mt-auto pt-4 flex gap-3">
               {!isOwner ? (
                 <>
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700" onClick={startChat}>💬 채팅</button>
-                  <button className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600" onClick={() => setShowReport(true)}>🚨 신고</button>
+                  <button
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    onClick={startChat}
+                  >
+                    💬 채팅
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    onClick={() => setShowReport(true)}
+                  >
+                    🚨 신고
+                  </button>
                 </>
               ) : (
                 <>
-                  <button className="px-4 py-2 bg-gray-300 text-black rounded shadow hover:bg-gray-400" onClick={() => navigate(`/talent/update/${talent.talentno}`)}>✏️ 수정</button>
-                  <button className="px-4 py-2 bg-gray-300 text-black rounded shadow hover:bg-gray-400" onClick={deleteTalent}>🗑️ 삭제</button>
-                  
+                  <button
+                    className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+                    onClick={() => navigate(`/talent/update/${talent.talentno}`)}
+                  >
+                    ✏️ 수정
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+                    onClick={deleteTalent}
+                  >
+                    🗑️ 삭제
+                  </button>
                 </>
               )}
             </div>
           </div>
         </div>
-
-        {/* 오른쪽: 프로필 카드 */}
-        {talent && (
-          <TalentProfileCard
-            talent={talent}
-            isOwner={isOwner}
-            startChat={startChat}
-            sendRequest={sendRequest}
-          />
-        )}
-      </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <img src={selectedImage} className="max-w-[90vw] max-h-[90vh] rounded shadow-lg" alt="상세 보기" />
-          <button onClick={closeModal} className="absolute top-4 right-4 text-white text-xl">✕</button>
-        </div>
-      )}
-
-      {showReport && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-          <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg relative">
-            <h3 className="text-lg font-bold mb-4">🚨 신고하기</h3>
-            <label className="block mb-2 font-semibold">신고 유형</label>
-            <select
-              value={reportType}
-              onChange={(e) => setReportType(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mb-4"
-            >
-              <option value="">-- 선택하세요 --</option>
-              <option value="욕설/비방">욕설/비방</option>
-              <option value="광고/홍보">광고/홍보</option>
-              <option value="음란/선정성">음란/선정성</option>
-              <option value="사기/허위">사기/허위</option>
-              <option value="중복/도배">중복/도배</option>
-              <option value="기타">기타</option>
-            </select>
-            <label className="block mb-2 font-semibold">신고 사유</label>
-            <textarea
-              value={reportReason}
-              onChange={(e) => setReportReason(e.target.value)}
-              rows="5"
-              placeholder="신고 사유를 입력하세요."
-              className="w-full border border-gray-300 rounded p-2 mb-4"
-            />
-            <div className="flex justify-end gap-2">
-              <button className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500" onClick={() => setShowReport(false)}>취소</button>
-              <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700" onClick={submitReport}>제출</button>
-            </div>
-            <button onClick={() => setShowReport(false)} className="absolute top-2 right-2 text-xl">✕</button>
-          </div>
-        </div>
-      )}
-
-      <div className="mt-10">
-        <ReviewPage receiverno={talent?.userno} />
-      </div>
+      </div>     
     </div>
-  );
+
+    {/* 하단 리뷰 */}
+    <div className="mt-10">
+      <ReviewPage receiverno={talent?.userno} />
+    </div>
+    {/* 오른쪽 프로필 카드 */}
+    <div className="w-[280px] shrink-0">
+        <TalentProfileCard
+          talent={talent}
+          isOwner={isOwner}
+          startChat={startChat}
+          sendRequest={sendRequest}
+        />
+      </div>
+  </div>
+);
+
+
 }
 
 export default TalentDetailPage;

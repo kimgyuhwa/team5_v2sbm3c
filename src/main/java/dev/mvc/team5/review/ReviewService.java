@@ -124,4 +124,12 @@ public class ReviewService {
     public void delete(Long id) {
         repo.deleteById(id);
     }
+    
+    // 리뷰 평점만
+    public double getAverageRatingForTalent(Long talentno) {
+      Double avg = repo.findAverageRatingByTalentno(talentno);
+      return avg != null ? avg : 0;
+  }
+
+
 }
