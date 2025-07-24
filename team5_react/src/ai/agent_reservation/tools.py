@@ -1,13 +1,13 @@
 # agent_reservation/tools.py
 from langchain.agents import Tool
-from agent_reservation.context import CURRENT_USERNO
+import agent_reservation.context
 from agent_reservation.utils import parse_datetime, extract_placename
 import requests
 
 BASE_URL = "http://localhost:9093/reservations/api"
 
-def make_reservation(message: str, userno: int) -> str:
-    userno = CURRENT_USERNO  # 전역 변수에서 userno 가져옴
+def make_reservation(message: str) -> str:
+    userno = agent_reservation.context.CURRENT_USERNO  # 전역 변수에서 userno 가져옴
 
     # 장소/시간 파싱
     placename = extract_placename(message)
@@ -34,12 +34,11 @@ def make_reservation(message: str, userno: int) -> str:
 
     # 예약 생성
     payload = {
-        # "userno": userno,
-        "userno": 6,
+        "userno": userno,
         "placeno": placeno,
         "start_time": start_time.isoformat(),
         "end_time": end_time.isoformat(),
-        "placesinfo": placename,
+        "purpose": "챗봇예약",
         "status": "예약됨"
     }
     print("[📦 예약 요청 바디]", payload)
@@ -55,8 +54,9 @@ def make_reservation(message: str, userno: int) -> str:
 
 reservation_tool = Tool(
     name="예약 생성",
-    func=lambda msg: make_reservation(msg, CURRENT_USERNO),
+    func=make_reservation, # <--- 이 부분이 핵심입니다. lambda를 제거하고 함수 자체를 바로 넘깁니다.
     description="자연어에서 날짜와 장소 정보를 추출해 실제 예약을 생성합니다. 예: '8월 5일 오후 3시에 공학101호 예약해줘'"
 )
+
 
 tools = [reservation_tool]

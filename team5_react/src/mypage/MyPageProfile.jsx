@@ -51,6 +51,31 @@ export default function MyPageProfile() {
     } catch(err) { console.error(err); alert('오류'); }
   };
 
+  // 전화번호 형식을 변환하는 함수
+const formatPhoneNumber = (phoneNumber) => {
+  if (!phoneNumber) return ''; // 전화번호가 null, undefined, 빈 문자열인 경우 처리
+  
+  // 숫자가 아닌 모든 문자를 제거하고 숫자만 남깁니다.
+  const cleaned = phoneNumber.replace(/\D/g, '');
+
+  // 11자리 숫자인 경우 (예: 01012345678)
+  if (cleaned.length === 11) {
+    return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+  } 
+  // 10자리 숫자인 경우 (예: 0101234567 또는 0212345678)
+  else if (cleaned.length === 10) {
+    // 02로 시작하는 10자리 (서울 번호 등)
+    if (cleaned.startsWith('02')) {
+      return cleaned.replace(/(\d{2})(\d{3,4})(\d{4})/, '$1-$2-$3');
+    }
+    // 그 외 10자리 (01X로 시작하는 번호)
+    return cleaned.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+  }
+  // 그 외 경우 (예: 지역번호 포함, 9자리 등)
+  // 필요에 따라 더 많은 패턴을 추가할 수 있습니다.
+  return cleaned; // 포맷팅이 불가능하면 원래 값 반환
+};
+
   /* ----------------- 렌더 ----------------- */
   if (!loginUser) return null; // 로딩 등 처리
 
@@ -95,7 +120,7 @@ export default function MyPageProfile() {
       {!editing && (
         <>
           <InfoRow icon={<Mail size={18} color="#64748b"/>} label="이메일" value={form.email}/>
-          <InfoRow icon={<Phone size={18} color="#64748b"/>} label="전화번호" value={form.phone}/>
+          <InfoRow icon={<Phone size={18} color="#64748b"/>} label="전화번호" value={formatPhoneNumber(form.phone)}/>
           <InfoRow icon={<User  size={18} color="#64748b"/>} label="닉네임"   value={form.name}/>
           {/* 필요하면 추가 */}
         </>

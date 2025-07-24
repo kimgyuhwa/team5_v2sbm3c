@@ -58,6 +58,7 @@ def chat_proc():
     # 1. 예약 관련이면 예약 에이전트로 분기
     if is_reservation_query(message):
         import agent_reservation.context
+        print("userno>>>",userno)
         agent_reservation.context.CURRENT_USERNO = userno
         print("🏢 예약 Agent 사용")
         result = reservation_agent.invoke({"input": message})
@@ -89,13 +90,12 @@ def chat_proc():
 
 
 
-# ✅ 예약 전용 엔드포인트 (테스트용 직접 호출 가능)
+#  예약 전용 엔드포인트 (테스트용 직접 호출 가능)
 @app.route("/reservation-chat", methods=["POST"])
 def reservation_chat():
     data = request.json
     message = data.get("message", "")
     userno = data.get("userno")
-
     import agent_reservation.context
     agent_reservation.context.CURRENT_USERNO = userno
 
