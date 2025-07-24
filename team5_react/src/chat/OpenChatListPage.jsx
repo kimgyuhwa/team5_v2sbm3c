@@ -1,10 +1,29 @@
 // src/chat/OpenChatListPage.jsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from 'axios';import { useContext } from "react";
+import { GlobalContext } from "../components/GlobalContext";
+import { useNavigate } from "react-router-dom";
 
 const OpenChatListPage = () => {
   const [publicRooms, setPublicRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { loginUser } = useContext(GlobalContext);
+  const navigate = useNavigate();
+
+  const handleEnterRoom = async (roomId) => {
+    if (!loginUser?.userno) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      await axios.post(`/chatroom/${roomId}/enter/${loginUser.userno}`);
+      navigate(`/chat/${roomId}`);
+    } catch (err) {
+      console.error("입장 실패:", err);
+      alert("채팅방 입장 중 오류가 발생했습니다.");
+    }
+  };
 
   useEffect(() => {
     axios.get('/chatroom/public')
@@ -35,15 +54,16 @@ const OpenChatListPage = () => {
                   생성일: {new Date(room.createdAt).toLocaleString()}
                 </p>
                 {room.creatorUsername && (
-                  <p className="text-sm text-blue-500 mt-1">개설자: {room.creatorUsername}</p>
+                  <p className="text-sm text-blue-500 mt-1">개설자: {room.creatorName}</p>
                 )}
                 <div className="mt-4 flex justify-end">
-                  <a
-                    href={`/chat/${room.chatRoomno}`}
-                    className="inline-block bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600"
+                  <button
+                    onClick={() => handleEnterRoom(room.chatRoomno)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600"
                   >
                     입장하기
-                  </a>
+                  </button>
+
                 </div>
               </div>
             ))}

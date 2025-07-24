@@ -19,6 +19,8 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
   const scrollRef = useRef(null);
   const [talentTitle, setTalentTitle] = useState("");
   const [pendingRequest, setPendingRequest] = useState(null);
+  const [members, setMembers] = useState([]);
+
 
   useEffect(() => {
     if (!chatRoomno) return;
@@ -92,9 +94,19 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
       .catch(console.error);
   }, [chatRoomno, loginUser?.userno]);
 
+  useEffect(() => {
+    axios.get(`/chatroom/${chatRoomno}/members`)
+      .then(res => {
+        console.log('-> 채팅방 멤버 data: ', res.data);
+        setMembers(res.data); // members: [{userno, username, joinedAt}, ...]
+      })
+      .catch(console.error);
+  }, [chatRoomno]);
+
+
   const handleAccept = async () => {
     try {
-      await axios.patch(`/request/${pendingRequest.requestno}/accept`);
+      await axios.patchaxios.get(`/chatmember/chatroom/${chatRoomno}/members`);
       alert("요청을 수락했습니다!");
       setPendingRequest(null);
     } catch (err) {
@@ -172,6 +184,15 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
       <div className="bg-blue-600 text-white p-4 font-bold flex justify-between items-center">
         <div>💬 채팅방 #{chatRoomno}</div>
         <div>{loginUser?.username}</div>
+        <div>
+          <h3 className="font-semibold mb-2">현재 참여자 ({members.length}명)</h3>
+          <ul className="text-sm text-gray-700">
+            {members.map(member => (
+              <li key={member.userno}>👤 {member.username}</li>
+            ))}
+          </ul>
+        </div>
+
         <button
           onClick={handleRequest}
           className="ml-auto text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"

@@ -1,3 +1,4 @@
+# chatbot.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ai_agent import apitool
@@ -58,11 +59,19 @@ def chat_proc():
     # 1. 예약 관련이면 예약 에이전트로 분기
     if is_reservation_query(message):
         import agent_reservation.context
+<<<<<<< HEAD
         print("userno>>>",userno)
         agent_reservation.context.CURRENT_USERNO = userno
         print("🏢 예약 Agent 사용")
         result = reservation_agent.invoke({"input": message})
+=======
+        print("✅ CURRENT_USERNO 설정:", userno)
+        agent_reservation.context.CURRENT_USERNO = userno  # ✅ 이거 필수
+        result = reservation_agent.invoke({"input": message})  # input은 문자열만 넘김
+>>>>>>> c6607221bc31644cc1ed5742c132c63aa8d30d63
         return jsonify({"res": result["output"], "source": "reservation"})
+
+
 
     # 2. FAQ 버튼에서 온 요청은 RAG로 강제 처리
     if source == "faq":
