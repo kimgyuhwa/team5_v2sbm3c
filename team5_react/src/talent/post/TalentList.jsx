@@ -255,18 +255,18 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery, selectedCatego
                   {t.cateGrpName} &gt; {t.categoryName}
                 </div>
               <div className="flex-1 text-left px-4">                
-  <h3 className="font-semibold text-lg">{t.title}</h3>
-  <p className="text-sm text-gray-500 mt-1">작성자: {t.userName}</p>
+                <h3 className="font-semibold text-lg">{t.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">작성자: {t.userName}</p>
 
-  {/* 평균 평점 표시 */}
-  {avgRatings[t.talentno] !== null && avgRatings[t.talentno] !== undefined && (
-    <p className="text-sm text-yellow-600 mt-1">⭐ {avgRatings[t.talentno]} / 5</p>
-  )}
+                {/* 평균 평점 표시 */}
+                {avgRatings[t.talentno] !== null && avgRatings[t.talentno] !== undefined && (
+                  <p className="text-sm text-yellow-600 mt-1">⭐ {avgRatings[t.talentno]} / 5</p>
+                )}
 
-  <div className="text-right text-xs text-gray-400 mt-2">
-    조회수 : {t.viewCount}
-  </div>
-</div>
+                <div className="text-right text-xs text-gray-400 mt-2">
+                  조회수 : {t.viewCount}
+                </div>
+              </div>
 
 
             </article>

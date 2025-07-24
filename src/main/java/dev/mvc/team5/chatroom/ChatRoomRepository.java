@@ -29,6 +29,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
   @Modifying
   @Query("DELETE FROM ChatRoomMember m WHERE m.chatRoom = :chatRoom")
   void deleteByChatRoom(@Param("chatRoom") ChatRoom chatRoom);
+  
+  List<ChatRoom> findByPublicRoomTrueOrderByCreatedAtDesc();
+
  
 
 
