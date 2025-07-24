@@ -703,7 +703,7 @@ const handleRequestList = () => {
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                   >
                     <FileText size={16} style={{ marginRight: '12px' }} />
-                    요청 목록
+                    거래 목록
                   </button>
 
 
