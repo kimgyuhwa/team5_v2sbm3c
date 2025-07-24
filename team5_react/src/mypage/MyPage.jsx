@@ -9,7 +9,7 @@ import MyPageSurvey from './MyPageSurvey';
 import MyPageReservation from './MyPageReservation';
 import MyPageBlockList from './MyPageBlockList';
 import MyTalentList from '../talent/post/MyTalentList';
-
+import SellList from './SellList';
 
 
 export default function MyPage() {
@@ -33,8 +33,12 @@ export default function MyPage() {
         return <MyPageBlockList />;
       case 'reservation':
         return <MyPageReservation />;  
-        case 'mytalent':  // 내 게시물
-      return <MyTalentList />;
+      case 'mytalent':  // 내 게시물
+        return <MyTalentList />;
+      // case 'myBuy':
+      //   return <MyBuy />
+      case 'mySell':
+        return <SellList />
     }
   };
 

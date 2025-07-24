@@ -37,7 +37,7 @@ import AdminReportList from './admin/AdminReportList';
 import ReportCreate from './components/report/ReportCreate';
 import ChatListPage from './chat/ChatListPage';
 import AdminActivityList from './admin/AdminActivityList';
-import RequestList from './talent/request/RequestList'
+import SellList from './mypage/SellList'
 import UserProfilePage from './user/profile/UserProfilePage';
 
 
@@ -81,7 +81,7 @@ function App() {
             <Route path="/talent/category" element={<TalentCategory />} />
             <Route path="/talent/categrp" element={<TalentCateGrp />} />
             <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
-            <Route path="/talent/request/list" element={<RequestList />} />
+            <Route path="/mypage/MyPage/list" element={<SellList />} />
             <Route path="/talent/update/:talentno" element={<TalentUpdate />} />
             {/* 장소 */}
             <Route path="/place/PlacesPage" element={<PlacesPage />} />

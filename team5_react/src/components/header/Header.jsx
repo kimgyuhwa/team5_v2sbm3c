@@ -50,7 +50,7 @@ function Header( { openLoginModal } ) {
 };
 
 const handleRequestList = () => {
-  navigate('/talent/request/list');
+  navigate('/mypage/MyPage/list');
   setIsDropdownOpen(false);
 };
 
@@ -335,7 +335,7 @@ const handleRequestList = () => {
 
     const handleLogoClick = (e) => {
     if (!isLoggedIn) {
-      e.preventDefault(); // 로그인 안 된 경우 클릭 막기
+      navigate('/'); // 로그인 안된 경우 홈으로 이동
     } else {
       navigate('/components/main'); // 로그인 된 경우 메인으로 이동
     }
@@ -362,14 +362,14 @@ const handleRequestList = () => {
         }}>
         {/* 로고 */}
         <div style={{ display: 'block', alignItems: 'center' }}>
+          
           <a 
-            href="/components/main" 
             onClick={handleLogoClick} 
             style={{ 
               display: 'flex',
               alignItems: 'center',
               textDecoration: 'none',
-              cursor: isLoggedIn ? 'pointer' : 'default',
+              cursor:  'pointer'
             }}
             aria-disabled={!isLoggedIn}
           >
