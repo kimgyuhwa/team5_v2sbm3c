@@ -312,6 +312,8 @@ public class UserService {
       dto.setReviewCount(reviewRepository.countByGiver_Userno(userno));       // 예시
       dto.setLoginLog(List.of("2024-07-09 11:00", "2024-07-08 13:25")); // 예시
       dto.setActivity(List.of("2024-07-06: 리뷰 작성", "2024-07-05: 재능 등록")); // 예시
+      
+      dto.setProfileImage(user.getProfileImage()); // 프로필 이미지 가져오기
 
       return dto;
   }

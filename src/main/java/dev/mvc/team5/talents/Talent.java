@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import dev.mvc.team5.file.FileUpload;
 import dev.mvc.team5.match.Match;
 import dev.mvc.team5.request.Request;
+import dev.mvc.team5.review.Review;
 import dev.mvc.team5.school.School;
 import dev.mvc.team5.talentcategory.TalentCategory;
 import dev.mvc.team5.talenttype.TalentType;
@@ -118,6 +119,10 @@ public class Talent {
 	@OneToMany(mappedBy = "talent", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Match> matches = new ArrayList<>();
 	
+//연관관계: Talent가 여러 리뷰를 가짐
+  @OneToMany(mappedBy = "talent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private List<Review> Reivew = new ArrayList<>();
+
 //연관관계: Talent가 여러 FileUpload를 가짐
   @OneToMany(mappedBy = "talent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<FileUpload> files = new ArrayList<>();

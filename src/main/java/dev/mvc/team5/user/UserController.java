@@ -90,9 +90,9 @@ public class UserController {
 //                .body("인증 실패: " + result.get("message"));
 //        }
 //    }
-    // 회원가입전  대학교 이메일 인증
+    // 회원가입전  대학교 이메일 인증번호 보내기
     @PostMapping("/univ/sendCode")
-    public ResponseEntity<String> sendCode(@RequestBody Map<String, String> request) {
+    public ResponseEntity<String> sendCode(@RequestBody Map<String, String> request,  HttpSession session) {
       String email = request.get("email");
       String schoolName = request.get("schoolName");
 
@@ -111,9 +111,36 @@ public class UserController {
           return ResponseEntity.badRequest().body("대학교 이메일만 가능합니다.");
       }
 
-      mailService.generateAndSendAuthCode(email);
+   // 인증번호 생성 및 메일 발송 (generateAndSendAuthCode가 인증번호를 반환한다고 가정)
+      String authCode = mailService.generateAndSendAuthCode(email);
+
+      // 세션에 인증번호, 이메일 저장
+      session.setAttribute("verify_code", authCode);
+      session.setAttribute("verify_email", email);
+
       return ResponseEntity.ok("인증번호를 전송했습니다.");
   }
+    @PostMapping("/univ/verifyCode")
+    public ResponseEntity<Map<String, Object>> verifySignupCode(@RequestBody Map<String, String> payload, HttpSession session) {
+        String code = payload.get("code");
+        String email = payload.get("email");
+
+        String sessionCode = (String) session.getAttribute("verify_code");
+        String sessionEmail = (String) session.getAttribute("verify_email");
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (sessionCode != null && sessionCode.equals(code) && sessionEmail != null && sessionEmail.equals(email)) {
+            result.put("sw", true);
+            result.put("msg", "인증 성공");
+        } else {
+            result.put("sw", false);
+            result.put("msg", "인증번호 불일치 또는 만료");
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
 
     /** 회원가입 */
     @PostMapping("/register")
@@ -528,6 +555,14 @@ public class UserController {
     public Page<ReviewDTO> getUserGivenReviews(@PathVariable(name="userno")  Long userno, Pageable pageable) {
         return reviewService.getReviewsByGiverUserno(userno, pageable);
     }
+    
+ // 공개 사용자 프로필 조회 (비로그인도 접근 가능)
+    @GetMapping("/public/detail/{userno}")
+    public ResponseEntity<UserDetailDTO> getPublicUserDetail(@PathVariable(name = "userno") Long userno) {
+        UserDetailDTO detail = userService.getUserDetail(userno);
+        return ResponseEntity.ok(detail);
+    }
+
     
     
 }

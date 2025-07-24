@@ -16,6 +16,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
   List<Review> findByReceiverUserno(Long userno);
   // 그걸 페이징
   Page<Review> findByGiver_Userno(Long receiverUserno, Pageable pageable);
+  
+  //특정 재능 게시물에 대란 리뷰
+  List<Review> findByTalent_Talentno(Long talentno);
+
+  // 특정 재능 게시물에 대한 리뷰 목록 (페이징 버전)
+  Page<Review> findByTalent_Talentno(Long talentno, Pageable pageable);
 
   int countByGiver_Userno(Long userno); 
   

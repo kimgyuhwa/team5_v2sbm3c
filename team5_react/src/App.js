@@ -18,10 +18,11 @@ import TalentCategory from './talent/category/TalentCategory';
 import TalentDetailPage from './talent/post/TalentDetailPage';
 import TalentType from './talent/type/TalentType';
 import Talent from './talent/post/Talent';
+import TalentUpdate from './talent/post/TalentUpdate'
 import ReservationsManager from './reservation/Reservation';
 import MainPage from './components/Main';
 import UnivCertPage from './user/UnivCertPage';
-import ReviewPage from './review/ReviewPage';
+import ProfileReviewPage from './review/ProfileReviewPage';
 import PlacesPage from './place/PlacesPage';
 import MyPage from './mypage/MyPage';
 import MyPageSetting from './mypage/MyPageSetting';
@@ -37,6 +38,8 @@ import ReportCreate from './components/report/ReportCreate';
 import ChatListPage from './chat/ChatListPage';
 import AdminActivityList from './admin/AdminActivityList';
 import RequestList from './talent/request/RequestList'
+import UserProfilePage from './user/profile/UserProfilePage';
+
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,15 +73,16 @@ function App() {
             <Route path="/user/findId" element={<FindUserId />} />
             <Route path="/user/findPwd" element={<FindUserPwd />} />
             <Route path="/user/univCert" element={<UnivCertPage />} />
-            <Route path="/review/review" element={<ReviewPage />} />
+            <Route path="/review/profilereview" element={<ProfileReviewPage />} />
+            <Route path="/profile/:userno" element={<UserProfilePage />} />
             {/* 재능 */}
             <Route path="/talent/post" element={<Talent />} />
             <Route path="/talent/type" element={<TalentType />} />
             <Route path="/talent/category" element={<TalentCategory />} />
-            <Route path="/talent/type" element={<TalentType />} />
             <Route path="/talent/categrp" element={<TalentCateGrp />} />
             <Route path="/talent/TalentCreateForm" element={<TalentCreateForm />} />
             <Route path="/talent/request/list" element={<RequestList />} />
+            <Route path="/talent/update/:talentno" element={<TalentUpdate />} />
             {/* 장소 */}
             <Route path="/place/PlacesPage" element={<PlacesPage />} />
             <Route path="/place/detail/:placeno" element={<PlaceDetailPage />} />

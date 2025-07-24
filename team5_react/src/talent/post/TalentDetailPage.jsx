@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import uploadFile from "../../fileupload/FileUpload";
-import { GlobalContext } from "../../components/GlobalContext";
 import Slider from "react-slick";
+import { GlobalContext } from "../../components/GlobalContext";
+import ReviewPage from "../../review/ProfileReviewPage";
+import TalentProfileCard from "../../user/profile/TalentProfileCard"; 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import ReviewPage from "../../review/ReviewPage";
 
 function TalentDetailPage() {
   const { talentno } = useParams();
@@ -22,7 +22,8 @@ function TalentDetailPage() {
   const [reportType, setReportType] = useState("");
   const [reportReason, setReportReason] = useState("");
 
-  const isOwner = loginUser?.userno === talent?.userno;
+  const isOwner = Number(loginUser?.userno) === Number(talent?.userno);
+
 
   useEffect(() => {
     fetch(`/talent/detail/${talentno}`)
@@ -71,12 +72,15 @@ function TalentDetailPage() {
         },
         withCredentials: true,
       });
-      const chatRoomno = res.data.chatRoomno;
-      navigate(`/chat/${chatRoomno}`);
+      navigate(`/chat/${res.data.chatRoomno}`);
     } catch (err) {
       alert("채팅방 오류: " + err.message);
     }
   };
+  useEffect(() => {
+  console.log("🔥 talent 객체 확인:", talent);
+}, [talent]);
+
 
   const deleteTalent = async () => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
@@ -86,7 +90,7 @@ function TalentDetailPage() {
       });
       if (!res.ok) throw new Error("삭제 실패");
       alert("삭제 완료");
-      navigate("/talent");
+      navigate("/components/main");
     } catch (e) {
       alert("에러: " + e.message);
     }
@@ -144,9 +148,10 @@ function TalentDetailPage() {
   if (!talent) return <div className="text-center text-gray-500">불러오는 중...</div>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-10">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-10">
       <div className="grid md:grid-cols-2 gap-10">
-        <div>
+        {/* 왼쪽 2칸 */}
+        <div className="md:col-span-2">
           {uniqueFiles.length === 1 ? (
             <img
               src={`/uploads/talent/${uniqueFiles[0].storedFileName}`}
@@ -176,31 +181,40 @@ function TalentDetailPage() {
               </div>
             </>
           )}
-        </div>
 
-        <div className="flex flex-col justify-between">
-          <div>
+          <div className="mt-6">
             <h1 className="text-3xl font-bold mb-2">{talent.title}</h1>
             <div className="text-sm text-gray-500 mb-4">
               {talent.cateGrpName} &gt; {talent.categoryName} • 조회수 {talent.viewCount}
             </div>
             <p className="text-gray-700 mb-6 whitespace-pre-wrap">{talent.description}</p>
-          </div>
-          <div className="flex gap-3">
-            {!isOwner ? (
-              <>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700" onClick={startChat}>💬 채팅</button>
-                <button className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600" onClick={() => setShowReport(true)}>🚨 신고</button>
-                <button className="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700" onClick={sendRequest}>📩 요청</button>
-              </>
-            ) : (
-              <>
-                <button className="px-4 py-2 bg-gray-300 text-black rounded shadow hover:bg-gray-400" onClick={() => navigate(`/talent/edit/${talent.talentno}`)}>✏️ 수정</button>
-                <button className="px-4 py-2 bg-gray-300 text-black rounded shadow hover:bg-gray-400" onClick={deleteTalent}>🗑️ 삭제</button>
-              </>
-            )}
+
+            <div className="flex gap-3">
+              {!isOwner ? (
+                <>
+                  <button className="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700" onClick={startChat}>💬 채팅</button>
+                  <button className="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600" onClick={() => setShowReport(true)}>🚨 신고</button>
+                </>
+              ) : (
+                <>
+                  <button className="px-4 py-2 bg-gray-300 text-black rounded shadow hover:bg-gray-400" onClick={() => navigate(`/talent/update/${talent.talentno}`)}>✏️ 수정</button>
+                  <button className="px-4 py-2 bg-gray-300 text-black rounded shadow hover:bg-gray-400" onClick={deleteTalent}>🗑️ 삭제</button>
+                  
+                </>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* 오른쪽: 프로필 카드 */}
+        {talent && (
+          <TalentProfileCard
+            talent={talent}
+            isOwner={isOwner}
+            startChat={startChat}
+            sendRequest={sendRequest}
+          />
+        )}
       </div>
 
       {isModalOpen && (

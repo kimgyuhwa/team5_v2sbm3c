@@ -33,7 +33,7 @@ public class NotificationController {
         @PageableDefault(size = 3, sort ={"createdAt", "notificationno"}) Pageable pageable) {
       return service.findUnreadByUserPaged(userno, pageable)
           .stream()
-          .map(service::toDTO) // ⭐⭐ service.toDTO를 명시적으로 호출! ⭐⭐
+          .map(service::toDTO) // service.toDTO
           .collect(Collectors.toList());
     }
     // 사용자가 알림을 클릭하면 read = true로 업데이트

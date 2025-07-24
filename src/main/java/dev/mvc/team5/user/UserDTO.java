@@ -90,6 +90,8 @@ public class UserDTO {
         private int reviewCount;
         private List<String> loginLog;
         private List<String> activity;
+        
+        private String profileImage;
     }
     
     @Data

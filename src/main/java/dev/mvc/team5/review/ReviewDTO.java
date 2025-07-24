@@ -9,7 +9,8 @@ public class ReviewDTO {
     private Long giver;          // 리뷰 작성자 userno
     private String givername; // ⭐ 추가
     private Long receiver;       // 리뷰 대상자 userno
-    private Float rating;      // 평점 (1~5)
+    private Long talentno;    // 재능 게시물의 ID
+    private Long rating;      // 평점 (1~5)
     private String comments;     // 코멘트 내용
     private String createdAt;    // 생성 시각 (문자열로 반환용)
 }

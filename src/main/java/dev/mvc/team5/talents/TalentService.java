@@ -293,44 +293,53 @@ public class TalentService {
     
     @Transactional
     public TalentDetailDTO getTalentDetailWithFiles(Long talentno) {
-      Optional<Talent> optionalTalent = talentRepository.findByIdWithFiles(talentno);
-      if (optionalTalent.isEmpty()) {
-          throw new IllegalArgumentException("재능이 존재하지 않음");
-      }
-      Talent t = optionalTalent.get();
-      
-      //  조회수 + 1
-      t.setViewCount(t.getViewCount() + 1);
+        Optional<Talent> optionalTalent = talentRepository.findByIdWithFiles(talentno);
+        if (optionalTalent.isEmpty()) {
+            throw new IllegalArgumentException("재능이 존재하지 않음");
+        }
+        Talent t = optionalTalent.get();
+        
+        // 조회수 증가
+        t.setViewCount(t.getViewCount() + 1);
 
-      List<FileUploadDTO> fileDTOs = t.getFiles().stream()
-              .map(file -> new FileUploadDTO(
-                      file.getFileno(),
-                      file.getOriginalFileName(),
-                      file.getStoredFileName(),
-                      file.getFilePath(),
-                      file.getFileSize(),
-                      file.getProfile(),
-                      file.getTargetType(),
-                      t.getTalentno()))
-              .collect(Collectors.toList());
+        List<FileUploadDTO> fileDTOs = t.getFiles().stream()
+            .map(file -> new FileUploadDTO(
+                file.getFileno(),
+                file.getOriginalFileName(),
+                file.getStoredFileName(),
+                file.getFilePath(),
+                file.getFileSize(),
+                file.getProfile(),
+                file.getTargetType(),
+                t.getTalentno()))
+            .collect(Collectors.toList());
 
-      TalentDetailDTO dto = new TalentDetailDTO(
-          t.getTalentno(),
-          t.getUser() != null ? t.getUser().getUserno() : null,
-          t.getType() != null ? t.getType().getName() : null,
-          t.getCategory() != null && t.getCategory().getCateGrp() != null ? t.getCategory().getCateGrp().getName() : null,
-          t.getCategory() != null ? t.getCategory().getName() : null,
-          t.getTitle(),
-          t.getDescription(),
-          t.getViewCount(),
-          t.getUser() != null ? t.getUser().getUsername() : null,
-          t.getCreatedAt(),
-          t.getUpdatedAt()
-      );
-      dto.setFileInfos(fileDTOs);  // 여기서 파일 리스트 세팅
+        TalentDetailDTO dto = new TalentDetailDTO(
+            t.getTalentno(),
+            t.getUser() != null ? t.getUser().getUserno() : null,
+            t.getType() != null ? t.getType().getName() : null,
+            t.getCategory() != null && t.getCategory().getCateGrp() != null ? t.getCategory().getCateGrp().getName() : null,
+            t.getCategory() != null ? t.getCategory().getName() : null,
+            t.getTitle(),
+            t.getDescription(),
+            t.getViewCount(),
+            t.getUser() != null ? t.getUser().getUsername() : null,
+            t.getCreatedAt(),
+            t.getUpdatedAt()
+        );
 
-      return dto;
-  }
+        dto.setTypeno(t.getType() != null ? t.getType().getTypeno() : null);
+        dto.setCateGrpno(t.getCategory() != null && t.getCategory().getCateGrp() != null ? t.getCategory().getCateGrp().getCateGrpno() : null);
+        dto.setCategoryno(t.getCategory() != null ? t.getCategory().getCategoryno() : null);
+        dto.setFileInfos(fileDTOs);
+
+        dto.setName(t.getUser() != null ? t.getUser().getName() : null);
+        dto.setEmail(t.getUser() != null ? t.getUser().getEmail() : null);
+        dto.setProfileImage(t.getUser() != null ? t.getUser().getProfileImage() : null);
+
+        return dto;
+    }
+
     
     /**
      * 제목 또는 설명에 키워드가 포함된 재능 리스트 조회 (페이징 + 정렬)
@@ -387,6 +396,29 @@ public class TalentService {
             return dto;
         });
     }
+    
+    /**
+     * 마이페이지 전용: 로그인한 사용자의 게시물만 검색 + 필터 + 페이징
+     */
+    public Page<TalentListDTO> searchMyTalents(String keyword, Long categoryno, Long schoolno, int page, int size, Long userno) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "talentno"));
+
+        Page<Talent> talentPage = talentRepository.searchWithFilters(
+            (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim(),
+            categoryno,
+            schoolno,
+            userno, 
+            pageable
+        );
+
+        return talentPage.map(this::toListDTO); // 마이페이지용은 block 여부 처리할 필요 없음
+    }
+    
+    public long countTalentsByUserno(Long userno) {
+      return talentRepository.countByUser_Userno(userno);
+  }
+
+
 
 
 

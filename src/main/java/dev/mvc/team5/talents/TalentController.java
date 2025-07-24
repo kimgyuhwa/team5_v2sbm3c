@@ -61,32 +61,32 @@ public class TalentController {
         }
     }
 
-    /** 
-     * 수정(Update)
-     * @param dto 수정할 TalentUpdateDTO 객체 (fileInfos 포함 가능)
-     * @param session 로그인 사용자 정보가 담긴 HttpSession
-     * @return 수정된 TalentResponseDTO 객체 또는 401 Unauthorized
-     */
-    @PutMapping("/update")
-    public ResponseEntity<?> updateTalent(
-            @RequestBody TalentUpdateDTO dto,
-            HttpSession session) {
-
-        Long loggedInUserNo = (Long) session.getAttribute("userno");
-
-        if (loggedInUserNo == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용해주세요.");
-        }
-
-        try {
-            TalentResponseDTO updatedDto = service.update(dto, loggedInUserNo);
-            return ResponseEntity.ok(updatedDto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        }
-    }
+//    /** 
+//     * 수정(Update)
+//     * @param dto 수정할 TalentUpdateDTO 객체 (fileInfos 포함 가능)
+//     * @param session 로그인 사용자 정보가 담긴 HttpSession
+//     * @return 수정된 TalentResponseDTO 객체 또는 401 Unauthorized
+//     */
+//    @PutMapping("/update")
+//    public ResponseEntity<?> updateTalent(
+//            @RequestBody TalentUpdateDTO dto,
+//            HttpSession session) {
+//
+//        Long loggedInUserNo = (Long) session.getAttribute("userno");
+//
+//        if (loggedInUserNo == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용해주세요.");
+//        }
+//
+//        try {
+//            TalentResponseDTO updatedDto = service.update(dto, loggedInUserNo);
+//            return ResponseEntity.ok(updatedDto);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+//        } catch (SecurityException e) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+//        }
+//    }
 
     /** 
      * 삭제(Delete)
@@ -161,4 +161,67 @@ public class TalentController {
         Page<TalentListDTO> resultPage = service.searchTalents(keyword, categoryno, schoolno, page, size,loggedInUserno);
         return ResponseEntity.ok(resultPage);
     }
+    
+    @PutMapping("/update/{talentno}")
+    public ResponseEntity<?> updateTalent(
+        @PathVariable(name="talentno") Long talentno,
+        @RequestBody TalentUpdateDTO dto,
+        HttpSession session) {
+        
+        Long loggedInUserNo = (Long) session.getAttribute("userno");
+
+        if (loggedInUserNo == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용해주세요.");
+        }
+
+        // PathVariable로 받은 talentno를 강제로 DTO에 세팅 (안 할 시 null일 수 있음)
+        dto.setTalentno(talentno);
+
+        try {
+            TalentResponseDTO updatedDto = service.update(dto, loggedInUserNo);
+            return ResponseEntity.ok(updatedDto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }
+    
+    /**
+     * 마이페이지 - 로그인한 사용자의 재능 목록 조회 (검색 + 카테고리 + 학교 + 페이징 + 정렬)
+     * @param keyword 검색 키워드 (title 또는 description)
+     * @param categoryno 카테고리 번호
+     * @param schoolno 학교 번호
+     * @param page 0부터 시작하는 페이지 번호 (기본 0)
+     * @param size 페이지 당 항목 수 (기본 10)
+     * @return 페이징된 재능 목록 DTO (로그인한 사용자만)
+     */
+    @GetMapping("/my-talents")
+    public ResponseEntity<Page<TalentListDTO>> getMyTalents(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "categoryno", required = false) Long categoryno,
+            @RequestParam(name = "schoolno", required = false) Long schoolno,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            HttpSession session) {
+
+        Long loggedInUserno = (Long) session.getAttribute("userno");
+        if (loggedInUserno == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Page<TalentListDTO> resultPage = service.searchMyTalents(keyword, categoryno, schoolno, page, size, loggedInUserno);
+        return ResponseEntity.ok(resultPage);
+    }
+    
+    // 사용자의 게시물 개수 (프로필용)
+    @GetMapping("/count-by-user")
+    public ResponseEntity<Long> getTalentCountByUser(@RequestParam("userno") Long userno) {
+        long count = service.countTalentsByUserno(userno);
+        return ResponseEntity.ok(count);
+    }
+
+
+    
+    
 }
