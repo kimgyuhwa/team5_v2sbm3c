@@ -7,6 +7,7 @@ import dev.mvc.team5.tool.RequestStatus;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -114,17 +115,22 @@ public class RequestController {
         return ResponseEntity.ok(new RequestResponseDTO(request));
     }
 
-    // 구매내역
-    @GetMapping("/requests/purchases/{userno}")
-    public List<Request> getPurchases(@PathVariable Long userno) {
-        return requestRepository.findByGiverUserno(userno);
+ // 구매내역: 내가 요청한 거래들 → giver
+    @GetMapping("/purchases/{userno}")
+    public List<RequestResponseDTO> getPurchases(@PathVariable("userno") Long userno) {
+        List<Request> purchases = requestRepository.findByGiver_Userno(userno);
+        return purchases.stream()
+                        .map(RequestResponseDTO::new)
+                        .collect(Collectors.toList());
     }
 
-    
-    //판매내역
-    @GetMapping("/requests/sales/{userno}")
-    public List<Request> getSales(@PathVariable Long userno) {
-        return requestRepository.findByReceiverUserno(userno);
+    // 판매내역: 내가 요청 받은 거래들 → receiver
+    @GetMapping("/sales/{userno}")
+    public List<RequestResponseDTO> getSales(@PathVariable("userno") Long userno) {
+        List<Request> sales = requestRepository.findByReceiver_Userno(userno);
+        return sales.stream()
+                    .map(RequestResponseDTO::new)
+                    .collect(Collectors.toList());
     }
 
 

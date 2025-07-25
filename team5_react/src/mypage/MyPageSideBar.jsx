@@ -121,7 +121,7 @@ const MyPageSideBar = ({ currentPage }) => {
           }}
           onClick={() => handleTabClick('mySell')}
         >
-          판매내역
+          거래내역
         </div>
       </div>
 

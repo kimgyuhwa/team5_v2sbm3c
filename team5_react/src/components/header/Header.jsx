@@ -50,7 +50,7 @@ function Header( { openLoginModal } ) {
 };
 
 const handleRequestList = () => {
-  navigate('/mypage/MyPage/list');
+  navigate('mypage/Mypage?tab=mySell');
   setIsDropdownOpen(false);
 };
 

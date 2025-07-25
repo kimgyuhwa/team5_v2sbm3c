@@ -30,8 +30,8 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
 
 
-		List<Request> findByGiverUserno(Long userno);     // 구매 내역
-		
-		List<Request> findByReceiverUserno(Long userno);  // 판매 내역
+    List<Request> findByGiver_Userno(Long userno);  //구매
+    
+    List<Request> findByReceiver_Userno(Long userno); // 판매
 }
 
