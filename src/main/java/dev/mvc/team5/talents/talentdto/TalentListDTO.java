@@ -14,6 +14,7 @@ public class TalentListDTO {
     private Long talentno;
     private String title;
     private String description;
+    private Long price;
     private int viewCount;
     private String cateGrpName;
     private String categoryName;

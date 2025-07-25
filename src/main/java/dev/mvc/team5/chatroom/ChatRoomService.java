@@ -89,11 +89,14 @@ public class ChatRoomService {
         talent.setTitle(title);
         chatRoom.setTalent(talent);
 
+        // 🔥 receiverno 세팅 추가
+        User receiver = userService.findById(receiverId);
+        chatRoom.setReceiverno(receiver);
+
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
         // 3. 유저 정보 로딩
         User sender = userService.findById(senderId);
-        User receiver = userService.findById(receiverId);
 
         // 4. 채팅 멤버 등록
         ChatRoomMember m1 = new ChatRoomMember();
@@ -112,11 +115,12 @@ public class ChatRoomService {
             receiverId,
             "chat",
             sender.getUsername() + "님이 [" + talent.getTitle() + "] 게시물에 대해 새 채팅을 시작했습니다.",
-            savedChatRoom.getChatRoomno()  // 알림 클릭 시 사용할 대상 ID
+            savedChatRoom.getChatRoomno()
         );
 
         return savedChatRoom;
     }
+
 
     /**
      * 전체 공개 채팅방 목록 조회 (최신순)

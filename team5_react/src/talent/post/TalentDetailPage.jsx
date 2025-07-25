@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Slider from "react-slick";
 import { GlobalContext } from "../../components/GlobalContext";
+import { BadgeDollarSign } from "lucide-react";
 import ReviewPage from "../../review/ReviewPage";
 import TalentProfileCard from "../../user/profile/TalentProfileCard"; 
 import "slick-carousel/slick/slick.css";
@@ -165,6 +166,14 @@ function TalentDetailPage() {
 
         {/* 제목 */}
         <h1 className="text-3xl font-bold mb-4">{talent.title}</h1>
+
+        {/* 가격 정보  */}
+        <div className="text-right mb-4">
+  <span className="inline-flex items-center gap-1 text-gray-800 text-xl font-semibold bg-gray-100 px-4 py-1 rounded-full shadow-sm">
+    <BadgeDollarSign className="w-5 h-5 text-gray-600" />
+    {Number(talent.price).toLocaleString()} 원
+  </span>
+</div>
 
         {/* 이미지 + 설명+버튼 */}
           <div className="grid grid-cols-[420px_1fr] gap-6 items-start w-full">

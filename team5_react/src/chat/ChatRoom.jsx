@@ -24,6 +24,7 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
   const [receiverName, setReceiverName] = useState("");
   const [isPublicRoom, setIsPublicRoom] = useState(false);
   const [showAllMembers, setShowAllMembers] = useState(false);
+  const [receiverno, setReceiverno] = useState(null);
 
   useEffect(() => {
     const url = `/chatroom/${chatRoomno}?loginUserno=${loginUser.userno}`;
@@ -35,8 +36,10 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
           setRoomName(data.roomName);
           setMembers(data.members || []);
         } else {
+          console.log('채팅 연결 게시물: ', data);
           setTalentTitle(data.title);
           setReceiverName(data.receiverName);
+          setReceiverno(data.receiverno);
         }
       })
       .catch(console.error);
@@ -124,7 +127,7 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
         giverno: loginUser.userno,
         receiverno: room.receiverno,
         message: `${talentTitle} 요청을 보냅니다.`,
-        chatRoomno: room.chatRoomno,
+        chatRoomno: chatRoomno,
       };
       await axios.post('/request/save', dto);
       alert('요청이 전송되었습니다!');
@@ -181,7 +184,7 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
           </div>
         )}
 
-        {!isPublicRoom && (
+        {!isPublicRoom && receiverName && loginUser.userno !== receiverno && (
           <button onClick={handleRequest} className="ml-auto text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
             요청하기
           </button>

@@ -101,32 +101,33 @@ public class ChatRoomController {
 
         ChatRoom chatRoom = chatRoomService.findOrCreatePrivateChat(senderId, receiverId, talentno, title);
 
+        // receiver 정보 조회 (receiverId를 기반으로)
+        User receiver = userService.findById(receiverId);
+
         ChatRoomResponseDTO dto = new ChatRoomResponseDTO(
             chatRoom.getChatRoomno(),
             chatRoom.getRoomName(),
             chatRoom.getCreatedAt(),
             chatRoom.getTalent().getTalentno(),
             chatRoom.getTalent().getTitle(),
-            chatRoom.getCreator() != null ? chatRoom.getCreator().getUserno() : null,
-            chatRoom.getCreator() != null ? chatRoom.getCreator().getUsername() : null,
+            chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUserno() : null,
+            chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUsername() : null,     // receiverName
             chatRoom.isPublicRoom()
         );
 
         return ResponseEntity.ok(dto);
     }
 
+
     /**
      * [GET] 1:1 채팅방 상세 조회 (상대방 정보 포함)
      */
     @GetMapping("/{chatRoomno}")
-    public ResponseEntity<ChatRoomResponseDTO> getChatRoom(@PathVariable(name = "chatRoomno") Long chatRoomno,
-                                                           @RequestParam(name = "loginUserno") Long loginUserno) {
+    public ResponseEntity<ChatRoomResponseDTO> getChatRoom(
+        @PathVariable(name = "chatRoomno") Long chatRoomno,
+        @RequestParam(name = "loginUserno") Long loginUserno
+    ) {
         ChatRoom chatRoom = chatRoomService.findById(chatRoomno);
-        List<ChatRoomMember> allMembers = chatRoomMemberService.findByChatRoomno(chatRoomno);
-        ChatRoomMember other = allMembers.stream()
-            .filter(m -> !Objects.equals(m.getUser().getUserno(), loginUserno))
-            .findFirst()
-            .orElse(null);
 
         ChatRoomResponseDTO dto = new ChatRoomResponseDTO(
             chatRoom.getChatRoomno(),
@@ -134,13 +135,14 @@ public class ChatRoomController {
             chatRoom.getCreatedAt(),
             chatRoom.getTalent() != null ? chatRoom.getTalent().getTalentno() : null,
             chatRoom.getTalent() != null ? chatRoom.getTalent().getTitle() : null,
-            other != null ? other.getUser().getUserno() : null,
-            other != null ? other.getUser().getUsername() : null,
+            chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUserno() : null,
+            chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUsername() : null,
             chatRoom.isPublicRoom()
         );
 
         return ResponseEntity.ok(dto);
     }
+
 
     /**
      * [DELETE] 채팅방 삭제 (관리자 또는 강제 삭제)

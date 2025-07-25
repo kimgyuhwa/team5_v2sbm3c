@@ -25,6 +25,7 @@ public class TalentCreateDTO {
     private Long categoryno;
     private String title;
     private String description;
+    private Long price;
     
     private List<FileUploadDTO> fileInfos;
 
@@ -63,6 +64,7 @@ public class TalentCreateDTO {
         // 5. 나머지 필드 세팅
         talent.setTitle(this.title);
         talent.setDescription(this.description);
+        talent.setPrice(price);
         
      // -------------- 사진 파일 처리 추가 --------------
         if (this.fileInfos != null && !this.fileInfos.isEmpty()) {

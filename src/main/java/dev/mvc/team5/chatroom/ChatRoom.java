@@ -11,9 +11,11 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.message.Message;
 import dev.mvc.team5.talents.Talent;
+import dev.mvc.team5.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,7 +51,10 @@ public class ChatRoom {
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private dev.mvc.team5.user.User creator;
-
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiverno")
+    private User receiverno;
     
     @CreationTimestamp
     @Column(name = "created_at")

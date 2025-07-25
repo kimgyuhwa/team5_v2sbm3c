@@ -82,6 +82,8 @@ public class RequestService {
 
         Request saved = requestRepository.save(request);
         
+        //ㅏㅇ릶 저돕
+        
 
         //  WebSocket 시스템 메시지 전송
         String systemMessage = giver.getName() + "님이 [" + talent.getTitle() + "] 요청을 보냈습니다.";
@@ -89,6 +91,14 @@ public class RequestService {
         messagingTemplate.convertAndSend(
             "/topic/chatroom/" + chatRoom.getChatRoomno(),
             new ChatMessageDTO("system", systemMessage, "SYSTEM", chatRoom.getChatRoomno())
+        );
+        
+     // 3. 알림 전송 (요청자에게)
+        notificationService.createNotification(
+            receiver.getUserno(),
+            "request",
+            "[" + talent.getTitle() + "] 요청이 왔습니다.",
+            chatRoom.getChatRoomno()
         );
         
      // 요청 메시지를 DB에도 저장
