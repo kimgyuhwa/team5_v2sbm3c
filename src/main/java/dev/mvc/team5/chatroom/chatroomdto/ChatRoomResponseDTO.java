@@ -2,7 +2,6 @@ package dev.mvc.team5.chatroom.chatroomdto;
 
 import java.time.LocalDateTime;
 
-import dev.mvc.team5.talents.Talent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,43 +13,25 @@ public class ChatRoomResponseDTO {
     private Long chatRoomno;
     private String roomName;
     private LocalDateTime createdAt;
-    public Long talentno;
-    public String title; // 게시물 제목
-    private Long receiverno;
-    private String receiverName;
-    private Long creatorId;
-    private String creatorName;
 
+    private Long talentno;       // 게시글 번호 (optional)
+    private String title;        // 게시글 제목 (optional)
+
+    private Long receiverno;     // 상대방 유저 번호 (1:1 채팅에서만)
+    private String receiverName; // 상대방 이름
     
-    public ChatRoomResponseDTO(Long chatRoomno, String roomName, LocalDateTime createdAt, Long talentno, String title,
-                                            Long creatorId, String creatorName) {
-      this.chatRoomno = chatRoomno;
-      this.roomName = roomName;
-      this.createdAt = createdAt;
-      this.talentno = talentno;
-      this.title = title;
-      this.receiverno = null;
-      this.receiverName = null;
-      this.creatorId = creatorId;
-      this.creatorName = creatorName;
-  }
-    
-    // ChatRoomResponseDTO.java
-    public ChatRoomResponseDTO(Long chatRoomno, String roomName, LocalDateTime createdAt, Long talentno, String title) {
+    private boolean publicRoom; // 공개 채팅방 여부
+
+
+    // 게시글 기반 채팅방 생성 응답용 (상대방 정보 제외)
+    public ChatRoomResponseDTO(Long chatRoomno, String roomName, LocalDateTime createdAt,
+                               Long talentno, String title, boolean publicRoom) {
         this.chatRoomno = chatRoomno;
         this.roomName = roomName;
         this.createdAt = createdAt;
         this.talentno = talentno;
         this.title = title;
+        this.publicRoom = publicRoom;
 
-        // 상황에 따라 null로 초기화 (1:1 채팅일 가능성 있음)
-        this.receiverno = null;
-        this.receiverName = null;
-        this.creatorId = null;
-        this.creatorName = null;
     }
-
-
-
-
 }

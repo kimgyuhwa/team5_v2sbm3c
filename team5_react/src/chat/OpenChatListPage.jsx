@@ -18,7 +18,9 @@ const OpenChatListPage = () => {
 
     try {
       await axios.post(`/chatroom/${roomId}/enter/${loginUser.userno}`);
-      navigate(`/chat/${roomId}`);
+      navigate(`/chat/${roomId}`, {
+        state: { isOpenRoom: true }
+      });
     } catch (err) {
       console.error("입장 실패:", err);
       alert("채팅방 입장 중 오류가 발생했습니다.");
@@ -53,7 +55,7 @@ const OpenChatListPage = () => {
                 <p className="text-sm text-gray-500 mt-1">
                   생성일: {new Date(room.createdAt).toLocaleString()}
                 </p>
-                {room.creatorUsername && (
+                {room.creatorName && (
                   <p className="text-sm text-blue-500 mt-1">개설자: {room.creatorName}</p>
                 )}
                 <div className="mt-4 flex justify-end">

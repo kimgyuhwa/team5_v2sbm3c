@@ -24,6 +24,7 @@ public class TalentDetailDTO {
     private String categoryName;    
     private String title;
     private String description;
+    private Long price;
     private int viewCount;
     private String userName; // 게시물 작성자 닉네임
     private String name; // 게시물 작성자 이름 
@@ -36,7 +37,7 @@ public class TalentDetailDTO {
     private List<FileUploadDTO> fileInfos;
     
     public TalentDetailDTO(Long talentno, Long userno, String typeName, String cateGrpName, String categoryName, String title,
-        String description, int viewCount, String userName,
+        String description, Long price, int viewCount, String userName,
         LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.talentno = talentno;
         this.userno = userno;
@@ -45,6 +46,7 @@ public class TalentDetailDTO {
         this.categoryName = categoryName;
         this.title = title;
         this.description = description;
+        this.price = price;
         this.viewCount = viewCount;
         this.userName = userName;
         this.createdAt = createdAt;

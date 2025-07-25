@@ -74,6 +74,17 @@ public class UserDTO {
     }
     
     @Data
+    public static class UserSimpleDTO {
+      private Long userno;
+      private String username;
+
+      public UserSimpleDTO(User user) {
+          this.userno = user.getUserno();
+          this.username = user.getUsername();
+      }
+  }
+    
+    @Data
     public static class UserDetailDTO {
         private Long userno;
         private String userId;

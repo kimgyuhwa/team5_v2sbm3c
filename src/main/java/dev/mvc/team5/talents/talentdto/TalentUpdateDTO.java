@@ -20,7 +20,7 @@ public class TalentUpdateDTO {
     private Long userno;          // 작성자 번호 (권한 체크용)
     private String title;         // 수정할 제목
     private String description;   // 수정할 내용
-    private String language;      // 수정할 언어
+    private Long price;      // 가격
     private Long typeno;
     private Long categoryno;
     
