@@ -93,6 +93,11 @@ public class Talent {
 	private String description;
 	
 	/**
+	 * 가격
+	 */
+	private Long price;
+	
+	/**
 	 * 조회수
 	 */
 	private int viewCount;
@@ -139,13 +144,14 @@ public class Talent {
 	 * @param language    사용 언어
 	 */
 	public Talent(User user, School school, TalentType type, TalentCategory category, String title, String description,
-			String language) {
+			Long price) {
 		this.user = user;
 		this.type = type;
 		this.category = category;
 		this.school = school;
 		this.title = title;
 		this.description = description;
+		this.price = price;
 	}
 
 }

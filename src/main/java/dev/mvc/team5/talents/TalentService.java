@@ -66,6 +66,7 @@ public class TalentService {
                 t.getSchool() != null ? t.getSchool().getSchoolno() : null,
                 t.getTitle(),
                 t.getDescription(),
+                t.getPrice(),
                 t.getViewCount(),
                 t.getCreatedAt(),
                 t.getUpdatedAt(),
@@ -182,6 +183,7 @@ public class TalentService {
         // 기본 정보 업데이트
         talent.setTitle(dto.getTitle());
         talent.setDescription(dto.getDescription());
+        talent.setPrice(dto.getPrice());
         talent.setType(type);
         talent.setCategory(category);
 
@@ -257,6 +259,7 @@ public class TalentService {
                 t.getTalentno(),
                 t.getTitle(),
                 t.getDescription(),
+                t.getPrice(),
                 t.getViewCount(),
                 t.getCategory() != null ? t.getCategory().getCateGrp().getName() : "없음",
                 t.getCategory() != null ? t.getCategory().getName() : "없음",
@@ -323,6 +326,7 @@ public class TalentService {
             t.getCategory() != null ? t.getCategory().getName() : null,
             t.getTitle(),
             t.getDescription(),
+            t.getPrice(),
             t.getViewCount(),
             t.getUser() != null ? t.getUser().getUsername() : null,
             t.getCreatedAt(),

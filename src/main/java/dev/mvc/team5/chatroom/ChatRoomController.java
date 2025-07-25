@@ -1,6 +1,7 @@
 package dev.mvc.team5.chatroom;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
@@ -9,12 +10,20 @@ import org.springframework.web.bind.annotation.*;
 import dev.mvc.team5.chatroom.chatroomdto.ChatRoomCreateDTO;
 import dev.mvc.team5.chatroom.chatroomdto.ChatRoomResponseDTO;
 import dev.mvc.team5.chatroom.chatroomdto.OpenRoomCreateDTO;
+import dev.mvc.team5.chatroom.chatroomdto.OpenRoomDetailDTO;
+import dev.mvc.team5.chatroom.chatroomdto.OpenRoomResponseDTO;
 import dev.mvc.team5.chatroommember.ChatRoomMember;
+import dev.mvc.team5.chatroommember.ChatRoomMemberRepository;
 import dev.mvc.team5.chatroommember.ChatRoomMemberService;
+import dev.mvc.team5.chatroommember.chatroommemberdto.ChatRoomMemberResponseDTO;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserService;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * ChatRoomController
+ * 채팅방 관련 API 컨트롤러
+ */
 @RestController
 @RequestMapping("/chatroom")
 @RequiredArgsConstructor
@@ -22,6 +31,7 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final ChatRoomMemberService chatRoomMemberService;
+    private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final UserService userService;
 
     /**
@@ -30,7 +40,6 @@ public class ChatRoomController {
     @PostMapping(path="/save")
     public ResponseEntity<ChatRoomResponseDTO> createRoom(@RequestBody ChatRoomCreateDTO dto) {
         ChatRoom savedRoom = chatRoomService.save(dto.toEntity());
-
         ChatRoomResponseDTO response = new ChatRoomResponseDTO(
             savedRoom.getChatRoomno(),
             savedRoom.getRoomName(),
@@ -38,9 +47,9 @@ public class ChatRoomController {
             savedRoom.getTalent().getTalentno(),
             savedRoom.getTalent().getTitle(),
             null,
-            null
+            null,
+            savedRoom.isPublicRoom()
         );
-
         return ResponseEntity.ok(response);
     }
 
@@ -48,11 +57,11 @@ public class ChatRoomController {
      * [POST] 채팅방 입장 (사용자 - 채팅방 멤버 연결)
      */
     @PostMapping("/{roomId}/enter/{userId}")
-    public ResponseEntity<String> enterRoom(@PathVariable(name="roomId") Long roomId, @PathVariable(name="userId") Long userId) {
-        ChatRoom chatRoom = chatRoomService.findById(roomId);
+    public ResponseEntity<String> enterRoom(@PathVariable(name = "roomId") Long roomId,
+                                            @PathVariable(name = "userId") Long userId) {
+        ChatRoom room = chatRoomService.findById(roomId);
         User user = userService.findById(userId);
-
-        ChatRoomMember member = chatRoomMemberService.enterChatRoom(chatRoom, user);
+        ChatRoomMember member = chatRoomMemberService.enterChatRoomIfNotExists(room, user);
         return ResponseEntity.ok("입장 완료: memberNo = " + member.getChatRoomMemberno());
     }
 
@@ -63,18 +72,18 @@ public class ChatRoomController {
     public List<ChatRoomResponseDTO> getChatListByUser(@PathVariable(name = "userno") Long userno) {
         return chatRoomService.findChatRoomsByUser(userno).stream()
             .map(room -> {
-              Long talentno = room.getTalent() != null ? room.getTalent().getTalentno() : null;
-              String title = room.getTalent() != null ? room.getTalent().getTitle() : null;
-
-              return new ChatRoomResponseDTO(
-                  room.getChatRoomno(),
-                  room.getRoomName(),
-                  room.getCreatedAt(),
-                  talentno,
-                  title,
-                  room.getCreator() != null ? room.getCreator().getUserno() : null,
-                  room.getCreator() != null ? room.getCreator().getUsername() : null
-              );
+                Long talentno = room.getTalent() != null ? room.getTalent().getTalentno() : null;
+                String title = room.getTalent() != null ? room.getTalent().getTitle() : null;
+                return new ChatRoomResponseDTO(
+                    room.getChatRoomno(),
+                    room.getRoomName(),
+                    room.getCreatedAt(),
+                    talentno,
+                    title,
+                    room.getCreator() != null ? room.getCreator().getUserno() : null,
+                    room.getCreator() != null ? room.getCreator().getUsername() : null,
+                    room.isPublicRoom()
+                );
             })
             .collect(Collectors.toList());
     }
@@ -85,12 +94,15 @@ public class ChatRoomController {
      */
     @PostMapping("/findOrCreate")
     public ResponseEntity<ChatRoomResponseDTO> findOrCreateChatRoom(
-        @RequestParam(name="senderId") Long senderId,
-        @RequestParam(name="receiverId") Long receiverId,
-        @RequestParam(name="talentno") Long talentno,
-        @RequestParam(name="title") String title
-    ) {
+        @RequestParam(name = "senderId") Long senderId,
+        @RequestParam(name = "receiverId") Long receiverId,
+        @RequestParam(name = "talentno") Long talentno,
+        @RequestParam(name = "title") String title) {
+
         ChatRoom chatRoom = chatRoomService.findOrCreatePrivateChat(senderId, receiverId, talentno, title);
+
+        // receiver 정보 조회 (receiverId를 기반으로)
+        User receiver = userService.findById(receiverId);
 
         ChatRoomResponseDTO dto = new ChatRoomResponseDTO(
             chatRoom.getChatRoomno(),
@@ -98,29 +110,24 @@ public class ChatRoomController {
             chatRoom.getCreatedAt(),
             chatRoom.getTalent().getTalentno(),
             chatRoom.getTalent().getTitle(),
-            chatRoom.getCreator() != null ? chatRoom.getCreator().getUserno() : null,
-            chatRoom.getCreator() != null ? chatRoom.getCreator().getUsername() : null
+            chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUserno() : null,
+            chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUsername() : null,     // receiverName
+            chatRoom.isPublicRoom()
         );
 
         return ResponseEntity.ok(dto);
     }
 
+
     /**
-     * [GET] 채팅방 상세 조회
-     * - 상대방 정보 (로그인 유저 제외한 멤버)를 함께 리턴
+     * [GET] 1:1 채팅방 상세 조회 (상대방 정보 포함)
      */
     @GetMapping("/{chatRoomno}")
     public ResponseEntity<ChatRoomResponseDTO> getChatRoom(
-        @PathVariable(name="chatRoomno") Long chatRoomno,
-        @RequestParam(name="loginUserno") Long loginUserno
+        @PathVariable(name = "chatRoomno") Long chatRoomno,
+        @RequestParam(name = "loginUserno") Long loginUserno
     ) {
         ChatRoom chatRoom = chatRoomService.findById(chatRoomno);
-
-        List<ChatRoomMember> allMembers = chatRoomMemberService.findByChatRoomno(chatRoomno);
-        ChatRoomMember other = allMembers.stream()
-            .filter(m -> !m.getUser().getUserno().equals(loginUserno))  // 로그인 유저 제외
-            .findFirst()
-            .orElse(null);
 
         ChatRoomResponseDTO dto = new ChatRoomResponseDTO(
             chatRoom.getChatRoomno(),
@@ -128,47 +135,46 @@ public class ChatRoomController {
             chatRoom.getCreatedAt(),
             chatRoom.getTalent() != null ? chatRoom.getTalent().getTalentno() : null,
             chatRoom.getTalent() != null ? chatRoom.getTalent().getTitle() : null,
-            other != null ? other.getUser().getUserno() : null,
-            other != null ? other.getUser().getUsername() : null
+            chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUserno() : null,
+            chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUsername() : null,
+            chatRoom.isPublicRoom()
         );
 
         return ResponseEntity.ok(dto);
     }
 
+
     /**
-     * [DELETE] 채팅방 삭제 (관리자 전용 또는 강제 삭제)
+     * [DELETE] 채팅방 삭제 (관리자 또는 강제 삭제)
      */
     @DeleteMapping("/{chatRoomno}")
-    public ResponseEntity<Void> deleteChatRoom(@PathVariable(name="chatRoomno") Long chatRoomno) {
+    public ResponseEntity<Void> deleteChatRoom(@PathVariable(name = "chatRoomno") Long chatRoomno) {
         chatRoomService.forceDeleteChatRoom(chatRoomno);
         return ResponseEntity.noContent().build();
     }
 
     /**
-     * [POST] 공개 채팅방 생성
-     * - 별도의 Talent 없이 생성 가능
+     * [POST] 공개 채팅방 생성 (creator 포함, talent 없이 생성 가능)
      */
     @PostMapping("/open")
-    public ResponseEntity<ChatRoomResponseDTO> createOpenChatRoom(@RequestBody OpenRoomCreateDTO dto) {
+    public ResponseEntity<OpenRoomResponseDTO> createOpenChatRoom(@RequestBody OpenRoomCreateDTO dto) {
         User creator = userService.findById(dto.getCreatorId());
         ChatRoom room = dto.toEntity(creator);
         ChatRoom savedRoom = chatRoomService.save(room);
 
-        // 생성자도 입장 처리
         ChatRoomMember member = new ChatRoomMember();
         member.setChatRoom(savedRoom);
         member.setUser(creator);
         chatRoomMemberService.save(member);
 
-        ChatRoomResponseDTO response = new ChatRoomResponseDTO(
+        OpenRoomResponseDTO response = new OpenRoomResponseDTO(
             savedRoom.getChatRoomno(),
             savedRoom.getRoomName(),
             savedRoom.getCreatedAt(),
-            null,
-            null,
             creator.getUserno(),
             creator.getUsername()
         );
+
         return ResponseEntity.ok(response);
     }
 
@@ -176,19 +182,51 @@ public class ChatRoomController {
      * [GET] 전체 공개 채팅방 목록 조회
      */
     @GetMapping("/public")
-    public List<ChatRoomResponseDTO> getPublicChatRooms() {
+    public List<OpenRoomResponseDTO> getPublicChatRooms() {
         List<ChatRoom> rooms = chatRoomService.getAllPublicChatRooms();
-
         return rooms.stream()
-            .map(room -> new ChatRoomResponseDTO(
+            .map(room -> new OpenRoomResponseDTO(
                 room.getChatRoomno(),
                 room.getRoomName(),
                 room.getCreatedAt(),
-                null,
-                null,
                 room.getCreator() != null ? room.getCreator().getUserno() : null,
                 room.getCreator() != null ? room.getCreator().getUsername() : null
             ))
             .collect(Collectors.toList());
     }
-}
+
+    /**
+     * [GET] 공개 채팅방 상세 조회 (참여자 리스트 포함)
+     */
+    @GetMapping("/open/{chatRoomno}")
+    public ResponseEntity<OpenRoomDetailDTO> getOpenRoomDetail(@PathVariable(name = "chatRoomno") Long chatRoomno) {
+        ChatRoom chatRoom = chatRoomService.findById(chatRoomno);
+
+        // 공개방 여부 확인
+        if (!chatRoom.isPublicRoom()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // 참여자 조회 및 DTO 변환
+        List<ChatRoomMember> members = chatRoomMemberService.findByChatRoomno(chatRoomno);
+        List<ChatRoomMemberResponseDTO> memberDTOs = members.stream()
+            .map(m -> new ChatRoomMemberResponseDTO(
+                m.getChatRoomMemberno(),
+                m.getChatRoom().getChatRoomno(),
+                m.getUser().getUserno(),
+                m.getUser().getUsername(),
+                m.getJoinedAt()
+            ))
+            .toList();
+
+        // 응답 DTO 구성
+        OpenRoomDetailDTO dto = new OpenRoomDetailDTO();
+        dto.setChatRoomno(chatRoom.getChatRoomno());
+        dto.setRoomName(chatRoom.getRoomName());
+        dto.setCreatedAt(chatRoom.getCreatedAt());
+        dto.setPublicRoom(true);
+        dto.setMembers(memberDTOs);
+
+        return ResponseEntity.ok(dto);
+    }
+} 

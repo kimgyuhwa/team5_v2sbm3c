@@ -24,8 +24,22 @@ public interface TalentRepository extends JpaRepository<Talent, Long> {
   //  List<Talent> findBySchoolnoAndCategoryno(Long schoolno, Long categoryno);
     
   
-    @Query("SELECT new dev.mvc.team5.talents.talentdto.TalentDetailDTO(t.talentno, t.user.userno, t.type.name, t.category.cateGrp.name, t.category.name, t.title, t.description, t.viewCount, t.user.username, t.createdAt, t.updatedAt) " +
-                "FROM Talent t WHERE t.talentno = :talentno")
+    @Query("""
+        SELECT new dev.mvc.team5.talents.talentdto.TalentDetailDTO(
+            t.talentno,
+            t.user.userno,
+            t.type.name,
+            t.category.cateGrp.name,
+            t.category.name,
+            t.title,
+            t.description,
+            t.price,
+            t.viewCount,
+            t.user.username,
+            t.createdAt,
+            t.updatedAt
+        ) FROM Talent t
+        WHERE t.talentno = :talentno""")
     TalentDetailDTO findDetailByTalentno(@Param("talentno") Long talentno);
     
     @Query("SELECT t FROM Talent t LEFT JOIN FETCH t.files LEFT JOIN FETCH t.user WHERE t.talentno = :talentno")

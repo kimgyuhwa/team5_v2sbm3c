@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Upload, X, User, BookOpen, Tag, Folder, FileText, ArrowLeft } from 'lucide-react';
+import { Upload, X, User, BookOpen, Tag, DollarSign, Folder, FileText, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import { GlobalContext } from '../../components/GlobalContext';
 import '../style/TalentCreateForm.css';
@@ -9,6 +9,7 @@ const TalentCreateForm = ({ onCreated }) => {
   // 기존 상태
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
   const [typeno, setTypeno] = useState('');
   const [cateGrpno, setCateGrpno] = useState('');
   const [categoryno, setCategoryno] = useState('');
@@ -53,6 +54,16 @@ const TalentCreateForm = ({ onCreated }) => {
       .catch(err => console.error('타입 목록 불러오기 실패', err));
   }, []);
 
+  // 천단위 자리표 찍기
+  const handlePriceChange = (e) => {
+    const raw = e.target.value.replace(/,/g, '');
+    if (!/^\d*$/.test(raw)) return; // 숫자만 허용
+    setPrice(raw);
+  };
+
+  // 찍은거 보여주기
+  const formattedPrice = Number(price).toLocaleString();
+
   // 파일 선택 핸들러
   const handleFileChange = (e) => {
     setSelectedFiles(Array.from(e.target.files)); // 다중 파일을 배열로 저장
@@ -94,6 +105,7 @@ const TalentCreateForm = ({ onCreated }) => {
     const dto = {
       title,
       description,
+      price,
       schoolno: loginUser.schoolno,
       userno: loginUser.userno,
       typeno: Number(typeno),
@@ -123,6 +135,7 @@ const TalentCreateForm = ({ onCreated }) => {
     // 초기화
     setTitle('');
     setDescription('');
+    setPrice('');
     setTypeno('');
     setCateGrpno('');
     setCategoryno('');
@@ -164,6 +177,24 @@ const TalentCreateForm = ({ onCreated }) => {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           />
         </div>
+
+        {/* 가격 입력 */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+            <DollarSign className="w-4 h-4" />
+            가격 (원)
+          </label>
+          <input
+            type="text"
+            value={formattedPrice}
+            onChange={handlePriceChange}
+            placeholder="예: 10,000"
+            inputMode="numeric"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          />
+        </div>
+
+
 
         {/* 설명 입력 */}
         <div className="space-y-2">
