@@ -28,6 +28,7 @@ const RequestList = () => {
 
       const response = await fetch(`/request/list?${params}`);
       const data = await response.json();
+      console.log("Data",data)
       setRequests(data.content);
       setTotalPages(data.totalPages);
     } catch (error) {
@@ -130,12 +131,13 @@ const RequestList = () => {
 
       {/* 거래 리스트 */}
       <div className="space-y-4">
-        {requests.length > 0 ? (
+        {requests?.length > 0 ? (
           requests.map((request) => (
             <div
               key={request.requestno}
               className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
             >
+              {console.log("requestsettes",request)}
               <div
                 className="p-4 cursor-pointer"
                 onClick={() => toggleExpanded(request.requestno)}
