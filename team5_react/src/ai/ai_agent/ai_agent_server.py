@@ -14,6 +14,7 @@ def chat_proc():
     print("✅ 받은 요청:", data)
     message = data.get("message", "")
     userno = data.get("userno")
+    print("userno", userno)
 
     apitool.CURRENT_USERNO = userno
     result = apitool.agent.invoke({"input": message, "userno": userno})

@@ -40,7 +40,7 @@ def summarize_tool(input: str) -> str:
 
 def chat_tool(input: dict) -> str:
     message = input["input"]
-    userno = input.get("userno")
+    userno = CURRENT_USERNO
 
     chat_chain = chat_prompt | llm | StrOutputParser()
     final_answer = chat_chain.invoke({"message": message})
@@ -74,7 +74,7 @@ def chat_tool(input: dict) -> str:
     return final_answer
 
 tools = [
-    Tool(name="질문응답", func=lambda input: chat_tool({"input": input, "userno": CURRENT_USERNO}), description="일반 질문 + 중요정보 저장"),
+    Tool(name="질문응답", func=chat_tool, description="일반 질문 + 중요정보 저장"),
     Tool(name="번역", func=translate_tool, description="문장을 외국어로 번역"),
     Tool(name="요약", func=summarize_tool, description="글 요약")
 ]

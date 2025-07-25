@@ -1,6 +1,6 @@
 # agent_reservation/tools.py
 from langchain.agents import Tool
-from agent_reservation.context import CURRENT_USERNO
+import agent_reservation.context
 from agent_reservation.utils import parse_datetime, extract_placename
 import requests
 
@@ -44,7 +44,7 @@ def make_reservation(input: dict) -> str:
         "placeno": placeno,
         "start_time": start_time.isoformat(),
         "end_time": end_time.isoformat(),
-        "placesinfo": placename,
+        "purpose": "챗봇예약",
         "status": "예약됨"
     }
     print("[📦 예약 요청 바디]", payload)
