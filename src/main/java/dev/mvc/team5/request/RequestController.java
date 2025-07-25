@@ -107,11 +107,10 @@ public class RequestController {
 //    }
     
     @GetMapping("/chatroom/{chatRoomno}")
-    public ResponseEntity<RequestResponseDTO> getLatestRequestByChatRoom(@PathVariable(name="chatRoomno") Long chatRoomno) {
-        Request request = requestRepository.findTopByChatRoom_ChatRoomnoOrderByCreatedAtDesc(chatRoomno)
-            .orElseThrow(() -> new RuntimeException("요청이 존재하지 않습니다."));
-        
-        return ResponseEntity.ok(new RequestResponseDTO(request));
+    public ResponseEntity<?> getLatestRequestByChatRoom(@PathVariable(name="chatRoomno") Long chatRoomno) {
+        return requestRepository.findTopByChatRoom_ChatRoomnoOrderByCreatedAtDesc(chatRoomno)
+            .map(request -> ResponseEntity.ok(new RequestResponseDTO(request)))
+            .orElse(ResponseEntity.noContent().build()); // 요청이 없으면 204
     }
 
     // 구매내역

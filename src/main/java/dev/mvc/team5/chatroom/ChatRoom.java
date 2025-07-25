@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.message.Message;
 import dev.mvc.team5.talents.Talent;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -59,10 +60,10 @@ public class ChatRoom {
     @JoinColumn(name = "talentno")
     private Talent talent; // 채팅방이 어떤 게시물과 관련돼 있는지
     
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 
     // === 생성자, getter, setter ===

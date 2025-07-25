@@ -29,7 +29,7 @@ public class ChatRoomMemberController {
     @Transactional
     public ChatRoomMember enterChatRoomIfNotExists(ChatRoom chatRoom, User user) {
        if (isAlreadyMember(chatRoom, user)) {
-           return chatMemberRepository.findByChatRoomAndUser(chatRoom, user)
+           return chatMemberRepository.findFirstByChatRoomAndUser(chatRoom, user)
                .orElseThrow(() -> new IllegalStateException("이미 멤버인데 멤버 정보가 없음"));
        }
     
@@ -40,7 +40,7 @@ public class ChatRoomMemberController {
     }
     
     @GetMapping("/chatroom/{id}/members")
-    public List<ChatRoomMemberResponseDTO> getChatRoomMembers(@PathVariable Long id) {
+    public List<ChatRoomMemberResponseDTO> getChatRoomMembers(@PathVariable(name="id") Long id) {
         List<ChatRoomMember> members = chatMemberRepository.findByChatRoomChatRoomno(id);
 
         return members.stream().map(member -> {
@@ -48,7 +48,7 @@ public class ChatRoomMemberController {
             dto.setChatRoomMemberno(member.getChatRoomMemberno());
             dto.setChatRoomno(member.getChatRoom().getChatRoomno());
             dto.setUserno(member.getUser().getUserno());
-            dto.setUsername(member.getUser().getUsername()); // ✅ 여기서 username 설정
+            dto.setUsername(member.getUser().getUsername()); 
             dto.setJoinedAt(member.getJoinedAt());
             return dto;
         }).toList();

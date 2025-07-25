@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import dev.mvc.team5.chatroommember.ChatRoomMember;
+import dev.mvc.team5.user.User;
 import jakarta.transaction.Transactional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
@@ -31,10 +34,5 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
   void deleteByChatRoom(@Param("chatRoom") ChatRoom chatRoom);
   
   List<ChatRoom> findByPublicRoomTrueOrderByCreatedAtDesc();
-
- 
-
-
-
   
 }

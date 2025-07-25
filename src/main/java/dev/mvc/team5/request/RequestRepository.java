@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import dev.mvc.team5.chatroom.ChatRoom;
+
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
@@ -28,7 +30,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     
     Optional<Request> findTopByChatRoom_ChatRoomnoOrderByCreatedAtDesc(Long chatRoomno);
 
-
+    List<Request> findByChatRoom(ChatRoom chatRoom);
 
 		List<Request> findByGiverUserno(Long userno);     // 구매 내역
 		

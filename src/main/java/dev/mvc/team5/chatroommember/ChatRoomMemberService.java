@@ -20,14 +20,14 @@ public class ChatRoomMemberService {
 
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
-    // 채팅방 멤버 입장 처리 (멤버 생성)
-    public ChatRoomMember enterChatRoom(ChatRoom chatRoom, User user) {
-        ChatRoomMember member = new ChatRoomMember();
-        member.setChatRoom(chatRoom);
-        member.setUser(user);
-        // joinedAt는 @CreationTimestamp로 자동 입력
-        return chatRoomMemberRepository.save(member);
-    }
+//    // 채팅방 멤버 입장 처리 (멤버 생성)
+//    public ChatRoomMember enterChatRoom(ChatRoom chatRoom, User user) {
+//        ChatRoomMember member = new ChatRoomMember();
+//        member.setChatRoom(chatRoom);
+//        member.setUser(user);
+//        // joinedAt는 @CreationTimestamp로 자동 입력
+//        return chatRoomMemberRepository.save(member);
+//    }
 
     public Collection<ChatRoomResponseDTO> findChatRoomsByUser(Long userno) {
       List<ChatRoomMember> members = chatRoomMemberRepository.findByUserUserno(userno);
@@ -50,9 +50,10 @@ public class ChatRoomMemberService {
                   room.getRoomName(),
                   room.getCreatedAt(),
                   room.getTalent().getTalentno(),
-                  room.getTalent().getTitle(),
+                  room.getTalent().getTitle(),                  
                   other.getUser().getUserno(),     // receiverno
-                  other.getUser().getUsername()    // receiverName
+                  other.getUser().getUsername(),    // receiverName
+                  room.isPublicRoom()
               );
           })
           .collect(Collectors.toList());
@@ -77,15 +78,19 @@ public class ChatRoomMemberService {
   }
     
     public ChatRoomMember save(ChatRoomMember member) {
+      System.out.println("중복 멤버 체크: " +
+          member.getChatRoom().getChatRoomno() + ", " +
+          member.getUser().getUserno());
       return chatRoomMemberRepository.save(member);
+      
   }
 
-    
+    // 입장 인원 중복 방지 
     @Transactional
     public ChatRoomMember enterChatRoomIfNotExists(ChatRoom chatRoom, User user) {
         if (isAlreadyMember(chatRoom, user)) {
             // 이미 멤버일 경우 기존 객체 반환
-            return chatRoomMemberRepository.findByChatRoomAndUser(chatRoom, user)
+            return chatRoomMemberRepository.findFirstByChatRoomAndUser(chatRoom, user)
                 .orElseThrow(() -> new IllegalStateException("이미 참여 중인데 멤버가 없습니다."));
         }
 

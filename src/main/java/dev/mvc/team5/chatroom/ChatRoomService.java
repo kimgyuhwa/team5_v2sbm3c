@@ -10,6 +10,8 @@ import dev.mvc.team5.chatroommember.ChatRoomMember;
 import dev.mvc.team5.chatroommember.ChatRoomMemberRepository;
 import dev.mvc.team5.message.MessageRepository;
 import dev.mvc.team5.notification.NotificationService;
+import dev.mvc.team5.request.Request;
+import dev.mvc.team5.request.RequestRepository;
 import dev.mvc.team5.talents.Talent;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserService;
@@ -25,6 +27,7 @@ public class ChatRoomService {
     private final UserService userService;
     private final NotificationService notificationService;
     private final MessageRepository messageRepository;
+    private final RequestRepository requestRepository;
 
     /**
      * 채팅방 저장
@@ -112,24 +115,39 @@ public class ChatRoomService {
     }
     
 
-  @Transactional
-  public void forceDeleteChatRoom(Long chatRoomno) {
-      ChatRoom chatRoom = chatRoomRepository.findById(chatRoomno)
-          .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
-  
-      // 1. 메시지 삭제
-      messageRepository.deleteByChatRoom(chatRoom);
-  
-      // 2. 채팅방 멤버 삭제
-      chatRoomMemberRepository.deleteByChatRoom(chatRoom);
-  
-      // 3. 채팅방 삭제
-      chatRoomRepository.delete(chatRoom);
-  }
-    
+//  @Transactional
+//  public void forceDeleteChatRoom(Long chatRoomno) {
+//      ChatRoom chatRoom = chatRoomRepository.findById(chatRoomno)
+//          .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+//  
+//      // 1. 메시지 삭제
+//      messageRepository.deleteByChatRoom(chatRoom);
+//  
+//      // 2. 채팅방 멤버 삭제
+//      chatRoomMemberRepository.deleteByChatRoom(chatRoom);
+//  
+//      // 3. 채팅방 삭제
+//      chatRoomRepository.delete(chatRoom);
+//  }
+//    
   public List<ChatRoom> getAllPublicChatRooms() {
     return chatRoomRepository.findByPublicRoomTrueOrderByCreatedAtDesc();
   }
+    
+    @Transactional
+    public void forceDeleteChatRoom(Long chatRoomno) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomno)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
+        
+        // request 참조 끊기
+        List<Request> requests = requestRepository.findByChatRoom(chatRoom);
+        for (Request request : requests) {
+            request.setChatRoom(null);
+        }
+
+        chatRoomRepository.delete(chatRoom); // 자식 메시지/멤버도 같이 삭제됨
+    }
+
 
   
   
