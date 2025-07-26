@@ -57,9 +57,20 @@ public class ChatRoomController {
      * [POST] 채팅방 입장 (사용자 - 채팅방 멤버 연결)
      */
     @PostMapping("/{roomId}/enter/{userId}")
-    public ResponseEntity<String> enterRoom(@PathVariable(name = "roomId") Long roomId,
-                                            @PathVariable(name = "userId") Long userId) {
+    public ResponseEntity<String> enterRoom(
+        @PathVariable(name="roomId") Long roomId,
+        @PathVariable(name="userId") Long userId,
+        @RequestParam(name="password", required = false) String password  // 비밀번호는 선택적으로 받음
+    ) {
         ChatRoom room = chatRoomService.findById(roomId);
+
+        // 공개방이고 비밀번호가 설정되어 있으면 비교
+        if (room.isPublicRoom() && room.getPassword() != null && !room.getPassword().isBlank()) {
+            if (password == null || !room.getPassword().equals(password)) {
+                return ResponseEntity.status(403).body("비밀번호가 올바르지 않습니다.");
+            }
+        }
+
         User user = userService.findById(userId);
         ChatRoomMember member = chatRoomMemberService.enterChatRoomIfNotExists(room, user);
         return ResponseEntity.ok("입장 완료: memberNo = " + member.getChatRoomMemberno());
@@ -172,7 +183,9 @@ public class ChatRoomController {
             savedRoom.getRoomName(),
             savedRoom.getCreatedAt(),
             creator.getUserno(),
-            creator.getUsername()
+            creator.getUsername(),
+            savedRoom.getPassword() != null && !savedRoom.getPassword().isBlank()
+            
         );
 
         return ResponseEntity.ok(response);
@@ -190,7 +203,8 @@ public class ChatRoomController {
                 room.getRoomName(),
                 room.getCreatedAt(),
                 room.getCreator() != null ? room.getCreator().getUserno() : null,
-                room.getCreator() != null ? room.getCreator().getUsername() : null
+                room.getCreator() != null ? room.getCreator().getUsername() : null,
+                room.getPassword() != null && !room.getPassword().isBlank()
             ))
             .collect(Collectors.toList());
     }

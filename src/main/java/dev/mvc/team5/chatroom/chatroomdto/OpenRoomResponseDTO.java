@@ -25,13 +25,17 @@ public class OpenRoomResponseDTO {
 
     private List<ChatRoomMemberResponseDTO> members;  // 공개방 멤버 전체 리스트
     
+    private boolean hasPassword; // 공개채팅방 비밀번호 여부 확인 (DB 컬럼 추가 없이 사용하는 필드)
+
+    
     public OpenRoomResponseDTO(Long chatRoomno, String roomName, LocalDateTime createdAt,
-                               Long creatorId, String creatorName) {
+                               Long creatorId, String creatorName, boolean hasPassword) {
         this.chatRoomno = chatRoomno;
         this.roomName = roomName;
         this.createdAt = createdAt;
         this.creatorId = creatorId;
         this.creatorName = creatorName;
+        this.hasPassword = hasPassword;
     }
 
 }
