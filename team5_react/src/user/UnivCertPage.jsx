@@ -80,7 +80,8 @@ function UnivCertPage() {
         schoolName,
         code: parseInt(code),
       });
-      if (res.data.includes("성공")) {
+      console.log(res)
+      if (res.data.sw) {
         alert("인증 성공!");
         navigate("/user/register", {
           state: {

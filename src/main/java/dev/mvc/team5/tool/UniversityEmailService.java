@@ -21,6 +21,7 @@ public class UniversityEmailService {
         universityEmailDomains.put("서강대학교", "sogang.ac.kr");
         universityEmailDomains.put("건국대학교", "konkuk.ac.kr");
         universityEmailDomains.put("경민대학교", "kyungmin.ac.kr");
+        universityEmailDomains.put("테스트대학교", "naver.com");
     }
 
     public boolean isValidUniversityEmail(String email) {

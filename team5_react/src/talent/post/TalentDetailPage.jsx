@@ -252,7 +252,7 @@ function TalentDetailPage() {
 
     {/* 하단 리뷰 */}
     <div className="mt-10">
-      <ReviewPage receiverno={talent?.userno} />
+      <ReviewPage talentno={Number(talentno)} receiverno={talent?.userno} />
     </div>
     {/* 오른쪽 프로필 카드 */}
     <div className="w-[280px] shrink-0">
