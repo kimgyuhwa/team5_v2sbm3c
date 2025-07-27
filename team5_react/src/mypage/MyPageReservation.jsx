@@ -64,30 +64,30 @@ const handleCancel = (reservationno) => {
   }
 };
 
-const filteredReservations = reservations.filter((reservation) => {
-  
-  // 각 필드 널 병합 연산자로 기본값 설정 (빈 문자열)
-  const username = reservation.username ?? '';
-  const placename = reservation.placename ?? '';
-  const purpose = reservation.purpose ?? '';
-  const status = reservation.status ?? '';
+  const filteredReservations = reservations.filter((reservation) => {
+    
+    // 각 필드 널 병합 연산자로 기본값 설정 (빈 문자열)
+    const username = reservation.username ?? '';
+    const placename = reservation.placename ?? '';
+    const purpose = reservation.purpose ?? '';
+    const status = reservation.status ?? '';
 
-  // 검색어 소문자 변환
-  const search = searchTerm.toLowerCase();
+    // 검색어 소문자 변환
+    const search = searchTerm.toLowerCase();
 
-  // 검색 조건: 사용자 이름, 장소 이름, 목적 중 하나라도 포함되면 true
-  const matchesSearch =
-    username.toLowerCase().includes(search) ||
-    placename.toLowerCase().includes(search) ||
-    purpose.toLowerCase().includes(search);
+    // 검색 조건: 사용자 이름, 장소 이름, 목적 중 하나라도 포함되면 true
+    const matchesSearch =
+      username.toLowerCase().includes(search) ||
+      placename.toLowerCase().includes(search) ||
+      purpose.toLowerCase().includes(search);
 
-  const matchesStatus = 
-    statusFilter === 'all' || 
-    (statusFilter === '예약됨' && (status === '예약됨' || status === '완료됨')) ||
-    (statusFilter === '취소됨' && status === '취소됨');
+    const matchesStatus = 
+      statusFilter === 'all' || 
+      (statusFilter === '예약됨' && (status === '예약됨' || status === '완료됨')) ||
+      (statusFilter === '취소됨' && status === '취소됨');
 
-  return matchesSearch && matchesStatus;
-});
+    return matchesSearch && matchesStatus;
+  });
 
   
   const toggleExpanded = (id) => {

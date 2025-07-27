@@ -54,7 +54,8 @@ public class RequestService {
           request.getReceiver() != null ? request.getReceiver().getName() : null,
           request.getStatus(),
           request.getMessage(),
-          request.getCreatedAt()
+          request.getCreatedAt(),
+          request.getTalent() != null ? request.getTalent().getPrice() : null
       );
   }
 

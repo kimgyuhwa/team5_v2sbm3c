@@ -1,21 +1,19 @@
 import React, { useEffect, useContext, useState } from "react";
-import { Search, Filter, ChevronDown, ChevronUp, MessageSquare, User, Star, Clock, ShoppingCart, DollarSign, FileText } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronUp, MessageSquare, User, Star, Coins, ShoppingCart, DollarSign, FileText } from 'lucide-react';
 import { GlobalContext } from '../components/GlobalContext';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const RequestList = ({userno}) => {
   const [activeTab, setActiveTab] = useState('purchases'); // 'purchases' or 'sales'
-  const [searchType, setSearchType] = useState("");
-  const [keyword, setKeyword] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // 검색어 변수명 통일
+  const [statusFilter, setStatusFilter] = useState('all'); // 상태 필터
   const [sort, setSort] = useState("requestno");
   const [direction, setDirection] = useState("DESC");
   const [expandedItem, setExpandedItem] = useState(null);
   const [purchases, setPurchases] = useState([]);
   const [sales, setSales] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const { loginUser } = useContext(GlobalContext); 
-
 
   useEffect(() => {
     // 구매내역 요청
@@ -24,7 +22,7 @@ const RequestList = ({userno}) => {
       setPurchases(res.data);
     })
     .catch((err) => {
-      console.error('멘토내역 가져오기 실패:', err);
+      console.error('구매내역 가져오기 실패:', err);
     });
 
     // 판매내역 요청
@@ -33,51 +31,65 @@ const RequestList = ({userno}) => {
         setSales(res.data);
       })
       .catch((err) => {
-        console.error('멘토내역 가져오기 실패:', err);
+        console.error('판매내역 가져오기 실패:', err);
       });
   }, [userno]);
 
-  // 현재 활성 탭에 따른 데이터 필터링 및 정렬
-  useEffect(() => {
+  // 필터링된 데이터 생성 (예약 컴포넌트의 로직 적용)
+  const filteredData = (() => {
     let currentData = activeTab === 'purchases' ? purchases : sales;
     
-    // 검색 필터링
-    if (keyword && searchType) {
-      currentData = currentData.filter(item => {
-        const value = item[searchType];
-        return value && value.toString().toLowerCase().includes(keyword.toLowerCase());
-      });
-    }
+    return currentData.filter((request) => {
+      // 각 필드 널 병합 연산자로 기본값 설정 (빈 문자열)
+      const talentTitle = request.talentTitle ?? '';
+      const receivername = request.receivername ?? '';
+      const givername = request.givername ?? '';
+      const message = request.message ?? '';
+      const price = request.price?.toString() ?? '';
+      const status = request.status ?? '';
 
-    // 정렬
-    currentData = [...currentData].sort((a, b) => {
-      let aValue = a[sort];
-      let bValue = b[sort];
-      
-      if (typeof aValue === 'string') {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
-      }
-      
-      if (direction === 'ASC') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
+      // 검색어 소문자 변환
+      const search = searchTerm.toLowerCase();
+
+      // 검색 조건: 게시물 제목, 멘토/멘티명, 메시지, 가격 중 하나라도 포함되면 true
+      const matchesSearch = searchTerm === '' || 
+        talentTitle.toLowerCase().includes(search) ||
+        receivername.toLowerCase().includes(search) ||
+        givername.toLowerCase().includes(search) ||
+        message.toLowerCase().includes(search) ||
+        price.includes(search);
+
+      // 상태 필터링
+      const matchesStatus = 
+        statusFilter === 'all' || 
+        status === statusFilter;
+
+      return matchesSearch && matchesStatus;
     });
+  })();
 
-    setFilteredData(currentData);
-  }, [loginUser,activeTab, purchases, sales, keyword, searchType, sort, direction]);
-
-  const handleSearch = () => {
-    // 검색 로직은 useEffect에서 자동으로 처리됨
-  };
+  // 정렬 적용
+  const sortedData = [...filteredData].sort((a, b) => {
+    let aValue = a[sort];
+    let bValue = b[sort];
+    
+    if (typeof aValue === 'string') {
+      aValue = aValue.toLowerCase();
+      bValue = bValue.toLowerCase();
+    }
+    
+    if (direction === 'ASC') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
+  });
 
   const toggleExpanded = (id) => {
     setExpandedItem(expandedItem === id ? null : id);
   };
 
-    const getStatusText = (status) => {
+  const getStatusText = (status) => {
     switch (status) {
       case 'accepted': return '거래중';
       case 'completed': return '완료';
@@ -89,10 +101,10 @@ const RequestList = ({userno}) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case '거래중': return 'bg-blue-100 text-blue-800';
-      case '완료': return 'bg-green-100 text-green-800';
-      case '취소': return 'bg-red-100 text-red-800';
-      case '대기': return 'bg-yellow-100 text-yellow-800';
+      case 'accepted': return 'bg-blue-100 text-blue-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -101,11 +113,10 @@ const RequestList = ({userno}) => {
     <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1 bg-white rounded-xl shadow-sm p-6 min-h-[400px] max-h-[80vh] overflow-y-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">나의 거래목록</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">{loginUser.username}님의 거래목록</h1>
           
           {/* 탭 메뉴 */}
           <div className="flex border-b border-gray-200 mt-4">
-
             <button
               className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
                 activeTab === 'purchases'
@@ -131,7 +142,6 @@ const RequestList = ({userno}) => {
                 판매내역 ({sales.length})
               </div>
             </button>
-            
           </div>
         </div>
 
@@ -142,29 +152,26 @@ const RequestList = ({userno}) => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="검색어 입력..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="게시물명, 사용자명, 메시지, 가격으로 검색..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2">
               <Filter className="text-gray-400 w-5 h-5" />
               <select
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={searchType}
-                onChange={(e) => setSearchType(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="">검색 필드</option>
-                <option value="status">상태</option>
+                <option value="all">전체 상태</option>
+                <option value="pending">대기</option>
+                <option value="accepted">거래중</option>
+                <option value="completed">완료</option>
+                <option value="rejected">취소</option>
               </select>
             </div>
-            <button 
-              onClick={handleSearch}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              검색
-            </button>
           </div>
 
           {/* 정렬 옵션 */}
@@ -174,10 +181,11 @@ const RequestList = ({userno}) => {
               <select 
                 value={sort} 
                 onChange={(e) => setSort(e.target.value)} 
-                className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               >
                 <option value="requestno">거래번호</option>
                 <option value="status">상태</option>
+                <option value="price">가격</option>
               </select>
             </div>
             <div className="flex items-center gap-2">
@@ -185,7 +193,7 @@ const RequestList = ({userno}) => {
               <select
                 value={direction}
                 onChange={(e) => setDirection(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               >
                 <option value="DESC">내림차순</option>
                 <option value="ASC">오름차순</option>
@@ -196,8 +204,8 @@ const RequestList = ({userno}) => {
 
         {/* 거래 리스트 */}
         <div className="space-y-4">
-          {filteredData.length > 0 ? (
-            filteredData.map((request) => (
+          {sortedData.length > 0 ? (
+            sortedData.map((request) => (
               <div
                 key={request.requestno}
                 className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
@@ -210,11 +218,13 @@ const RequestList = ({userno}) => {
                     <div className="text-left">
                         <div className="flex items-center text-gray-800 font-medium mb-1">
                           <FileText className="w-4 h-4 mr-2 text-blue-600" />
-                          게시물 : {request.talentTitle}
+                          <Link to={`/talent/detail/${request.talentno}`} className="text-blue-600 hover:underline">
+                              게시물: {request.talentTitle}
+                            </Link>
                         </div>
                         <div className="flex items-center text-gray-600">
-                          <User className="w-4 h-4 mr-1" />
-                          {activeTab === 'purchases' ? '멘토' : '멘티'}: {activeTab === 'purchases' ? request.receivername : request.givername}
+                          <Coins className="w-4 h-4 mr-2 text-gray-600"></Coins>
+                          재능가격: {request.price}
                         </div>
                       </div>
                     </div>
@@ -237,13 +247,9 @@ const RequestList = ({userno}) => {
                   <div className="px-4 pb-4 border-t border-gray-100">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <div className="space-y-3">
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 text-gray-400 mr-2" />
-                          <span className="font-medium">
-                            <Link to={`/talent/detail/${request.talentno}`} className="text-blue-600 hover:underline">
-                              게시물: {request.talentTitle}
-                            </Link>
-                          </span>
+                        <div className="flex items-center text-gray-600">
+                          <User className="w-4 h-4 mr-1 " />
+                          {activeTab === 'purchases' ? '멘토' : '멘티'}: {activeTab === 'purchases' ? request.receivername : request.givername}님
                         </div>
                         <div className="flex items-center">
                           {activeTab === 'purchases' ? 
@@ -251,7 +257,7 @@ const RequestList = ({userno}) => {
                             <DollarSign className="w-4 h-4 text-green-500 mr-2" />
                           }
                           <span className="text-sm text-gray-600">
-                            {activeTab === 'purchases' ? '받은 멘토링' : '판매한 서비스'}
+                            {activeTab === 'purchases' ? '구매한 서비스' : '판매한 서비스'}
                           </span>
                         </div>
                       </div>
@@ -277,7 +283,7 @@ const RequestList = ({userno}) => {
             <div className="text-center py-12">
               <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-600 mb-2">
-                {activeTab === 'purchases' ? '멘토 내역이' : '멘티 내역이'} 없습니다
+                {activeTab === 'purchases' ? '구매 내역이' : '판매 내역이'} 없습니다
               </h3>
               <p className="text-gray-500">
                 검색 조건을 변경하거나 새로운 거래를 추가해보세요.
