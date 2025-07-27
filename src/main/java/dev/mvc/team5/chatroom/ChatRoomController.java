@@ -48,7 +48,8 @@ public class ChatRoomController {
             savedRoom.getTalent().getTitle(),
             null,
             null,
-            savedRoom.isPublicRoom()
+            savedRoom.isPublicRoom(),
+            savedRoom.getTalent().getPrice()
         );
         return ResponseEntity.ok(response);
     }
@@ -93,7 +94,8 @@ public class ChatRoomController {
                     title,
                     room.getCreator() != null ? room.getCreator().getUserno() : null,
                     room.getCreator() != null ? room.getCreator().getUsername() : null,
-                    room.isPublicRoom()
+                    room.isPublicRoom(),
+                    room.getTalent().getPrice()
                 );
             })
             .collect(Collectors.toList());
@@ -123,7 +125,8 @@ public class ChatRoomController {
             chatRoom.getTalent().getTitle(),
             chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUserno() : null,
             chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUsername() : null,     // receiverName
-            chatRoom.isPublicRoom()
+            chatRoom.isPublicRoom(),
+            chatRoom.getTalent().getPrice()
         );
 
         return ResponseEntity.ok(dto);
@@ -148,7 +151,8 @@ public class ChatRoomController {
             chatRoom.getTalent() != null ? chatRoom.getTalent().getTitle() : null,
             chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUserno() : null,
             chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUsername() : null,
-            chatRoom.isPublicRoom()
+            chatRoom.isPublicRoom(),
+            chatRoom.getTalent().getPrice()
         );
 
         return ResponseEntity.ok(dto);

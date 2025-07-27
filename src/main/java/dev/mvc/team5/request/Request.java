@@ -78,6 +78,11 @@ public class Request {
      * 요청 상태
      */
     private String status;
+    
+    /**
+     * 요청 시 가격
+     */
+    private Long price;
 
     /**
      * 요청 메세지

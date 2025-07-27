@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import axios from "axios";
 import { GlobalContext } from "../components/GlobalContext";
-import RequestModal from "./components/RequestModal";
 
 const SOCKET_URL = "http://localhost:9093/ws-chat";
 
@@ -26,9 +25,6 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
   const [isPublicRoom, setIsPublicRoom] = useState(false);
   const [showAllMembers, setShowAllMembers] = useState(false);
   const [receiverno, setReceiverno] = useState(null);
-  const [showRequestModal, setShowRequestModal] = useState(false);
-  const [talentPrice, setTalentPrice] = useState(null);
-
 
   useEffect(() => {
     const url = `/chatroom/${chatRoomno}?loginUserno=${loginUser.userno}`;
@@ -40,8 +36,8 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
           setRoomName(data.roomName);
           setMembers(data.members || []);
         } else {
+          console.log('채팅 연결 게시물: ', data);
           setTalentTitle(data.title);
-          setTalentPrice(data.price);
           setReceiverName(data.receiverName);
           setReceiverno(data.receiverno);
         }
@@ -85,9 +81,10 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
   useEffect(() => {
     axios.get(`/request/chatroom/${chatRoomno}`)
       .then(res => {
+        console.log('요청 데이터: ', res.data);
         if (res.status === 204) return;
         const req = res.data;
-        if (req?.status === "pending") {
+        if (req?.status === "pending" && req.receiverno === loginUser.userno) {
           setPendingRequest(req);
         }
       })
@@ -120,16 +117,8 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
     }
   };
 
-  const openRequestModal = () => {
-  if (talentPrice == null) {
-    alert("가격 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
-    return;
-  }
-  setShowRequestModal(true);
-};
-
-
-  const submitRequest = async ({ message, price }) => {
+  const handleRequest = async () => {
+    if (!loginUser?.userno || !chatRoomno) return;
     try {
       const res = await axios.get(`/chatroom/${chatRoomno}?loginUserno=${loginUser.userno}`, { withCredentials: true });
       const room = res.data;
@@ -138,15 +127,13 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
         talentno: room.talentno,
         giverno: loginUser.userno,
         receiverno: room.receiverno,
-        message,
-        price,
+        message: `${talentTitle} 요청을 보냅니다.`,
         chatRoomno: chatRoomno,
       };
-      await axios.post("/request/save", dto);
-      alert("요청이 전송되었습니다!");
-      setShowRequestModal(false);
+      await axios.post('/request/save', dto);
+      alert('요청이 전송되었습니다!');
     } catch (error) {
-      alert("요청 전송 실패");
+      alert('요청 전송 실패');
     }
   };
 
@@ -178,8 +165,28 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
           💬 {isPublicRoom ? roomName : `${receiverName}님과의 채팅`}
         </div>
 
+        {isPublicRoom && (
+          <div className="flex flex-col ml-4">
+            <div className="text-sm text-white mb-1">
+              👥 참여 인원: {members.length}명
+            </div>
+            <div className="flex items-center gap-2 max-w-[300px] overflow-hidden">
+              {members.slice(0, 2).map(member => (
+                <div key={member.userno} className="bg-white text-blue-600 rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap">
+                  👤 {member.username}
+                </div>
+              ))}
+              {members.length > 2 && (
+                <button onClick={() => setShowAllMembers(true)} className="bg-white text-blue-600 rounded-full px-3 py-1 text-xs font-semibold">
+                  +{members.length - 2}명
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {!isPublicRoom && receiverName && loginUser.userno !== receiverno && (
-          <button onClick={openRequestModal} className="ml-auto text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
+          <button onClick={handleRequest} className="ml-auto text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
             요청하기
           </button>
         )}
@@ -215,47 +222,60 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
       </div>
 
       <div className="p-4 border-t flex gap-2">
-        <input
-          className="flex-1 border rounded px-3 py-2"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && sendMessage()}
-          placeholder="메시지를 입력하세요"
-        />
+        <input className="flex-1 border rounded px-3 py-2" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder="메시지를 입력하세요" />
         <button onClick={sendMessage} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
           전송
         </button>
       </div>
 
-      {pendingRequest && pendingRequest.receiverno === loginUser.userno && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative my-2 mx-4">
-          <strong className="font-bold">📩 요청 알림: </strong>
-          <div className="mt-1">
-            <span className="block sm:inline">{pendingRequest.message}</span>
-            {pendingRequest.price != null && (
-              <span className="block sm:inline ml-1 text-sm font-semibold text-gray-800">
-                💰 {pendingRequest.price.toLocaleString()}원
-              </span>
-            )}
-          </div>
-          <div className="mt-2 flex gap-2">
-            <button onClick={handleAccept} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-              수락
-            </button>
-            <button onClick={handleReject} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-              거절
-            </button>
+      {pendingRequest && (
+  <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative my-2 mx-4">
+    <strong className="font-bold">📩 요청 알림: </strong>
+    <div className="mt-1">
+      <span className="block sm:inline">{pendingRequest.message}</span>
+      {pendingRequest.price != null && (
+        <span className="block sm:inline ml-1 text-sm font-semibold text-gray-800">
+          💰 {pendingRequest.price.toLocaleString()}원
+        </span>
+      )}
+    </div>
+    <div className="mt-2 flex gap-2">
+      <button
+        onClick={handleAccept}
+        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+      >
+        수락
+      </button>
+      <button
+        onClick={handleReject}
+        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+      >
+        거절
+      </button>
+    </div>
+  </div>
+)}
+
+
+      {showAllMembers && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-lg font-bold text-gray-800">전체 참여자 목록</h2>
+              <button onClick={() => setShowAllMembers(false)} className="text-gray-500 hover:text-red-500 text-xl font-bold">
+                ×
+              </button>
+            </div>
+            <div className="max-h-60 overflow-y-auto">
+              {members.map(member => (
+                <div key={member.userno} className="text-sm text-gray-800 border-b py-1 px-1">
+                  👤 {member.username}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
-
-      <RequestModal
-        isOpen={showRequestModal}
-        onClose={() => setShowRequestModal(false)}
-        onSubmit={submitRequest}
-        defaultMessage={`${talentTitle} 요청을 보냅니다.`}
-        defaultPrice={talentPrice}
-      />
     </div>
   );
 }

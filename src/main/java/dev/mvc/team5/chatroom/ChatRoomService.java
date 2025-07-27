@@ -13,6 +13,7 @@ import dev.mvc.team5.notification.NotificationService;
 import dev.mvc.team5.request.Request;
 import dev.mvc.team5.request.RequestRepository;
 import dev.mvc.team5.talents.Talent;
+import dev.mvc.team5.talents.TalentService;
 import dev.mvc.team5.user.User;
 import dev.mvc.team5.user.UserService;
 import jakarta.transaction.Transactional;
@@ -31,6 +32,7 @@ public class ChatRoomService {
     private final NotificationService notificationService;
     private final MessageRepository messageRepository;
     private final RequestRepository requestRepository;
+    private final TalentService talentService;
 
     /**
      * 채팅방 저장
@@ -73,32 +75,27 @@ public class ChatRoomService {
      */
     @Transactional
     public ChatRoom findOrCreatePrivateChat(Long senderId, Long receiverId, Long talentno, String title) {
-        // 1. 기존 1:1 채팅방 존재 여부 확인
         Optional<ChatRoom> existingRoom = chatRoomRepository
             .findPrivateRoomByMembersAndTalent(senderId, receiverId, talentno);
         if (existingRoom.isPresent()) {
             return existingRoom.get();
         }
 
-        // 2. 채팅방 새로 생성
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.setRoomName("1:1 Chat");
 
-        Talent talent = new Talent();
-        talent.setTalentno(talentno);  // 영속성 필요 시 talentService.findById()로 대체 가능
-        talent.setTitle(title);
+        // ✅ 영속 엔티티로 변경
+        Talent talent = talentService.getEntityById(talentno);
         chatRoom.setTalent(talent);
 
-        // 🔥 receiverno 세팅 추가
+        // ✅ receiver는 잘 처리됨
         User receiver = userService.findById(receiverId);
         chatRoom.setReceiverno(receiver);
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
-        // 3. 유저 정보 로딩
         User sender = userService.findById(senderId);
 
-        // 4. 채팅 멤버 등록
         ChatRoomMember m1 = new ChatRoomMember();
         m1.setChatRoom(savedChatRoom);
         m1.setUser(sender);
@@ -110,7 +107,6 @@ public class ChatRoomService {
         chatRoomMemberRepository.save(m1);
         chatRoomMemberRepository.save(m2);
 
-        // 5. 알림 전송
         notificationService.createNotification(
             receiverId,
             "chat",
@@ -120,6 +116,7 @@ public class ChatRoomService {
 
         return savedChatRoom;
     }
+
 
 
     /**

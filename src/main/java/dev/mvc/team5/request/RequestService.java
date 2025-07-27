@@ -54,7 +54,8 @@ public class RequestService {
           request.getReceiver() != null ? request.getReceiver().getName() : null,
           request.getStatus(),
           request.getMessage(),
-          request.getCreatedAt()
+          request.getCreatedAt(),
+          request.getPrice()
       );
   }
 
@@ -79,6 +80,7 @@ public class RequestService {
         // 요청 객체 생성 및 저장
         Request request = new Request(talent, giver, receiver, dto.getStatus(), dto.getMessage());
         request.setChatRoom(chatRoom);
+        request.setPrice(dto.getPrice());
 
         Request saved = requestRepository.save(request);
         

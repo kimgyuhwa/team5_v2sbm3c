@@ -53,7 +53,8 @@ public class ChatRoomMemberService {
                   room.getTalent().getTitle(),                  
                   other.getUser().getUserno(),     // receiverno
                   other.getUser().getUsername(),    // receiverName
-                  room.isPublicRoom()
+                  room.isPublicRoom(),
+                  room.getTalent().getPrice()
               );
           })
           .collect(Collectors.toList());

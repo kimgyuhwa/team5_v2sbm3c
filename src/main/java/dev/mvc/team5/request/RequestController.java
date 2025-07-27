@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -31,6 +32,7 @@ public class RequestController {
 
     private final RequestService service;
     private final RequestRepository requestRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * 요청 생성
@@ -41,6 +43,13 @@ public class RequestController {
     public ResponseEntity<RequestResponseDTO> createRequest(@RequestBody RequestCreateDTO dto) {
         System.out.println("받은 요청 DTO: " + dto);
         RequestResponseDTO savedDto = service.save(dto);
+
+        // ✅ WebSocket 채팅방 구독자에게 요청 정보 전송
+        messagingTemplate.convertAndSend(
+            "/topic/chatroom/" + dto.getChatRoomno(),
+            savedDto  // 이 객체 안에 price, message, receiverno 등 모두 포함됨
+        );
+
         return ResponseEntity.ok(savedDto);
     }
 

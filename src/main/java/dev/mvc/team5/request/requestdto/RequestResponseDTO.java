@@ -20,7 +20,8 @@ public class RequestResponseDTO {
     private String receivername;       // 피요청자 이름
     private String status;         // 요청 상태
     private String message;        // 요청 메시지
-    private LocalDateTime createdAt;      // 요청시간
+    private LocalDateTime createdAt;      // 요청시간\
+    private Long price; // 가격
     
     private final String type = "REQUEST";  // ✅ WebSocket 메시지 분기용 타입 추가
     
@@ -35,6 +36,7 @@ public class RequestResponseDTO {
       this.status = request.getStatus();
       this.message = request.getMessage();
       this.createdAt = request.getCreatedAt();
+      this.price = request.getPrice();
   }
 
 }

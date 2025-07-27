@@ -450,6 +450,12 @@ public class TalentService {
       }
       return talentRepository.findByCategorynosInAndFilters(categorynos, keyword, schoolno, pageable);
   }
+    
+    public Talent getEntityById(Long talentno) {
+        return talentRepository.findById(talentno)
+            .orElseThrow(() -> new IllegalArgumentException("재능이 존재하지 않습니다. talentno = " + talentno));
+    }
+
 
 
 
