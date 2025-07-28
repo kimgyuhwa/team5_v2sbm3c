@@ -1,4 +1,4 @@
-import { Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, CalendarCheck, FileText } from 'lucide-react';
+import { Star,Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, CalendarCheck, FileText } from 'lucide-react';
 import React, { useState, useContext,useEffect,useRef } from 'react';
 import ReactDOM from 'react-dom';
 import UserLogout from '../../user/UserLogout';
@@ -60,8 +60,8 @@ const handleRequestList = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleResearch = () => {
-    navigate('/mypage/Mypage?tab=history');
+  const handleAdmin = () => {
+    navigate('/admin/user');
     setIsDropdownOpen(false);
   };
 
@@ -720,8 +720,8 @@ const handleRequestList = () => {
                       예약 확인
 
                     </button>
-                    {/* <button 
-                    onClick={handleResearch}
+                   { loginUser.role == "admin" &&(<button 
+                    onClick={handleAdmin}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -738,8 +738,8 @@ const handleRequestList = () => {
                     onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
                     >
                       <Star size={16} style={{ marginRight: '12px' }} />
-                      설문조사
-                    </button> */}
+                      관리자 페이지
+                    </button>) }
                     <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e1e5e9' }} />
                     <button onClick={handleLogout} style={{ ...dropdownBtn, color: '#dc3545' }}>
                       <LogOut size={16} style={{ marginRight: 12 }} /> 로그아웃

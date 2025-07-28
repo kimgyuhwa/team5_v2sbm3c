@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function AdminUserList() {
@@ -149,8 +150,17 @@ const handleDelete = (userno) => {
 )}
 
 
-  <h2 className="text-xl font-bold mb-4">관리자 - 사용자 목록</h2>
-
+  <div className="flex gap-6 items-center mb-4">
+  <Link to="/admin/user">
+    <h2 className="text-xl font-bold hover:underline">관리자 - 사용자 목록</h2>
+  </Link>
+  <Link to="/admin/activity">
+    <h2 className="text-xl hover:underline">활동로그 목록</h2>
+  </Link>
+  <Link to="/admin/report">
+    <h2 className="text-xl hover:underline">신고 목록</h2>
+  </Link>
+</div>
      {/* 검색창 */}
   <div className="flex items-center gap-2 mb-4">
     <input
