@@ -83,6 +83,9 @@ public interface TalentRepository extends JpaRepository<Talent, Long> {
   
 
     long countByUser_Userno(Long userno);  
+    
+    List<Talent> findByUser_Userno(Long userno);
+
 
   
 
