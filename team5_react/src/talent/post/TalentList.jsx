@@ -267,7 +267,6 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
           ) : (
             <article key={t.talentno}
               onClick={() => handleGoDetail(t.talentno)}
-<<<<<<< HEAD
               className="relative flex items-center justify-between gap-4 border px-5 py-4 rounded-lg mb-4 hover:shadow cursor-pointer">
               
               {/* 오른쪽 상단 카테고리 */}
@@ -277,7 +276,6 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
               
               <div className="flex-1 text-left px-2">                
                 <h3 className="font-semibold text-lg">{t.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">작성자: {t.userName}</p>
                 <p className="text-sm text-gray-400 mt-1" title={t.description}>
                   {t.description.length > 30 ? t.description.slice(0, 30) + '...' : t.description}
                 </p>
@@ -292,43 +290,14 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
                   )}
                   <span>조회수 : {t.viewCount}</span>
                 </div>
-=======
-              className="relative flex items-center justify-between gap-4 border px-6 py-5 rounded-lg mb-4 hover:shadow cursor-pointer">
-              {t.fileInfos && t.fileInfos.length > 0 && (
-                <img src={`/uploads/talent/${t.fileInfos[0].storedFileName}`}
-                  alt={t.fileInfos[0].originalFileName}
-                  className="w-24 h-24 object-cover rounded shadow"
-                  onClick={(e) => e.stopPropagation()} />
-              )}
-              {/* 오른쪽 상단 카테고리 */}
-              <div className="absolute top-4 right-6 text-xs text-gray-500">
-                {t.cateGrpName} &gt; {t.categoryName}
->>>>>>> 7a82dd19a02c24203df348f4e85246ffd7da0274
               </div>
-              <div className="flex-1 text-left px-4 overflow-hidden">                
-              <h3 className="font-semibold text-lg">
-              {t.title.length > 30 ? t.title.slice(0, 30) + '...' : t.title}
-            </h3>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-2">{t.description}</p>
-              <p className="text-sm text-gray-500 mt-1">작성자: {t.userName}</p>
 
-<<<<<<< HEAD
               {t.fileInfos && t.fileInfos.length > 0 && (
                 <img src={`/uploads/talent/${t.fileInfos[0].storedFileName}`}
                   alt={t.fileInfos[0].originalFileName}
                   className="w-24 h-24 object-cover rounded shadow mt-5"
                   onClick={(e) => e.stopPropagation()} />
               )}
-=======
-              {/* ⭐ 평점 + 조회수 한 줄로 정렬 */}
-              {avgRatings[t.talentno] !== null && avgRatings[t.talentno] !== undefined && (
-                <div className="flex justify-between items-center text-sm mt-1">
-                  <p className="text-yellow-600">⭐ {avgRatings[t.talentno]} / 5</p>
-                  <p className="text-xs text-gray-400">조회수 : {t.viewCount}</p>
-                </div>
-              )}
-            </div>
->>>>>>> 7a82dd19a02c24203df348f4e85246ffd7da0274
             </article>
           )
         )
