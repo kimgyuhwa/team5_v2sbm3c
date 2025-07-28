@@ -441,6 +441,12 @@ public class TalentService {
     public long countTalentsByUserno(Long userno) {
       return talentRepository.countByUser_Userno(userno);
   }
+    
+    public List<TalentListDTO> findTalentsByUserno(Long userno) {
+      List<Talent> list = talentRepository.findByUser_Userno(userno);
+      return list.stream().map(this::toListDTO).toList();
+  }
+
 
 
     public Page<Talent> findTalentsByCateGrp(Long cateGrpno, String keyword, Long schoolno, Pageable pageable) {

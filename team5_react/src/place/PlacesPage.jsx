@@ -307,8 +307,7 @@ const PlacePage = ({place}) => {
                       alignItems: 'center',
                       gap: '4px'
                     }}>
-                      <Navigation size={12} />
-                      {place.distance || '-'}
+                      <Navigation size={14} />
                     </div>
                   </div>
 
