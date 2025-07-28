@@ -59,6 +59,7 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
         setIsConnected(true);
         stompClient.current.subscribe(`/topic/chatroom/${chatRoomno}`, msg => {
           const message = JSON.parse(msg.body);
+          console.log("알림 수신 메세지", message);
           if (message?.type === "REQUEST" && message?.status === "pending") {
             if (Number(message.receiverno) === Number(loginUser.userno)) {
               setPendingRequest(message);
@@ -178,6 +179,26 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
           💬 {isPublicRoom ? roomName : `${receiverName}님과의 채팅`}
         </div>
 
+        {isPublicRoom && (
+          <div className="flex flex-col ml-4">
+            <div className="text-sm text-white mb-1">
+              👥 참여 인원: {members.length}명
+            </div>
+            <div className="flex items-center gap-2 max-w-[300px] overflow-hidden">
+              {members.slice(0, 2).map(member => (
+                <div key={member.userno} className="bg-white text-blue-600 rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap">
+                  👤 {member.username}
+                </div>
+              ))}
+              {members.length > 2 && (
+                <button onClick={() => setShowAllMembers(true)} className="bg-white text-blue-600 rounded-full px-3 py-1 text-xs font-semibold">
+                  +{members.length - 2}명
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {!isPublicRoom && receiverName && loginUser.userno !== receiverno && (
           <button onClick={openRequestModal} className="ml-auto text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
             요청하기
@@ -248,6 +269,28 @@ export default function ChatRoom({ chatRoomno: propChatRoomno }) {
           </div>
         </div>
       )}
+
+      {showAllMembers && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-lg font-bold text-gray-800">전체 참여자 목록</h2>
+              <button onClick={() => setShowAllMembers(false)} className="text-gray-500 hover:text-red-500 text-xl font-bold">
+                ×
+              </button>
+            </div>
+            <div className="max-h-60 overflow-y-auto">
+              {members.map(member => (
+                <div key={member.userno} className="text-sm text-gray-800 border-b py-1 px-1">
+                  👤 {member.username}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      
 
       <RequestModal
         isOpen={showRequestModal}
