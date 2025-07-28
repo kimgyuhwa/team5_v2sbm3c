@@ -43,6 +43,7 @@ def chat_proc():
     userno = data.get("userno")
     source = data.get("source", "user")
     mode = data.get("mode")  # ✅ 여기에 추가
+    apitool.CURRENT_MODE = mode
 
     print("-> 사용자 질문:", message)
 
@@ -81,7 +82,8 @@ def chat_proc():
 
     # 4. LangChain Agent fallback
     apitool.CURRENT_USERNO = userno
-    result = apitool.agent.invoke({"input": message, "userno": userno})
+    agent = apitool.get_agent(mode)
+    result = agent.invoke({"input": message})
     agent_answer = result["output"]
 
     if "Agent stopped due to" in agent_answer:

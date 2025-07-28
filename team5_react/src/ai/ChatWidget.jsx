@@ -43,7 +43,7 @@ function ChatWidget() {
     setMessages((prev) => [...prev, { from: 'user', text: question }]);
     setIsLoading(true);
 
-    const res = await fetch('http://localhost:5000/chat', {
+    const res = await fetch('http://192.168.12.141:5000/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -77,7 +77,7 @@ function ChatWidget() {
         userno: loginUser?.userno,
       };
 
-  const res = await fetch('http://localhost:5000/chat', {
+  const res = await fetch('http://192.168.12.141:5000/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
