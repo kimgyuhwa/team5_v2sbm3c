@@ -1,4 +1,3 @@
-// TalentUpdate.jsx
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { GlobalContext } from "../../components/GlobalContext";
@@ -12,6 +11,7 @@ function TalentUpdate() {
   const [form, setForm] = useState({
     title: "",
     description: "",
+    price: "",
     typeno: "",
     cateGrpno: "",
     categoryno: "",
@@ -23,7 +23,6 @@ function TalentUpdate() {
   const [categoryList, setCategoryList] = useState([]);
   const [error, setError] = useState(null);
 
-  // 기존 데이터 불러오기
   useEffect(() => {
     fetch(`/talent/detail/${talentno}`)
       .then((res) => res.json())
@@ -32,23 +31,21 @@ function TalentUpdate() {
         setForm({
           title: data.title,
           description: data.description,
+          price: data.price ?? "",
           typeno: data.typeno,
           cateGrpno: data.cateGrpno,
           categoryno: data.categoryno,
           fileInfos: data.fileInfos || [],
         });
-
       })
       .catch(() => setError("데이터 불러오기 실패"));
   }, [talentno]);
 
-  // 옵션 데이터 로딩
   useEffect(() => {
     fetch("/talent_type/list").then((res) => res.json()).then((data) => setTypeList(data.content || []));
     fetch("/talent_cate_grp/list").then((res) => res.json()).then((data) => setCateGrpList(data.content || []));
   }, []);
 
-  // 소분류 동적 로딩
   useEffect(() => {
     if (form.cateGrpno) {
       fetch(`/talent_category/list-by-categrp/${form.cateGrpno}`)
@@ -57,7 +54,6 @@ function TalentUpdate() {
     }
   }, [form.cateGrpno]);
 
-  // select 동기화
   useEffect(() => {
     if (typeList.length > 0 && form.typeno) {
       setForm((prev) => ({ ...prev, typeno: Number(prev.typeno) }));
@@ -78,6 +74,14 @@ function TalentUpdate() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handlePriceChange = (e) => {
+    const raw = e.target.value.replace(/,/g, "");
+    if (!/^\d*$/.test(raw)) return;
+    setForm((prev) => ({ ...prev, price: raw }));
+  };
+
+  const formattedPrice = Number(form.price || 0).toLocaleString();
 
   const handleFileChange = (e) => {
     setSelectedFiles(Array.from(e.target.files));
@@ -105,8 +109,11 @@ function TalentUpdate() {
         talentno: Number(talentno),
         typeno: Number(form.typeno),
         categoryno: Number(form.categoryno),
+        price: Number(form.price), // ✅ 추가
         fileInfos: [...form.fileInfos, ...uploadedFileData],
       };
+
+      console.log("📤 수정 요청 DTO:", dto);
 
       const res = await fetch(`/talent/update/${talentno}`, {
         method: "PUT",
@@ -115,7 +122,11 @@ function TalentUpdate() {
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error("수정 실패");
+      if (!res.ok) {
+        const msg = await res.text();
+        console.error("서버 응답 오류:", res.status, msg);
+        throw new Error("수정 실패");
+      }
 
       alert("수정 완료!");
       navigate(`/talent/detail/${talentno}`);
@@ -137,6 +148,17 @@ function TalentUpdate() {
         placeholder="제목"
         className="w-full p-3 border border-gray-300 rounded mb-4"
       />
+
+      {/* ✅ 가격 입력 */}
+      <input
+        type="text"
+        name="price"
+        value={formattedPrice}
+        onChange={handlePriceChange}
+        placeholder="가격 (숫자만)"
+        className="w-full p-3 border border-gray-300 rounded mb-4"
+      />
+
       <textarea
         name="description"
         value={form.description}

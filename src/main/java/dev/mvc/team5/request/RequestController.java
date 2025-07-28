@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * 요청 관련 API 컨트롤러
- * - 요청 생성, 삭제, 상태 변경
- * - 요청 목록 검색/페이징
- * - 채팅방 기반 요청 조회
- * - 구매/판매 내역 조회
+ * - 거래 요청 생성, 삭제, 상태 변경
+ * - 검색 및 페이징 처리
+ * - 채팅방 내 최근 요청 조회
+ * - 사용자별 구매/판매 내역 조회
  */
 @RestController
-@RequiredArgsConstructor  
+@RequiredArgsConstructor
 @RequestMapping("/request")
 public class RequestController {
 
@@ -35,28 +35,31 @@ public class RequestController {
     private final SimpMessagingTemplate messagingTemplate;
 
     /**
-     * 요청 생성
-     * @param dto 생성할 요청 정보
-     * @return 저장된 요청 DTO
+     *  거래 요청 생성
+     *  요청 저장 후, 해당 채팅방 구독자에게 WebSocket 메시지 전송
+     *
+     * @param dto 요청 생성용 DTO
+     * @return 저장된 요청 정보 DTO
      */
     @PostMapping(path="save")
     public ResponseEntity<RequestResponseDTO> createRequest(@RequestBody RequestCreateDTO dto) {
         System.out.println("받은 요청 DTO: " + dto);
         RequestResponseDTO savedDto = service.save(dto);
 
-        // ✅ WebSocket 채팅방 구독자에게 요청 정보 전송
+        // ✅ WebSocket: 채팅방 내 모든 사용자에게 실시간 요청 정보 전송
         messagingTemplate.convertAndSend(
             "/topic/chatroom/" + dto.getChatRoomno(),
-            savedDto  // 이 객체 안에 price, message, receiverno 등 모두 포함됨
+            savedDto
         );
 
         return ResponseEntity.ok(savedDto);
     }
 
     /**
-     * 요청 삭제
-     * @param requestno 삭제할 요청 번호
-     * @return 삭제 결과 메시지
+     *  요청 삭제
+     * 
+     * @param requestno 삭제할 요청 ID
+     * @return 성공 메시지
      */
     @DeleteMapping("/delete/{requestno}")
     public ResponseEntity<String> deleteRequest(@PathVariable(name="requestno") Long requestno) {
@@ -65,16 +68,15 @@ public class RequestController {
     }
 
     /**
-     * 요청 목록 조회 + 검색 + 페이징 + 정렬
-     * 기본 정렬: requestno 내림차순(최신순)
-     * 
-     * @param searchType 검색 필드 (talentTitle, userName, status, message)
-     * @param keyword 검색어 (없으면 전체)
+     *  요청 목록 조회 (검색 + 페이징 + 정렬 지원)
+     *
+     * @param searchType 검색 필드 (예: "talentTitle", "userName", "status", "message")
+     * @param keyword 검색 키워드 (없으면 전체)
      * @param page 페이지 번호 (0부터 시작)
-     * @param size 페이지 크기
-     * @param sort 정렬 기준 필드명
-     * @param direction 정렬 방향 (ASC or DESC)
-     * @return 페이지 형태의 요청 목록
+     * @param size 한 페이지당 요청 수
+     * @param sort 정렬 기준 필드 (기본: requestno)
+     * @param direction 정렬 방향 (ASC 또는 DESC)
+     * @return 요청 리스트 페이지
      */
     @GetMapping("/list")
     public ResponseEntity<Page<RequestListDTO>> listRequests(
@@ -93,14 +95,15 @@ public class RequestController {
     }
 
     /**
-     * 요청 상태 직접 변경
-     * @param requestno 요청 번호
-     * @param status 변경할 상태 (e.g., ACCEPTED, REJECTED)
-     * @return 상태 변경 결과 메시지
+     *  요청 상태 수동 변경 (단일 요청)
+     * 
+     * @param requestno 요청 ID
+     * @param status 변경할 상태 값 (예: "ACCEPTED", "REJECTED")
+     * @return 성공 메시지
      */
     @PatchMapping("/status/{requestno}")
     public ResponseEntity<String> updateStatus(
-            @PathVariable(name="reqeustno") Long requestno,
+            @PathVariable(name="requestno") Long requestno,
             @RequestParam(name="status") String status) {
 
         service.updateStatus(requestno, status);
@@ -108,9 +111,10 @@ public class RequestController {
     }
 
     /**
-     * 요청 수락 처리
+     *  요청 수락 처리
+     *
      * @param requestno 수락할 요청 번호
-     * @return 성공 응답
+     * @return 200 OK
      */
     @PatchMapping("/{requestno}/accept")
     public ResponseEntity<Void> acceptRequest(@PathVariable(name="requestno") Long requestno) {
@@ -119,9 +123,10 @@ public class RequestController {
     }
 
     /**
-     * 요청 거절 처리
+     *  요청 거절 처리
+     *
      * @param requestno 거절할 요청 번호
-     * @return 성공 응답
+     * @return 200 OK
      */
     @PatchMapping("/{requestno}/reject")
     public ResponseEntity<Void> rejectRequest(@PathVariable(name="requestno") Long requestno) {
@@ -130,9 +135,10 @@ public class RequestController {
     }
 
     /**
-     * 채팅방 번호로 가장 최근 요청 조회
-     * @param chatRoomno 채팅방 번호
-     * @return 가장 최근 요청 or 204 (없을 경우)
+     *  채팅방 번호 기준으로 최근 요청 1건 조회
+     * 
+     * @param chatRoomno 채팅방 ID
+     * @return 가장 최근 요청 정보 or 204 No Content
      */
     @GetMapping("/chatroom/{chatRoomno}")
     public ResponseEntity<?> getLatestRequestByChatRoom(@PathVariable(name="chatRoomno") Long chatRoomno) {
@@ -141,23 +147,33 @@ public class RequestController {
             .orElse(ResponseEntity.noContent().build());
     }
 
-
- // 구매내역: 내가 요청한 거래들 → giver
+    /**
+     *  구매 내역 조회
+     *  내가 요청한 거래 내역 (giver 기준)
+     *
+     * @param userno 사용자 번호
+     * @return 요청 리스트 (내가 요청한 것들)
+     */
     @GetMapping("/purchases/{userno}")
-    public List<RequestResponseDTO> getPurchases(@PathVariable("userno") Long userno) {
+    public List<RequestResponseDTO> getPurchases(@PathVariable(name="userno") Long userno) {
         List<Request> purchases = requestRepository.findByGiver_Userno(userno);
         return purchases.stream()
                         .map(RequestResponseDTO::new)
                         .collect(Collectors.toList());
     }
 
-    // 판매내역: 내가 요청 받은 거래들 → receiver
+    /**
+     *  판매 내역 조회
+     *  내가 요청 받은 거래 내역 (receiver 기준)
+     *
+     * @param userno 사용자 번호
+     * @return 요청 리스트 (내가 받은 요청들)
+     */
     @GetMapping("/sales/{userno}")
     public List<RequestResponseDTO> getSales(@PathVariable("userno") Long userno) {
         List<Request> sales = requestRepository.findByReceiver_Userno(userno);
         return sales.stream()
                     .map(RequestResponseDTO::new)
                     .collect(Collectors.toList());
-
     }
-} 
+}
