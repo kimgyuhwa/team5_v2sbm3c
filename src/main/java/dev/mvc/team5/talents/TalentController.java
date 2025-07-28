@@ -215,6 +215,14 @@ public class TalentController {
         return ResponseEntity.ok(resultPage);
     }
     
+ // 🔹 누구나 접근 가능한 공개 API (userno로 게시글 조회)
+    @GetMapping("/user/{userno}/posts")
+    public ResponseEntity<List<TalentListDTO>> getTalentsByUser(@PathVariable(name="userno") Long userno) {
+        List<TalentListDTO> list = service.findTalentsByUserno(userno);
+        return ResponseEntity.ok(list);
+    }
+
+    
     // 사용자의 게시물 개수 (프로필용)
     @GetMapping("/count-by-user")
     public ResponseEntity<Long> getTalentCountByUser(@RequestParam("userno") Long userno) {

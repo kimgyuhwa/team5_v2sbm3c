@@ -22,6 +22,7 @@ public class RequestResponseDTO {
     private String message;        // 요청 메시지
     private LocalDateTime createdAt;      // 요청시간
     private Long price;
+
     
     private final String type = "REQUEST";  // ✅ WebSocket 메시지 분기용 타입 추가
     
@@ -37,6 +38,7 @@ public class RequestResponseDTO {
       this.message = request.getMessage();
       this.createdAt = request.getCreatedAt();
       this.price = request.getTalent().getPrice();
+
   }
 
 }
