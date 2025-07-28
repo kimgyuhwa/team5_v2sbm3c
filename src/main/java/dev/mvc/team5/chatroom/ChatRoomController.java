@@ -49,7 +49,8 @@ public class ChatRoomController {
             null,
             null,
             savedRoom.isPublicRoom(),
-            savedRoom.getTalent().getPrice()
+            savedRoom.getTalent() != null ? savedRoom.getTalent().getPrice() : null
+
         );
         return ResponseEntity.ok(response);
     }
@@ -86,6 +87,7 @@ public class ChatRoomController {
             .map(room -> {
                 Long talentno = room.getTalent() != null ? room.getTalent().getTalentno() : null;
                 String title = room.getTalent() != null ? room.getTalent().getTitle() : null;
+                Long price = room.getTalent() != null ? room.getTalent().getPrice() : null;
                 return new ChatRoomResponseDTO(
                     room.getChatRoomno(),
                     room.getRoomName(),
@@ -95,7 +97,7 @@ public class ChatRoomController {
                     room.getCreator() != null ? room.getCreator().getUserno() : null,
                     room.getCreator() != null ? room.getCreator().getUsername() : null,
                     room.isPublicRoom(),
-                    room.getTalent().getPrice()
+                    price
                 );
             })
             .collect(Collectors.toList());
@@ -126,7 +128,8 @@ public class ChatRoomController {
             chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUserno() : null,
             chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUsername() : null,     // receiverName
             chatRoom.isPublicRoom(),
-            chatRoom.getTalent().getPrice()
+            chatRoom.getTalent() != null ? chatRoom.getTalent().getPrice() : null
+
         );
 
         return ResponseEntity.ok(dto);
@@ -152,7 +155,8 @@ public class ChatRoomController {
             chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUserno() : null,
             chatRoom.getReceiverno() != null ? chatRoom.getReceiverno().getUsername() : null,
             chatRoom.isPublicRoom(),
-            chatRoom.getTalent().getPrice()
+            chatRoom.getTalent() != null ? chatRoom.getTalent().getPrice() : null
+
         );
 
         return ResponseEntity.ok(dto);
