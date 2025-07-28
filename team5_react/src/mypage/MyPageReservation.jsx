@@ -40,7 +40,7 @@ useEffect(() => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case '예약됨': return '확정';
+      case '예약됨': return '예약';
       case '취소됨': return '취소';
       case '완료됨': return '완료';
       default: return status;
@@ -153,7 +153,7 @@ const handleCancel = (reservationno) => {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 {/* <option value="all">전체 목록</option>  전체 목록이 필요할것같으면 열기 */}
-                <option value="예약됨">확정/완료</option>
+                <option value="예약됨">예약/완료</option>
                 <option value="취소됨">취소</option>
               </select>
             </div>
@@ -257,7 +257,7 @@ const handleCancel = (reservationno) => {
                           
                           {/* 액션 버튼들 */}
                           <div className="flex justify-end space-x-2 mt-4">
-                            {reservation.status === '확정됨' && (
+                            {reservation.status === '예약됨' && (
                               <button 
                                 onClick={() => handleCancel(reservation.reservationno)}
                                 className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"

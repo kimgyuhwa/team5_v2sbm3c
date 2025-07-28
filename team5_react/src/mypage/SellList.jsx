@@ -165,7 +165,7 @@ const RequestList = ({userno}) => {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="all">전체 상태</option>
+                <option value="all">전체</option>
                 <option value="pending">대기</option>
                 <option value="accepted">거래중</option>
                 <option value="completed">완료</option>
@@ -174,7 +174,7 @@ const RequestList = ({userno}) => {
             </div>
           </div>
 
-          {/* 정렬 옵션 */}
+          {/* 정렬 옵션
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center gap-2">
               <span className="text-gray-600">정렬 기준:</span>
@@ -199,7 +199,7 @@ const RequestList = ({userno}) => {
                 <option value="ASC">오름차순</option>
               </select>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* 거래 리스트 */}

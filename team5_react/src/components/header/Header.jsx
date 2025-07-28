@@ -141,7 +141,7 @@ const handleRequestList = () => {
           path = `/mypage/Mypage?tab=reservation&reservationNo=${notification.targetId}`; //
           break;
         case 'request':    //요청페이지로 가게해야함
-          path = `/mypage/MyPage/list`; // (리뷰 대상 재능 또는 구매/판매 기록으로 이동)
+          path = `/mypage/Mypage?tab=mySell`; // (리뷰 대상 재능 또는 구매/판매 기록으로 이동)
           break;
       }
       console.log(notificationList[0].targetId)
