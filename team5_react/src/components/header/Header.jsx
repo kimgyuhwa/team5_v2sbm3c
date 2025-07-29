@@ -1,4 +1,5 @@
-import { Star,Search, User, ChevronDown, Settings, LogOut, Bell, Menu, Plus, MessageCircle, CalendarCheck, FileText } from 'lucide-react';
+import { Star,Search, User, ChevronDown, Sparkles, Settings, LogOut, Bell, Menu, Plus, MessageCircle, CalendarCheck, FileText } from 'lucide-react';
+// import { MdInterests } from 'react-icons/md';
 import React, { useState, useContext,useEffect,useRef } from 'react';
 import ReactDOM from 'react-dom';
 import UserLogout from '../../user/UserLogout';
@@ -57,6 +58,11 @@ const handleRequestList = () => {
 
   const handleReservation = () => {
     navigate('/mypage/Mypage?tab=reservation');
+    setIsDropdownOpen(false);
+  };
+
+  const handleChatbotList = () => {
+    navigate('/mypage/chatbot-list');
     setIsDropdownOpen(false);
   };
 
@@ -720,6 +726,30 @@ const handleRequestList = () => {
                       예약 확인
 
                     </button>
+
+                    <button
+                    onClick={handleChatbotList}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      color: '#333',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                    >
+                      <Sparkles size={16} style={{ marginRight: '12px' }} />
+                      내 관심사
+
+                    </button>
+
+
                    { loginUser.role == "admin" &&(<button 
                     onClick={handleAdmin}
                     style={{
