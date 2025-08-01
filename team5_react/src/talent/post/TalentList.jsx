@@ -267,7 +267,7 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
           ) : (
             <article key={t.talentno}
               onClick={() => handleGoDetail(t.talentno)}
-              className="relative flex items-center justify-between gap-4 border px-5 py-4 rounded-lg mb-4 hover:shadow cursor-pointer">
+              className="relative flex items-center justify-between gap-4 border px-5 py-4 rounded-lg mb-4 hover:shadow cursor-pointer  h-[150px]">
               
               {/* 오른쪽 상단 카테고리 */}
                 <div className="absolute top-4 right-6 text-xs text-gray-500">
@@ -275,11 +275,10 @@ const TalentList = ({ refresh, onUpdated, onDeleted, searchQuery }) => {
                 </div>
               
               <div className="flex-1 text-left px-2">                
-                <h3 className="font-semibold text-lg">{t.title}</h3>
+                <h3 className="font-semibold text-xl">{t.title}</h3>
                 <p className="text-sm text-gray-400 mt-1" title={t.description}>
                   {t.description.length > 30 ? t.description.slice(0, 30) + '...' : t.description}
                 </p>
-
               <div className="flex items-center gap-2 text-xs text-gray-400 mt-2">
                   {/* 평균 평점 표시 */}
                   {avgRatings[t.talentno] !== null && avgRatings[t.talentno] !== undefined && (

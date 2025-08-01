@@ -24,7 +24,19 @@ public class FileUploadServiceImpl implements FileUploadService {
     private final FileUploadRepository fileUploadRepository;
     private final TalentRepository talentRepository; // ⭐ Talent 조회를 위한 주입
 
-    private String uploadBasePath = "C:/kd/deploy/team5/storage";
+    private final String uploadBasePath;
+
+    public FileUploadServiceImpl(FileUploadRepository fileUploadRepository, TalentRepository talentRepository) {
+        this.fileUploadRepository = fileUploadRepository;
+        this.talentRepository = talentRepository;
+
+        String ci = System.getenv("CI");
+        if ("true".equals(ci)) {
+            this.uploadBasePath = "build/uploads";  // CI 환경용 상대 경로
+        } else {
+            this.uploadBasePath = "C:/kd/deploy/team5/storage";  // 로컬 환경 경로
+        }
+    }
 
     @Override
     public FileUploadDTO saveFile(MultipartFile file, String targetType, Long talentno, String profile) {

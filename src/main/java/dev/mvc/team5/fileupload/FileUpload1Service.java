@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,35 +16,44 @@ import lombok.RequiredArgsConstructor;
 public class FileUpload1Service {
 
     private final FileUpload1Repository fileUploadRepository;
+    private final String uploadDir;
 
-   // @Value("${file.upload-dir}") // ex: C:/kd/upload
-    private  String uploadDir = "C:/kd/deploy/team5/storage/user";
+    public FileUpload1Service(FileUpload1Repository fileUploadRepository) {
+        this.fileUploadRepository = fileUploadRepository;
+
+        String ci = System.getenv("CI");
+        if ("true".equals(ci)) {
+            this.uploadDir = "build/uploads"; // CI 환경용 상대 경로
+        } else {
+            this.uploadDir = "C:/kd/deploy/team5/storage/user"; // 로컬 개발용 절대 경로
+        }
+    }
 
     public FileUpload1 uploadFile(MultipartFile multipartFile, String purpose, String targetType, Long targetId) throws IOException {
-      if (multipartFile.isEmpty()) return null;
+        if (multipartFile.isEmpty()) return null;
 
-      File uploadPath = new File(uploadDir);
-      if (!uploadPath.exists()) {
-          uploadPath.mkdirs();
-      }
+        File uploadPath = new File(uploadDir);
+        if (!uploadPath.exists()) {
+            uploadPath.mkdirs();
+        }
 
-      String originalFileName = Paths.get(multipartFile.getOriginalFilename()).getFileName().toString();
-      String storedFileName = UUID.randomUUID() + "_" + originalFileName;
-      String filePath = uploadDir + File.separator + storedFileName;
+        String originalFileName = Paths.get(multipartFile.getOriginalFilename()).getFileName().toString();
+        String storedFileName = UUID.randomUUID() + "_" + originalFileName;
+        String filePath = uploadDir + File.separator + storedFileName;
 
-      File dest = new File(filePath);
-      multipartFile.transferTo(dest);
+        File dest = new File(filePath);
+        multipartFile.transferTo(dest);
 
-      FileUpload1 fileUpload = new FileUpload1();
-      fileUpload.setOriginalFileName(originalFileName);
-      fileUpload.setStoredFileName(storedFileName);
-      fileUpload.setFilePath(filePath);
-      fileUpload.setFileSize(multipartFile.getSize());
-      fileUpload.setUploadedAt(LocalDateTime.now());
-      fileUpload.setPurpose(purpose);
-      fileUpload.setTargetId(targetId);
-      fileUpload.setTargetType(targetType);
+        FileUpload1 fileUpload = new FileUpload1();
+        fileUpload.setOriginalFileName(originalFileName);
+        fileUpload.setStoredFileName(storedFileName);
+        fileUpload.setFilePath(filePath);
+        fileUpload.setFileSize(multipartFile.getSize());
+        fileUpload.setUploadedAt(LocalDateTime.now());
+        fileUpload.setPurpose(purpose);
+        fileUpload.setTargetId(targetId);
+        fileUpload.setTargetType(targetType);
 
-      return fileUploadRepository.save(fileUpload);
-  }
+        return fileUploadRepository.save(fileUpload);
+    }
 }
